@@ -1,0 +1,55 @@
+terrain:
+  source: allen
+  output: data/terrain.npz
+
+  allen:
+    bbox: [-149.87, -17.555, -149.80, -17.485]  # Moorea nord, Polynésie française
+    resolution: 0.0003      # degrés par pixel (~33m)
+    cache_dir: cache/
+
+  procedural:
+    length_x: 1000          # mètres
+    length_y: 1000
+    resolution: 2.0         # mètres par pixel
+    seed: 42
+    depth_max: 20.0
+    reef_crest_depth: 1.5
+    lagoon_depth: 8.0
+    slope_angle: 45.0       # degrés
+    octaves: 6
+    rugosity: 1.5           # amplitude bruit haute fréquence (m)
+
+colony:
+  input: data/terrain.npz
+  output: data/reef.glb
+  seed: 42
+  templates_per_type: 5
+
+  dla:
+    grid_size: 50
+    n_particles: 3000
+    bias_up: 0.3
+    size_range: [0.3, 1.5]
+
+  differential_growth:
+    iterations: 200
+    repulsion: 0.8
+    noise: 0.3
+    size_range: [0.5, 3.0]
+
+  placement:
+    zones:
+      - depth: [0, 5]
+        type: dla
+        density: 0.04
+      - depth: [5, 15]
+        type: differential_growth
+        density: 0.02
+      - depth: [15, 25]
+        type: dla
+        density: 0.005
+
+viz:
+  input: data/terrain.npz
+  colormap: deep
+  background: [10, 20, 40]

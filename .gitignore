@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Données téléchargées et sorties
+models/
+cache/
+data/
+.npz
+*.glb
+reef_3d.html
