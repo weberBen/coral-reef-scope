@@ -2,7 +2,7 @@
 
 import sys
 
-from . import get_terrain, load_config
+from . import get_terrain, load_config, resolve_path
 from .io import save_terrain
 
 if len(sys.argv) < 2:
@@ -11,4 +11,4 @@ if len(sys.argv) < 2:
 
 config = load_config(sys.argv[1])
 terrain = get_terrain(config)
-save_terrain(config["terrain"]["output"], terrain)
+save_terrain(resolve_path(config, config["terrain"]["output"]), terrain)

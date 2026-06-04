@@ -165,7 +165,7 @@ def _rasterize(
 if __name__ == "__main__":
     import sys
 
-    from . import load_config
+    from . import load_config, resolve_path
     from .io import save_terrain
 
     if len(sys.argv) < 2:
@@ -174,4 +174,4 @@ if __name__ == "__main__":
 
     config = load_config(sys.argv[1])
     terrain = fetch_allen_terrain(config["terrain"]["allen"])
-    save_terrain(config["terrain"]["output"], terrain)
+    save_terrain(resolve_path(config, config["terrain"]["output"]), terrain)

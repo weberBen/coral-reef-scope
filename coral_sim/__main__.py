@@ -2,7 +2,7 @@
 
 import sys
 
-from .terrain import get_terrain, load_config
+from .terrain import get_terrain, load_config, resolve_path
 from .terrain.io import save_terrain
 from .viz import show_terrain
 
@@ -14,7 +14,7 @@ config = load_config(sys.argv[1])
 
 # Générer le terrain
 terrain = get_terrain(config)
-save_terrain(config["terrain"]["output"], terrain)
+save_terrain(resolve_path(config, config["terrain"]["output"]), terrain)
 
 # Visualiser
 show_terrain(terrain, config.get("viz", {}))

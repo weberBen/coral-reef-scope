@@ -31,3 +31,9 @@ def load_config(path: str | Path) -> dict[str, Any]:
     """Charge un fichier YAML de configuration."""
     with open(path) as f:
         return yaml.safe_load(f)
+
+
+def resolve_path(config: dict[str, Any], relative_path: str) -> Path:
+    """Résout un chemin relatif par rapport à data_dir."""
+    data_dir = Path(config.get("data_dir", "data"))
+    return data_dir / relative_path
