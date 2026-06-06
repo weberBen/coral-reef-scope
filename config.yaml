@@ -53,5 +53,8 @@ colony:
 
 viz:
   input: terrain.npz         # → data_dir/terrain.npz
-  z_exaggeration: 30         # facteur d'exagération verticale
-  background: [10, 20, 40]
+  output_html: reef_3d.html
+  terrain_exaggeration: 1.5  # exagération 3D MapLibre
+  contour_interval: 2.0      # mètres entre isolines
+  zoom: 14
+  pitch: 60                  # angle de vue initial

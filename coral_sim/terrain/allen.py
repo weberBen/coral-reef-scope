@@ -45,8 +45,13 @@ def fetch_allen_terrain(config: dict[str, Any]) -> TerrainData:
     resolution = config["resolution"]
     cache_dir = Path(config.get("cache_dir", "cache"))
 
-    # 1. Télécharger les polygones géomorphiques
-    geojson = _fetch_wfs(bbox, cache_dir)
+    # 1. Télécharger les deux couches
+    geo_geojson = _fetch_wfs_layer(
+        "coral-atlas:geomorphic_data_verbose", bbox, cache_dir
+    )
+    ben_geojson = _fetch_wfs_layer(
+        "coral-atlas:benthic_data_verbose", bbox, cache_dir
+    )
 
     # 2. Rastériser sur une grille
     lon_min, lat_min, lon_max, lat_max = bbox
@@ -54,7 +59,7 @@ def fetch_allen_terrain(config: dict[str, Any]) -> TerrainData:
     ny = int(round((lat_max - lat_min) / resolution))
 
     print(f"Rastérisation ({nx}×{ny})…", end=" ", flush=True)
-    depth_grid = _rasterize(geojson, bbox, nx, ny, resolution)
+    depth_grid = _rasterize(geo_geojson, bbox, nx, ny, resolution)
     print("OK")
 
     # 3. Lissage pour transitions douces entre zones
@@ -79,26 +84,32 @@ def fetch_allen_terrain(config: dict[str, Any]) -> TerrainData:
         metadata={
             "bbox": bbox,
             "resolution_deg": resolution,
-            "n_features": len(geojson.get("features", [])),
+            "n_geomorphic": len(geo_geojson.get("features", [])),
+            "n_benthic": len(ben_geojson.get("features", [])),
         },
+        geomorphic_geojson=geo_geojson,
+        benthic_geojson=ben_geojson,
     )
 
 
-def _fetch_wfs(bbox: list[float], cache_dir: Path) -> dict:
-    """Télécharge les polygones géomorphiques depuis le WFS Allen Coral Atlas."""
+def _fetch_wfs_layer(
+    typename: str, bbox: list[float], cache_dir: Path
+) -> dict:
+    """Télécharge une couche depuis le WFS Allen Coral Atlas."""
     cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = cache_dir / "geomorphic_data_verbose.json"
+    short = typename.split(":")[1]
+    cache_file = cache_dir / f"{short}.json"
 
     if cache_file.exists():
-        print("  Géomorphologie : cache local")
+        print(f"  {short} : cache local")
         return json.loads(cache_file.read_text())
 
-    print("  Géomorphologie : téléchargement…", end=" ", flush=True)
+    print(f"  {short} : téléchargement…", end=" ", flush=True)
     params = {
         "service": "WFS",
         "version": "1.0.0",
         "request": "GetFeature",
-        "typeName": "coral-atlas:geomorphic_data_verbose",
+        "typeName": typename,
         "outputFormat": "application/json",
         "srsName": "EPSG:4326",
         "bbox": f"{bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]}",
