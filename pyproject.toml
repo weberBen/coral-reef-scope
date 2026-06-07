@@ -13,5 +13,6 @@ dependencies = [
     "opensimplex>=0.4",
     "trimesh>=4.0",
     "scikit-image>=0.24",
-    "numba>=0.60",
+    "viser>=1.0.30",
+    "dlacorals>=2024.0.1",
 ]

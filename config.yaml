@@ -10,16 +10,29 @@ terrain:
     cache_dir: cache/
 
   procedural:
-    length_x: 1000          # mètres
-    length_y: 1000
+    length_x: 2000          # mètres
+    length_y: 2000
     resolution: 2.0         # mètres par pixel
     seed: 42
-    depth_max: 20.0
-    reef_crest_depth: 1.5
-    lagoon_depth: 8.0
-    slope_angle: 45.0       # degrés
     octaves: 6
     rugosity: 1.5           # amplitude bruit haute fréquence (m)
+    flat_depth: 20.0        # profondeur du fond plat
+
+    zones:
+      - bounds: [100, 200, 900, 1800]   # [x_min, y_min, x_max, y_max] en mètres
+        profile:                         # [distance_au_bord_m, profondeur_m]
+          - [0, 20.0]                    # bord = fond
+          - [30, 8.0]                    # pente externe
+          - [100, 1.5]                   # platier
+          - [150, 0.3]                   # crête
+          - [200, 1.5]                   # centre
+
+      - bounds: [1200, 400, 1700, 1200]
+        profile:
+          - [0, 20.0]
+          - [20, 5.0]
+          - [80, 0.5]
+          - [120, 2.0]
 
 colony:
   input: terrain.npz        # → data_dir/terrain.npz
@@ -27,34 +40,37 @@ colony:
   seed: 42
   templates_per_type: 5
 
-  dla:
+  dla:                           # coraux branchus (Pocillopora, Acropora) via dlacorals
     grid_size: 50
-    n_particles: 3000
-    bias_up: 0.3
+    steps: 500                   # itérations de marche aléatoire
+    particle_density: 0.1
+    drift_vec: [0, 0, -1]       # direction du courant (vers le haut)
+    sun_vec: [0, 0, -1]         # direction de la lumière
     size_range: [0.3, 1.5]
 
-  differential_growth:
-    iterations: 200
-    repulsion: 0.8
-    noise: 0.3
+  massive:                       # coraux massifs (Porites) — sphère bruitée
+    subdivisions: 3
+    noise_scale: 3.0
+    noise_amplitude: 0.15
+    radius: 0.4
     size_range: [0.5, 3.0]
 
   placement:
     zones:
       - depth: [0, 5]
         type: dla
-        density: 0.04
+        density: 0.002           # ~1 colonie tous les 22m
       - depth: [5, 15]
-        type: differential_growth
-        density: 0.02
+        type: massive
+        density: 0.001
       - depth: [15, 25]
         type: dla
-        density: 0.005
+        density: 0.0003
 
 viz:
   input: terrain.npz         # → data_dir/terrain.npz
   output_html: reef_3d.html
-  terrain_exaggeration: 1.5  # exagération 3D MapLibre
+  z_exaggeration: 30         # exagération verticale
   contour_interval: 2.0      # mètres entre isolines
   zoom: 14
   pitch: 60                  # angle de vue initial
