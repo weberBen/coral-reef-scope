@@ -38,6 +38,8 @@ colony:
   input: terrain.npz
   output: reef.glb
   seed: 42
+  ram_limit: 500               # Mo max pour la matrice KJMA
+  cpu_core_limit: 4            # cores max pour numpy
 
   kjma:
     base_speed: 1.0
@@ -63,7 +65,7 @@ colony:
         density: 0.001
 
 viz:
-  input: reef.glb              # terrain.npz pour terrain seul, reef.glb pour terrain + colonies
+  input: terrain.npz
   output_html: reef_3d.html
   z_exaggeration: 5           # exagération verticale
   contour_interval: 2.0      # mètres entre isolines

@@ -27,8 +27,10 @@ def scatter_seeds(
     terrain: TerrainData,
     placement_zones: list[dict],
     rng: np.random.Generator,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Distribue des graines sur le terrain. Retourne positions, depths, indices de zone."""
+    config: dict[str, Any] | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Distribue des graines sur le terrain. Retourne positions, depths."""
+    config = config or {}
     heightmap = terrain.heightmap
     ny, nx = heightmap.shape
     x_max, y_max = terrain.x_coords[-1], terrain.y_coords[-1]
@@ -60,9 +62,12 @@ def scatter_seeds(
     positions = np.vstack(all_positions) if all_positions else np.zeros((0, 2))
     depths = np.concatenate(all_depths) if all_depths else np.zeros(0)
 
-    # Limiter le nombre de seeds (pas plus que le nombre de vertices du mesh)
-    ny, nx = heightmap.shape
-    max_seeds = min(len(positions), 2000)  # limiter pour la RAM
+    # Limiter les seeds selon la RAM disponible
+    # La matrice KJMA fait chunk_size × n_seeds × 8 bytes (float64) × ~5 arrays temporaires
+    ram_limit_mb = config.get("ram_limit", 500)
+    chunk_size = 5000
+    max_seeds = int(ram_limit_mb * 1_000_000 / (chunk_size * 8 * 5))
+    max_seeds = min(len(positions), max_seeds)
     if len(positions) > max_seeds:
         idx = rng.choice(len(positions), max_seeds, replace=False)
         positions = positions[idx]
@@ -268,13 +273,22 @@ def terrain_to_mesh(terrain: TerrainData) -> trimesh.Trimesh:
 
 def generate_reef(terrain: TerrainData, config: dict[str, Any]) -> trimesh.Trimesh:
     """Pipeline KJMA : seeds → attributs → attribution → déformation."""
+    import os
+
+    # Limiter les cores CPU pour numpy/BLAS
+    cpu_limit = str(config.get("cpu_core_limit", ""))
+    if cpu_limit:
+        os.environ["OMP_NUM_THREADS"] = cpu_limit
+        os.environ["MKL_NUM_THREADS"] = cpu_limit
+        os.environ["OPENBLAS_NUM_THREADS"] = cpu_limit
+
     seed_val = config.get("seed", 42)
     rng = np.random.default_rng(seed_val)
     kjma_cfg = config.get("kjma", {})
     zones = config.get("placement", {}).get("zones", [])
 
     # 1. Scatter
-    positions, depths = scatter_seeds(terrain, zones, rng)
+    positions, depths = scatter_seeds(terrain, zones, rng, config=config)
     if len(positions) == 0:
         print("  Aucun seed placé")
         return terrain_to_mesh(terrain)
