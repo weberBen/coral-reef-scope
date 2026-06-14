@@ -35,42 +35,37 @@ terrain:
           - [120, 2.0]
 
 colony:
-  input: terrain.npz        # → data_dir/terrain.npz
-  output: reef.glb           # → data_dir/reef.glb
+  input: terrain.npz
+  output: reef.glb
   seed: 42
-  templates_per_type: 5
 
-  dla:                           # coraux branchus (Pocillopora, Acropora) via dlacorals
-    grid_size: 50
-    steps: 500                   # itérations de marche aléatoire
-    particle_density: 0.1
-    drift_vec: [0, 0, -1]       # direction du courant (vers le haut)
-    sun_vec: [0, 0, -1]         # direction de la lumière
-    size_range: [0.3, 1.5]
-
-  massive:                       # coraux massifs (Porites) — sphère bruitée
-    subdivisions: 3
-    noise_scale: 3.0
-    noise_amplitude: 0.15
-    radius: 0.4
-    size_range: [0.5, 3.0]
+  kjma:
+    base_speed: 1.0
+    anisotropy: 2.0              # 1=sphère, 2=ellipsoïde 2:1
+    max_height: 0.5             # hauteur max d'une colonie (m)
+    boundary_sharpness: 3.0      # netteté des frontières
+    w_gravity: 1.0
+    w_light: 0.5
+    w_current: 0.3
+    sun_direction: [0, 0, 1]
+    current_direction: [1, 0, 0]
+    light_decay: 0.05            # atténuation lumière par m de profondeur
+    max_slope: 70                # degrés max pour la croissance
+    current_boost: 1.5
 
   placement:
     zones:
-      - depth: [0, 5]
-        type: dla
-        density: 0.002           # ~1 colonie tous les 22m
+      - depth: [0.5, 5]
+        density: 0.005
       - depth: [5, 15]
-        type: massive
-        density: 0.001
+        density: 0.003
       - depth: [15, 25]
-        type: dla
-        density: 0.0003
+        density: 0.001
 
 viz:
-  input: terrain.npz         # → data_dir/terrain.npz
+  input: reef.glb              # terrain.npz pour terrain seul, reef.glb pour terrain + colonies
   output_html: reef_3d.html
-  z_exaggeration: 30         # exagération verticale
+  z_exaggeration: 5           # exagération verticale
   contour_interval: 2.0      # mètres entre isolines
   zoom: 14
   pitch: 60                  # angle de vue initial
