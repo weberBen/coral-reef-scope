@@ -160,7 +160,7 @@ def serve(mesh: trimesh.Trimesh, config: dict[str, Any] | None = None):
     # Couleurs calculées sur les profondeurs réelles (avant exag) — ne change jamais
     base_colors = _depth_colors(original_verts)
 
-    def rebuild_mesh(z_exag: float, flip: bool) -> trimesh.Trimesh:
+    def rebuild_mesh(z_exag: float, flip: bool, opacity: int = 255) -> trimesh.Trimesh:
         """Reconstruit le mesh avec l'exagération Z donnée, visible des deux côtés."""
         verts = original_verts.copy()
         verts[:, 2] *= z_exag * (-1 if flip else 1)
@@ -170,10 +170,11 @@ def serve(mesh: trimesh.Trimesh, config: dict[str, Any] | None = None):
         faces_flipped = faces_orig[:, ::-1] + len(verts)  # offset vers les vertices dupliqués
         all_verts = np.vstack([verts, verts])  # dupliquer les vertices
         all_faces = np.vstack([faces_orig, faces_flipped])
-        all_colors = np.vstack([base_colors, base_colors])
+        colors_with_alpha = np.vstack([base_colors, base_colors]).copy()
+        colors_with_alpha[:, 3] = opacity
 
         m = trimesh.Trimesh(vertices=all_verts, faces=all_faces)
-        m.visual.vertex_colors = all_colors
+        m.visual.vertex_colors = colors_with_alpha
         m.fix_normals()  # recalculer les normales pour chaque côté
         return m
 
@@ -195,7 +196,91 @@ def serve(mesh: trimesh.Trimesh, config: dict[str, Any] | None = None):
         height=float(current_mesh.extents[1]),
     )
 
-    arrow_handles = []  # vide pour l'instant — pas de données de courant réel
+    # ── Mooring (optionnel) ──
+    mooring_handles = []
+    mooring_data = None
+    mooring_cfg = cfg.get("_full_config", {}).get("mooring", {})
+    mooring_file = mooring_cfg.get("file")
+
+    if mooring_file:
+        from .mooring import load_mooring, solve_equilibrium, get_viz_data
+        from .terrain import resolve_path
+
+        full_config = cfg.get("_full_config", {})
+        mooring_path = resolve_path(full_config, mooring_file)
+        if mooring_path.exists():
+            system = load_mooring(mooring_path)
+            solve_equilibrium(system)
+            mooring_data = get_viz_data(system)
+
+            # Centre XY du terrain original (avant normalisation)
+            terrain_center_xy = center_xy
+
+            def draw_mooring(z_exag: float, flip: bool):
+                """Dessine le mooring avec la même transformation que le terrain."""
+                nonlocal mooring_handles
+                # Supprimer les anciens
+                for h in mooring_handles:
+                    h.remove()
+                mooring_handles = []
+
+                flip_sign = -1 if flip else 1
+
+                def transform(pos):
+                    p = pos.copy().astype(float)
+                    p[:2] -= terrain_center_xy
+                    p *= norm_scale
+                    p[2] *= z_exag * flip_sign
+                    return p
+
+                # Lignes (câbles) — segments droits entre chaque nœud
+                for line in mooring_data["lines"]:
+                    pts = np.array([transform(p) for p in line["positions"]], dtype=np.float32)
+                    if len(pts) < 2:
+                        continue
+                    for seg in range(len(pts) - 1):
+                        h = server.scene.add_spline_catmull_rom(
+                            f"mooring/line_{line['id']}_seg_{seg}",
+                            positions=pts[seg:seg + 2],
+                            color=(255, 200, 50),
+                            line_width=2.0,
+                        )
+                        mooring_handles.append(h)
+
+                # Points (ancrages = pyramide rouge, bouées = sphère verte)
+                for point in mooring_data["points"]:
+                    pos = transform(point["position"])
+                    sphere_size = 0.03
+
+                    if point["type"] == "fixed":
+                        color = (255, 50, 50)
+                        label = f"Anchor {point['id']} ({-point['position'][2]:.0f}m)"
+                        sphere = trimesh.creation.icosphere(radius=sphere_size)
+                        sphere.visual.vertex_colors = np.full((len(sphere.vertices), 4), [*color, 255], dtype=np.uint8)
+                        sphere.apply_translation(pos)
+                    else:
+                        color = (50, 255, 100)
+                        label = f"Buoy {point['id']} ({point['mass']:.0f}kg)"
+                        sphere = trimesh.creation.icosphere(radius=sphere_size * 1.2)
+                        sphere.visual.vertex_colors = np.full((len(sphere.vertices), 4), [*color, 255], dtype=np.uint8)
+                        sphere.apply_translation(pos)
+
+                    h = server.scene.add_mesh_trimesh(
+                        f"mooring/sphere_{point['id']}",
+                        sphere,
+                    )
+                    mooring_handles.append(h)
+
+                    h = server.scene.add_label(
+                        f"mooring/label_{point['id']}",
+                        text=label,
+                        wxyz=(1, 0, 0, 0),
+                        position=(pos[0], pos[1], pos[2] + sphere_size * 2),
+                    )
+                    mooring_handles.append(h)
+
+            draw_mooring(initial_z_exag, False)
+            print(f"  Mooring : {len(mooring_data['points'])} points, {len(mooring_data['lines'])} lignes")
 
     # ── GUI ──
     with server.gui.add_folder("View"):
@@ -204,15 +289,18 @@ def serve(mesh: trimesh.Trimesh, config: dict[str, Any] | None = None):
             initial_value=initial_z_exag,
         )
         flip_toggle = server.gui.add_checkbox("Flip (vue du fond)", initial_value=False)
+        opacity_slider = server.gui.add_slider(
+            "Reef opacity", min=30, max=255, step=5, initial_value=255,
+        )
         grid_toggle = server.gui.add_checkbox("Grid", initial_value=True)
-        arrows_toggle = server.gui.add_checkbox("Current direction", initial_value=False)
+        if mooring_data:
+            mooring_toggle = server.gui.add_checkbox("Mooring", initial_value=True)
 
     with server.gui.add_folder("Info"):
         server.gui.add_text("Vertices", initial_value=f"{len(mesh.vertices):,}")
         server.gui.add_text("Faces", initial_value=f"{len(mesh.faces):,}")
         server.gui.add_text("Real depth", initial_value=f"{real_depth_min:.1f} – {real_depth_max:.1f} m")
         server.gui.add_text("Terrain", initial_value=f"{xy_extent:.0f} × {xy_extent:.0f} m")
-        depth_label = server.gui.add_text("Depth at cursor", initial_value="—")
 
     print(f"\nServeur Viser → http://localhost:{port}")
     print("Ctrl+C pour arrêter\n")
@@ -220,8 +308,9 @@ def serve(mesh: trimesh.Trimesh, config: dict[str, Any] | None = None):
     # ── Boucle interactive ──
     last_z = initial_z_exag
     last_flip = False
+    last_opacity = 255
     last_grid = True
-    last_arrows = True
+    last_mooring = True
 
     try:
         while True:
@@ -233,20 +322,25 @@ def serve(mesh: trimesh.Trimesh, config: dict[str, Any] | None = None):
             if flip_toggle.value != last_flip:
                 last_flip = flip_toggle.value
                 changed = True
+            if opacity_slider.value != last_opacity:
+                last_opacity = int(opacity_slider.value)
+                changed = True
 
             if changed:
-                current_mesh = rebuild_mesh(last_z, last_flip)
+                current_mesh = rebuild_mesh(last_z, last_flip, last_opacity)
                 reef_handle.remove()
                 reef_handle = server.scene.add_mesh_trimesh("reef", current_mesh)
+                if mooring_data:
+                    draw_mooring(last_z, last_flip)
 
             if grid_toggle.value != last_grid:
                 last_grid = grid_toggle.value
                 grid_handle.visible = last_grid
 
-            if arrows_toggle.value != last_arrows:
-                last_arrows = arrows_toggle.value
-                for ah in arrow_handles:
-                    ah.visible = last_arrows
+            if mooring_data and mooring_toggle.value != last_mooring:
+                last_mooring = mooring_toggle.value
+                for h in mooring_handles:
+                    h.visible = last_mooring
 
             time.sleep(0.1)
     except KeyboardInterrupt:
@@ -269,10 +363,8 @@ if __name__ == "__main__":
     if arg.endswith(".yaml") or arg.endswith(".yml"):
         config = load_config(arg)
         viz_cfg = config.get("viz", {})
-        # Passer les infos du courant depuis colony.kjma si disponible
-        colony_cfg = config.get("colony", {}).get("kjma", {})
-        if "current_direction" in colony_cfg and "current_direction" not in viz_cfg:
-            viz_cfg["current_direction"] = colony_cfg["current_direction"]
+        # Passer la config complète pour que serve() puisse accéder à mooring, etc.
+        viz_cfg["_full_config"] = config
         input_path = resolve_path(config, viz_cfg.get("input", "terrain.npz"))
     else:
         input_path = Path(arg)

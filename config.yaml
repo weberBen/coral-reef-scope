@@ -64,6 +64,9 @@ colony:
       - depth: [15, 25]
         density: 0.001
 
+mooring:
+  file: mooring.dat              # fichier MoorDyn dans data_dir
+
 viz:
   input: terrain.npz
   output_html: reef_3d.html
