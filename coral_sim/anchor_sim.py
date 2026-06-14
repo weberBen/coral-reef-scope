@@ -339,39 +339,94 @@ def run_anchor_sim(config: dict[str, Any]):
             dev_mesh.visual.vertex_colors = np.full((len(dev_mesh.vertices), 4), [50, 255, 100, 255], dtype=np.uint8)
             device_handle = server.scene.add_mesh_trimesh("device", dev_mesh)
 
-            # ── Current field arrows (update every 10 frames) ──
-            if frame % 10 == 0 and show_current_field.value:
+            # ── Current + wave field arrows (animated every 3 frames) ──
+            if frame % 3 == 0 and show_current_field.value:
                 if arrows_handle is not None:
                     arrows_handle.remove()
+
+                # Grille 3D de points
+                gx = np.linspace(-2, 2, 5)
+                gy = np.linspace(-2, 2, 5)
+                gz = np.linspace(-depth, -0.5, max(2, int(depth / 3)))
+                grid = np.array(np.meshgrid(gx, gy, gz)).reshape(3, -1).T
+
+                # Courant statique
                 cur_speed = current_slider.value
-                if cur_speed > 0.01:
-                    grid = np.mgrid[-2:2.1:1.0, -2:2.1:1.0, -depth:0.1:depth/4].reshape(3, -1).T
-                    cur_vec = np.array([
-                        cur_speed * math.cos(cur_dir_rad),
-                        cur_speed * math.sin(cur_dir_rad),
-                        0,
-                    ]) * 0.5  # scale for visibility
-                    ends = grid + cur_vec
-                    pts = np.stack([grid, ends], axis=1).astype(np.float32)
-                    colors = np.full((len(grid), 3), [100, 180, 255], dtype=np.uint8)
-                    arrows_handle = server.scene.add_arrows(
-                        "current_field", pts, colors,
-                        shaft_radius=0.01, head_radius=0.03, head_length=0.05,
-                    )
-                else:
-                    arrows_handle = None
+                cur_vec = np.array([
+                    cur_speed * math.cos(cur_dir_rad),
+                    cur_speed * math.sin(cur_dir_rad),
+                    0,
+                ])
+
+                # Houle (vitesse orbitale animée, dépend de z et t)
+                t_sim = data.time
+                T = wave_t.value
+                H = wave_h.value
+                wl = 1.56 * T * T
+
+                # Vitesse orbitale par point de la grille
+                z_arr = grid[:, 2]
+                u_horiz = np.zeros(len(grid))
+                u_vert = np.zeros(len(grid))
+                if H > 0:
+                    amp = (math.pi * H / T)
+                    decay = np.exp(2 * math.pi * z_arr / wl)
+                    phase = 2 * math.pi * t_sim / T
+                    # Composante horizontale (dans la direction du courant)
+                    u_horiz = amp * decay * np.cos(phase + grid[:, 0] * 0.5)
+                    # Composante verticale (mouvement orbital)
+                    u_vert = amp * decay * np.sin(phase + grid[:, 0] * 0.5)
+
+                # Vecteur total = courant + houle
+                dirs = np.zeros_like(grid)
+                dirs[:, 0] = (cur_vec[0] + u_horiz * math.cos(cur_dir_rad)) * 0.4
+                dirs[:, 1] = (cur_vec[1] + u_horiz * math.sin(cur_dir_rad)) * 0.4
+                dirs[:, 2] = u_vert * 0.4  # mouvement vertical des vagues
+
+                ends = grid + dirs
+                pts = np.stack([grid, ends], axis=1).astype(np.float32)
+
+                # Couleur : bleu pour le courant, plus clair si vagues
+                magnitudes = np.linalg.norm(dirs, axis=1)
+                max_mag = max(magnitudes.max(), 0.01)
+                intensity = (magnitudes / max_mag * 155 + 100).astype(np.uint8)
+                colors = np.column_stack([
+                    np.full(len(grid), 80, dtype=np.uint8),
+                    intensity,
+                    np.full(len(grid), 255, dtype=np.uint8),
+                ])
+
+                arrows_handle = server.scene.add_arrows(
+                    "current_field", pts, colors,
+                    shaft_radius=0.008, head_radius=0.025, head_length=0.04,
+                )
             elif not show_current_field.value and arrows_handle is not None:
                 arrows_handle.remove()
                 arrows_handle = None
 
-            # ── Current particles (drift every frame) ──
+            # ── Current + wave particles (drift every frame) ──
             if show_particles.value:
                 cur_vec_full = np.array([
                     current_slider.value * math.cos(cur_dir_rad),
                     current_slider.value * math.sin(cur_dir_rad),
                     0,
                 ], dtype=np.float32)
-                particle_pos += cur_vec_full * 0.03  # drift
+
+                # Drift du courant
+                particle_pos += cur_vec_full * 0.03
+
+                # Mouvement orbital des vagues (sur chaque particule)
+                if wave_h.value > 0:
+                    t_sim = data.time
+                    T_w = wave_t.value
+                    H_w = wave_h.value
+                    wl_w = 1.56 * T_w * T_w
+                    amp_w = (math.pi * H_w / T_w) * 0.02  # scale pour le déplacement
+                    decay_w = np.exp(2 * math.pi * particle_pos[:, 2] / wl_w)
+                    phase_w = 2 * math.pi * t_sim / T_w + particle_pos[:, 0] * 0.5
+                    particle_pos[:, 0] += amp_w * decay_w * np.cos(phase_w) * math.cos(cur_dir_rad)
+                    particle_pos[:, 1] += amp_w * decay_w * np.cos(phase_w) * math.sin(cur_dir_rad)
+                    particle_pos[:, 2] += amp_w * decay_w * np.sin(phase_w)  # mouvement vertical
 
                 # Recycle particles that leave the domain
                 out = (np.abs(particle_pos[:, 0]) > particle_domain) | \
