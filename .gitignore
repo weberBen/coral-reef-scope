@@ -16,3 +16,7 @@ data/
 .npz
 *.glb
 reef_3d.html
+*_log.*
+*_LOG.*
+*.log
+*.LOG
