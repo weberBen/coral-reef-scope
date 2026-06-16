@@ -255,11 +255,13 @@ def run_anchor_sim(config: dict[str, Any]):
     try:
         while True:
             # ── Update MuJoCo params from GUI ──
+            arrows_need_redraw = False
             if current_slider.value != last_current or current_dir.value != last_dir:
                 last_current = current_slider.value
                 last_dir = current_dir.value
                 model.opt.wind[0] = last_current * math.cos(math.radians(last_dir))
                 model.opt.wind[1] = last_current * math.sin(math.radians(last_dir))
+                arrows_need_redraw = True
 
             if damping_slider.value != last_damping:
                 last_damping = damping_slider.value
@@ -339,8 +341,14 @@ def run_anchor_sim(config: dict[str, Any]):
             dev_mesh.visual.vertex_colors = np.full((len(dev_mesh.vertices), 4), [50, 255, 100, 255], dtype=np.uint8)
             device_handle = server.scene.add_mesh_trimesh("device", dev_mesh)
 
-            # ── Current + wave field arrows (animated every 3 frames) ──
-            if frame % 3 == 0 and show_current_field.value:
+            # ── Current + wave field arrows ──
+            # Statique : redessiné quand courant change
+            # Animé : seulement si houle active (wave_h > 0)
+            if show_current_field.value and (
+                arrows_need_redraw or                      # slider courant changé
+                (wave_h.value > 0 and frame % 3 == 0) or  # houle → animer
+                frame == 0                                 # premier frame
+            ):
                 if arrows_handle is not None:
                     arrows_handle.remove()
 

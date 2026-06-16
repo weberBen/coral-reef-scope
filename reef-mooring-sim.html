@@ -1,0 +1,328 @@
+<div id="app">
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="status" class="ok">OK</div>
+    <div id="readouts">
+      <div class="r"><span>Profondeur dispositif</span><b id="ro-depth">–</b></div>
+      <div class="r"><span>Hauteur / fond</span><b id="ro-h">–</b></div>
+      <div class="r"><span>Excursion horizontale</span><b id="ro-exc">–</b></div>
+      <div class="r"><span>Angle max / vertical</span><b id="ro-ang">–</b></div>
+      <div class="r hl"><span>Tension max câble</span><b id="ro-tmax">–</b></div>
+      <div class="r"><span>Ancrage — vertical (soulèvement)</span><b id="ro-av">–</b></div>
+      <div class="r"><span>Ancrage — horizontal</span><b id="ro-ah">–</b></div>
+      <div class="r hl"><span>Ancrage — total</span><b id="ro-at">–</b></div>
+      <div class="r"><span>Résistance câble (MBL)</span><b id="ro-mbl">–</b></div>
+      <div class="r hl"><span>Coeff. de sécurité</span><b id="ro-sf">–</b></div>
+    </div>
+  </div>
+
+  <div id="panel">
+    <div class="grp">
+      <div class="grp-t">Déroulement</div>
+      <label>Câble déployé : <b id="v-L">20</b> m</label>
+      <input id="L" type="range" min="2" max="40" value="20" step="0.5">
+      <div class="btns">
+        <button id="b-deploy">Déployer ▲</button>
+        <button id="b-retract">Rembobiner ▼</button>
+        <button id="b-lock" class="alt">Bloquer ⏸</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp-t">Environnement</div>
+      <label>Courant de surface : <b id="v-cur">0.6</b> m/s</label>
+      <input id="cur" type="range" min="0" max="2.5" value="0.6" step="0.05">
+      <label>Profil de courant</label>
+      <select id="prof">
+        <option value="lin">Linéaire (→0 au fond)</option>
+        <option value="uni">Uniforme</option>
+        <option value="surf">Concentré en surface</option>
+      </select>
+      <label>Houle — hauteur : <b id="v-wh">1.2</b> m</label>
+      <input id="wh" type="range" min="0" max="4" value="1.2" step="0.1">
+      <label>Houle — période : <b id="v-wt">7</b> s</label>
+      <input id="wt" type="range" min="3" max="14" value="7" step="0.5">
+      <label>Vent (surface) : <b id="v-wind">5</b> m/s</label>
+      <input id="wind" type="range" min="0" max="25" value="5" step="1">
+      <label>Profondeur du site : <b id="v-D">30</b> m</label>
+      <input id="D" type="range" min="10" max="60" value="30" step="1">
+    </div>
+
+    <div class="grp">
+      <div class="grp-t">Câble</div>
+      <label>Diamètre : <b id="v-dia">10</b> mm</label>
+      <input id="dia" type="range" min="3" max="24" value="10" step="0.5">
+      <label>Matériau</label>
+      <select id="mat">
+        <option value="poly">Polyester (1380 kg/m³)</option>
+        <option value="nylon">Nylon (1140 kg/m³)</option>
+        <option value="dyn">Dyneema/UHMWPE (975 — flotte)</option>
+        <option value="steel">Acier (7850 kg/m³)</option>
+      </select>
+    </div>
+
+    <div class="grp">
+      <div class="grp-t">Dispositif & flotteurs</div>
+      <label>Masse dispositif : <b id="v-dm">18</b> kg</label>
+      <input id="dm" type="range" min="2" max="60" value="18" step="1">
+      <label>Flottabilité nette dispositif : <b id="v-db">80</b> N</label>
+      <input id="db" type="range" min="10" max="400" value="80" step="5">
+      <label>Flotteurs intermédiaires : <b id="v-fn">0</b></label>
+      <input id="fn" type="range" min="0" max="5" value="0" step="1">
+      <label>Flottabilité par flotteur : <b id="v-fb">40</b> N</label>
+      <input id="fb" type="range" min="10" max="200" value="40" step="5">
+    </div>
+
+    <div class="btns">
+      <button id="b-pause" class="alt">Pause</button>
+      <button id="b-reset" class="warn">Réinitialiser</button>
+    </div>
+    <p class="note">Modèle simplifié (éléments discrets + bilan quasi-statique) pour le pré-dimensionnement et l'intuition. À valider avec un outil dédié (MoorDyn / Project Chrono / OrcaFlex) pour les chiffres certifiés.</p>
+  </div>
+</div>
+
+<style>
+  * { box-sizing: border-box; }
+  #app { display:flex; gap:14px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+         color:#dbe6f0; min-height:560px; }
+  #stage { position:relative; flex:1 1 auto; min-width:0; background:linear-gradient(#06243f,#021423);
+           border-radius:14px; overflow:hidden; box-shadow:inset 0 0 60px rgba(0,0,0,.5); }
+  #cv { display:block; width:100%; height:100%; }
+  #status { position:absolute; top:12px; left:12px; padding:6px 14px; border-radius:20px; font-weight:700;
+            font-size:13px; letter-spacing:.5px; }
+  #status.ok { background:rgba(34,197,94,.18); color:#5ee08a; border:1px solid rgba(94,224,138,.4); }
+  #status.warn { background:rgba(245,158,11,.2); color:#fcd34d; border:1px solid rgba(252,211,77,.5); }
+  #status.brk { background:rgba(239,68,68,.25); color:#fca5a5; border:1px solid rgba(252,165,165,.6);
+                animation:pulse .7s infinite; }
+  @keyframes pulse { 50% { opacity:.55; } }
+  #readouts { position:absolute; bottom:12px; left:12px; right:12px; display:grid;
+              grid-template-columns:1fr 1fr; gap:4px 16px; background:rgba(2,12,22,.6);
+              backdrop-filter:blur(6px); padding:10px 14px; border-radius:10px; font-size:12.5px;
+              border:1px solid rgba(255,255,255,.06); }
+  .r { display:flex; justify-content:space-between; gap:8px; padding:2px 0; }
+  .r span { color:#8aa4bd; } .r b { color:#eaf2fa; font-variant-numeric:tabular-nums; }
+  .r.hl b { color:#7dd3fc; }
+  #panel { flex:0 0 290px; overflow-y:auto; max-height:580px; padding-right:4px; }
+  .grp { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
+         border-radius:12px; padding:12px 14px; margin-bottom:10px; }
+  .grp-t { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#7dd3fc; margin-bottom:8px; font-weight:700; }
+  label { display:block; font-size:12px; color:#b6c6d8; margin:8px 0 3px; }
+  label b { color:#eaf2fa; }
+  input[type=range] { width:100%; accent-color:#38bdf8; }
+  select { width:100%; padding:6px; border-radius:8px; background:#0b2236; color:#dbe6f0;
+           border:1px solid rgba(255,255,255,.12); font-size:12px; }
+  .btns { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  button { flex:1; padding:8px 6px; border-radius:9px; border:1px solid rgba(255,255,255,.14);
+           background:#0e2c47; color:#eaf2fa; font-size:12px; font-weight:600; cursor:pointer; min-width:72px; }
+  button:hover { background:#14375a; }
+  button.alt { background:#1e293b; } button.warn { background:#3b1d1d; border-color:rgba(252,165,165,.3); }
+  .note { font-size:10.5px; color:#6f88a0; line-height:1.45; margin:6px 2px 0; }
+  @media (max-width:760px){ #app{flex-direction:column;} #panel{flex-basis:auto;max-height:none;} #stage{height:420px;} }
+</style>
+
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const g = 9.81, rhoW = 1025, N = 24;
+const MAT = {
+  poly:  {rho:1380, sig:250e6}, nylon:{rho:1140, sig:280e6},
+  dyn:   {rho:975,  sig:1500e6}, steel:{rho:7850, sig:1400e6}
+};
+const P = { L:20, targetL:20, cur:0.6, prof:'lin', wh:1.2, wt:7, wind:5, D:30,
+            dia:10, mat:'poly', dm:18, db:80, fn:0, fb:40, paused:false };
+let nodes=[], broken=false, cutSeg=-1, t=0;
+
+function restLen(){ return P.L / N; }
+function initNodes(){
+  nodes=[]; const rl=restLen();
+  for(let i=0;i<=N;i++){ const y=-P.D + i*rl;
+    nodes.push({x:0,y:Math.min(y,-0.2),px:0,py:Math.min(y,-0.2)}); }
+  broken=false; cutSeg=-1;
+}
+initNodes();
+
+function curAt(y){ // horizontal water current at depth (y<=0)
+  const D=P.D, f=Math.max(0,Math.min(1,(y+D)/D)); let p=1;
+  if(P.prof==='lin') p=f; else if(P.prof==='surf') p=f*f*f; else p=1;
+  let u=P.cur*p;
+  if(y>-2) u += P.wind*0.03*(y+2)/2; // light wind-driven surface current
+  return u;
+}
+function waveVel(x,y){ // Airy orbital velocities
+  if(P.wh<=0.01) return [0,0];
+  const w=2*Math.PI/P.wt, k=w*w/g, a=P.wh/2, ph=k*x - w*t, e=Math.exp(k*Math.max(y,-P.D));
+  return [a*w*e*Math.cos(ph), a*w*e*Math.sin(ph)];
+}
+function surfEta(x){ if(P.wh<=0.01) return 0; const w=2*Math.PI/P.wt,k=w*w/g; return (P.wh/2)*Math.cos(k*x-w*t); }
+
+function areaA(){ const d=P.dia/1000; return Math.PI*d*d/4; }
+function mbl(){ return MAT[P.mat].sig*areaA(); }
+
+function extForces(){ // external force per node [Fx,Fy], y-up positive
+  const A=areaA(), rl=restLen(), m=MAT[P.mat], dt=1/60;
+  const F=nodes.map(()=>[0,0]);
+  const cableNet=(rhoW-m.rho)*A*rl*g; // up-positive per segment
+  const floatNodes=new Set();
+  for(let j=1;j<=P.fn;j++) floatNodes.add(Math.round(j*N/(P.fn+1)));
+  for(let i=1;i<=N;i++){
+    const nd=nodes[i];
+    // weight/buoyancy of cable lumped at node
+    F[i][1]+=cableNet;
+    if(floatNodes.has(i)) F[i][1]+=P.fb;
+    // drag from relative water velocity
+    const vx=(nd.x-nd.px)/dt, vy=(nd.y-nd.py)/dt;
+    const [wu,wv]=waveVel(nd.x,nd.y);
+    const rx=curAt(nd.y)+wu-vx, ry=wv-vy;
+    // segment tangent for normal/tangential split
+    const a=nodes[Math.max(0,i-1)], b=nodes[Math.min(N,i+1)];
+    let tx=b.x-a.x, ty=b.y-a.y; const tl=Math.hypot(tx,ty)||1; tx/=tl; ty/=tl;
+    const vt=rx*tx+ry*ty, nxv=rx-vt*tx, nyv=ry-vt*ty, nm=Math.hypot(nxv,nyv);
+    const d=P.dia/1000, Ap=d*rl;
+    const kn=0.5*rhoW*1.2*Ap*nm, kt=0.5*rhoW*0.1*Math.PI*Ap*Math.abs(vt);
+    F[i][0]+=kn*nxv + kt*vt*tx; F[i][1]+=kn*nyv + kt*vt*ty;
+  }
+  // device node extras
+  F[N][1]+=P.db;
+  if(nodes[N].y>-1){ // exposed to wind near surface
+    const wv=(nodes[N].x-nodes[N].px)/(1/60);
+    F[N][0]+=0.5*1.2*0.9*0.15*Math.abs(P.wind-wv)*(P.wind-wv);
+  }
+  return F;
+}
+
+function step(){
+  const dt=1/60, A=areaA(), m=MAT[P.mat], rl=restLen();
+  const mCab=Math.max(m.rho*A*rl + rhoW*A*rl*0.6, 0.05); // node mass + added mass
+  const F=extForces();
+  // smooth payout
+  P.L += Math.max(-1.0/60,Math.min(1.0/60, P.targetL-P.L));
+  // verlet integrate (node 0 = anchor, fixed)
+  for(let i=1;i<=N;i++){
+    const nd=nodes[i], mi = i===N ? Math.max(P.dm,1) : mCab;
+    const ax=F[i][0]/mi, ay=F[i][1]/mi - 0; // gravity already in cableNet
+    const nx=nd.x+(nd.x-nd.px)*0.93+ax*dt*dt, ny=nd.y+(nd.y-nd.py)*0.93+ay*dt*dt;
+    nd.px=nd.x; nd.py=nd.y; nd.x=nx; nd.y=ny;
+  }
+  nodes[0].x=0; nodes[0].y=-P.D; // anchor pinned
+  // constraint relaxation (inextensible segments)
+  const RL=restLen();
+  for(let it=0; it<18; it++){
+    for(let i=0;i<N;i++){
+      if(i===cutSeg) continue;
+      const a=nodes[i], b=nodes[i+1];
+      let dx=b.x-a.x, dy=b.y-a.y; let l=Math.hypot(dx,dy)||1e-6;
+      const diff=(l-RL)/l;
+      if(i===0){ b.x-=dx*diff; b.y-=dy*diff; } // anchor fixed
+      else { a.x+=dx*diff*0.5; a.y+=dy*diff*0.5; b.x-=dx*diff*0.5; b.y-=dy*diff*0.5; }
+    }
+    nodes[0].x=0; nodes[0].y=-P.D;
+    // device cannot pierce surface
+    const eta=surfEta(nodes[N].x);
+    if(nodes[N].y>eta) nodes[N].y=eta;
+  }
+}
+
+function tensions(){ // quasi-static force balance from top down
+  const F=extForces(); let cx=0,cy=0; const seg=new Array(N).fill(0);
+  for(let i=N;i>=1;i--){ cx+=F[i][0]; cy+=F[i][1]; seg[i-1]=Math.hypot(cx,cy); }
+  return {seg, anchorV:cy, anchorH:cx, anchorT:Math.hypot(cx,cy), maxT:Math.max(...seg)};
+}
+
+// ---- rendering ----
+function resize(){ const r=cv.parentElement.getBoundingClientRect();
+  cv.width=r.width*devicePixelRatio; cv.height=r.height*devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+new ResizeObserver(resize).observe(cv.parentElement); resize();
+
+function draw(){
+  const W=cv.width/devicePixelRatio, H=cv.height/devicePixelRatio;
+  ctx.clearRect(0,0,W,H);
+  const xspan=24, top=18, bot=H-16;
+  const sx=v=> W/2 + v*(W*0.42/xspan);
+  const sy=v=> top + (0 - v)/(P.D+2)*(bot-top);
+  // water column + wave surface
+  ctx.beginPath(); ctx.moveTo(0,sy(0));
+  for(let px=0;px<=W;px+=6){ const xw=(px-W/2)/(W*0.42/xspan); ctx.lineTo(px,sy(surfEta(xw))); }
+  ctx.lineTo(W,bot); ctx.lineTo(0,bot); ctx.closePath();
+  const grd=ctx.createLinearGradient(0,top,0,bot);
+  grd.addColorStop(0,'rgba(56,189,248,.28)'); grd.addColorStop(1,'rgba(8,47,73,.5)');
+  ctx.fillStyle=grd; ctx.fill();
+  // current arrows
+  ctx.strokeStyle='rgba(125,211,252,.35)'; ctx.lineWidth=1;
+  for(let d=2; d<P.D; d+=4){ const y=-d, u=curAt(y), len=u*22, px=40, py=sy(y);
+    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px+len,py); ctx.stroke();
+    if(Math.abs(len)>4){ ctx.beginPath(); ctx.moveTo(px+len,py); ctx.lineTo(px+len-4*Math.sign(len),py-3);
+      ctx.lineTo(px+len-4*Math.sign(len),py+3); ctx.fillStyle='rgba(125,211,252,.4)'; ctx.fill(); } }
+  // seabed
+  ctx.fillStyle='#3a2c1c'; ctx.fillRect(0,sy(-P.D),W,bot-sy(-P.D));
+  ctx.fillStyle='rgba(0,0,0,.25)'; for(let i=0;i<W;i+=14) ctx.fillRect(i,sy(-P.D),7,3);
+
+  const {seg}=tensions(); const M=mbl();
+  // cable, colored by tension fraction
+  for(let i=0;i<N;i++){ if(i===cutSeg) continue;
+    const a=nodes[i], b=nodes[i+1], fr=Math.min(1.2, seg[i]/M);
+    let col= fr<0.3?'#34d399': fr<0.7?'#fbbf24': fr<1?'#fb923c':'#ef4444';
+    ctx.strokeStyle=broken?'#7f1d1d':col; ctx.lineWidth=Math.max(2,P.dia/2.4);
+    ctx.beginPath(); ctx.moveTo(sx(a.x),sy(a.y)); ctx.lineTo(sx(b.x),sy(b.y)); ctx.stroke();
+  }
+  // intermediate floats
+  const fset=[]; for(let j=1;j<=P.fn;j++) fset.push(Math.round(j*N/(P.fn+1)));
+  for(const i of fset){ const n=nodes[i]; ctx.fillStyle='#fde68a';
+    ctx.beginPath(); ctx.arc(sx(n.x),sy(n.y),6,0,7); ctx.fill();
+    ctx.strokeStyle='#a16207'; ctx.lineWidth=1; ctx.stroke(); }
+  // anchor + winder
+  const an=nodes[0];
+  ctx.fillStyle='#94a3b8'; ctx.fillRect(sx(an.x)-18,sy(an.y)-6,36,16);
+  ctx.fillStyle='#64748b'; ctx.beginPath(); ctx.arc(sx(an.x),sy(an.y)-2,7,0,7); ctx.fill();
+  ctx.strokeStyle='#334155'; ctx.stroke();
+  // device
+  const dv=nodes[N]; const dx=sx(dv.x), dy=sy(dv.y);
+  ctx.fillStyle='#e2e8f0'; ctx.strokeStyle='#0ea5e9'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.roundRect(dx-14,dy-12,28,24,5); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#0c4a6e'; ctx.beginPath(); ctx.arc(dx,dy-2,5,0,7); ctx.fill(); // camera lens
+  ctx.fillStyle='#38bdf8'; ctx.fillRect(dx-9,dy+5,18,4); // battery strip
+}
+
+function updateUI(){
+  const {seg,anchorV,anchorH,anchorT,maxT}=tensions(), M=mbl();
+  const dv=nodes[N]; const dep=Math.max(0,-dv.y), hgt=dv.y+P.D, exc=dv.x;
+  let maxAng=0; for(let i=0;i<N;i++){ const a=nodes[i],b=nodes[i+1];
+    const ang=Math.abs(Math.atan2(b.x-a.x,(b.y-a.y)||1e-6))*180/Math.PI; if(ang>maxAng)maxAng=ang; }
+  const sf=maxT>1?M/maxT:99;
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('ro-depth',dep.toFixed(1)+' m'); set('ro-h',hgt.toFixed(1)+' m');
+  set('ro-exc',exc.toFixed(2)+' m'); set('ro-ang',maxAng.toFixed(0)+' °');
+  set('ro-tmax',Math.round(maxT)+' N'); set('ro-av',Math.round(anchorV)+' N ↑');
+  set('ro-ah',Math.round(anchorH)+' N'); set('ro-at',Math.round(anchorT)+' N');
+  set('ro-mbl',Math.round(M)+' N'); set('ro-sf', sf>=99?'—':sf.toFixed(2)+' ×');
+  const st=document.getElementById('status');
+  if(maxT>M && !broken){ broken=true; cutSeg=N-1; }
+  if(broken){ st.className='brk'; st.textContent='CÂBLE ROMPU — réinitialisez'; }
+  else if(sf<2){ st.className='warn'; st.textContent='ATTENTION — sécurité faible'; }
+  else { st.className='ok'; st.textContent='OK'; }
+}
+
+let acc=0,last=performance.now();
+function loop(now){ const d=(now-last)/1000; last=now; acc+=d;
+  while(acc>1/60){ if(!P.paused){ t+=1/60; step(); } acc-=1/60; }
+  draw(); updateUI(); requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// ---- controls ----
+const bind=(id,key,fmt,re)=>{ const el=document.getElementById(id);
+  el.addEventListener('input',()=>{ P[key]=el.type==='range'?parseFloat(el.value):el.value;
+    const lbl=document.getElementById('v-'+id); if(lbl) lbl.textContent=fmt?fmt(P[key]):P[key];
+    if(re) initNodes(); }); };
+bind('L','targetL'); document.getElementById('L').addEventListener('input',e=>P.targetL=parseFloat(e.target.value));
+bind('cur','cur'); bind('prof','prof'); bind('wh','wh'); bind('wt','wt'); bind('wind','wind');
+bind('D','D',v=>v,true); bind('dia','dia'); bind('mat','mat'); bind('dm','dm');
+bind('db','db'); bind('fn','fn'); bind('fb','fb');
+document.getElementById('b-deploy').onclick=()=>{ P.targetL=Math.min(P.D+2,P.targetL+5);
+  document.getElementById('L').value=P.targetL; document.getElementById('v-L').textContent=P.targetL; };
+document.getElementById('b-retract').onclick=()=>{ P.targetL=Math.max(2,P.targetL-5);
+  document.getElementById('L').value=P.targetL; document.getElementById('v-L').textContent=P.targetL; };
+document.getElementById('b-lock').onclick=()=>{ P.targetL=P.L;
+  document.getElementById('L').value=P.L.toFixed(1); document.getElementById('v-L').textContent=P.L.toFixed(1); };
+document.getElementById('b-pause').onclick=e=>{ P.paused=!P.paused; e.target.textContent=P.paused?'Lecture':'Pause'; };
+document.getElementById('b-reset').onclick=()=>{ initNodes(); };
+</script>
