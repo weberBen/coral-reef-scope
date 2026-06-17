@@ -438,32 +438,6 @@ export function buildPresentation() {
   </div>
 </section>
 
-<!-- ============ COMPARATIF ============ -->
-<section class="deck compare-section">
-  <div class="deck-content">
-    <h2 class="reveal kicker">Pourquoi CORAL</h2>
-    <div class="compare-grid reveal d1">
-      <div class="compare-col other">
-        <h4>Methodes classiques</h4>
-        <div class="compare-item bad">Plongeurs requis</div>
-        <div class="compare-item bad">Infrastructure lourde</div>
-        <div class="compare-item bad">Risque corallien</div>
-        <div class="compare-item bad">Couverture fixe</div>
-        <div class="compare-item bad">Cout lineaire</div>
-      </div>
-      <div class="compare-vs">VS</div>
-      <div class="compare-col ours">
-        <h4>CORAL</h4>
-        <div class="compare-item good">100% surface</div>
-        <div class="compare-item good">Ancre + cable uniquement</div>
-        <div class="compare-item good">Remontee verticale</div>
-        <div class="compare-item good">Multi-stations + mapping</div>
-        <div class="compare-item good">Scalable</div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ CTA ============ -->
 <section class="deck cta-section">
   <div class="cta-glow"></div>
