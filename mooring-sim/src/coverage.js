@@ -185,10 +185,6 @@ export function initCoverage() {
       <div class="cov-label">Couv. surface</div>
       <div id="ascent-coverage-value" class="cov-num" style="color:#34d399">0%</div>
     </div>
-    <div class="cov-stat" data-tip="Part de la couverture photogrammetrique (remontee) exploitable : resolution suffisante (GSD ≤ seuil) et visibilite non limitee par la turbidite">
-      <div class="cov-label">Remontee utile</div>
-      <div id="useful-coverage-value" class="cov-num" style="color:#34d399">0%</div>
-    </div>
     <div class="cov-stat" data-tip="Resolution moyenne au sol (Ground Sample Distance). Augmente avec l'altitude, depend du capteur">
       <div class="cov-label">GSD moyen</div>
       <div id="gsd-value" class="cov-num" style="color:#e4eef6">--</div>
