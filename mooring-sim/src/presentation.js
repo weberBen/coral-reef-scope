@@ -366,6 +366,8 @@ export function buildPresentation() {
         <p class="reveal big-statement">Chaque remontee produit une<br><em>carte 3D</em> du recif</p>
         <p class="reveal d1 sub-text">Les cameras orientees vers le bas capturent le recif a differentes altitudes pendant la remontee. Les images sont assemblees par photogrammetrie pour reconstruire un modele 3D haute resolution.</p>
         <p class="reveal d2 sub-text highlight-text">Chaque cycle de maintenance = une mise a jour automatique de la cartographie. Pas de survol drone, pas de plongeur.</p>
+        <p class="reveal d3 sub-text">La turbidite peut compromettre la qualite des captures en altitude, mais les images haute resolution prises au fond servent de reference : par interpolation entre ces zones connues et les captures de remontee, on reconstitue les zones ou la visibilite etait insuffisante.</p>
+        <p class="reveal d3 sub-text">La remontee etant breve et limitee a une fois par jour, l'utilisation d'un sonar acoustique ou d'un LiDAR bathymetrique peut etre envisagee pour completer la capture optique. L'impact sur la vie sous-marine reste compatible avec les recommandations en vigueur compte tenu de la faible duree et frequence d'exposition.</p>
       </div>
       <div class="mapping-illustration reveal d1">
         <svg viewBox="0 0 360 480" class="illustration">
@@ -387,7 +389,7 @@ export function buildPresentation() {
             <circle cx="170" cy="352" r="7" fill="#f97316"/>
           </g>
           <!-- Capture cone 1 -->
-          <path d="M160 382 L110 440 L230 440Z" fill="rgba(56,189,248,0.05)" stroke="#38bdf8" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
+          <path d="M170 382 L110 440 L230 440Z" fill="rgba(56,189,248,0.05)" stroke="#38bdf8" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
 
           <!-- Device at position 2 (mid) -->
           <g opacity="0.5">
@@ -395,7 +397,7 @@ export function buildPresentation() {
             <circle cx="170" cy="232" r="7" fill="#f97316"/>
           </g>
           <!-- Capture cone 2 (wider) -->
-          <path d="M156 262 L80 380 L260 380Z" fill="rgba(56,189,248,0.04)" stroke="#38bdf8" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
+          <path d="M170 262 L80 380 L260 380Z" fill="rgba(56,189,248,0.04)" stroke="#38bdf8" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
 
           <!-- Device at position 3 (near top, current) -->
           <g opacity="1">
@@ -406,7 +408,7 @@ export function buildPresentation() {
             <circle cx="170" cy="119" r="2" fill="#38bdf8" opacity="0.6"/>
           </g>
           <!-- Capture cone 3 (widest) -->
-          <path d="M152 132 L40 320 L300 320Z" fill="rgba(56,189,248,0.03)" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
+          <path d="M170 132 L40 320 L300 320Z" fill="rgba(56,189,248,0.03)" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
 
           <!-- Arrow up showing ascent path -->
           <path d="M200 355 L200 120" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
