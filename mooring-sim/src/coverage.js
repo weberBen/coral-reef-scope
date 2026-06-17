@@ -14,6 +14,8 @@ const state = {
   ascent: 0,
   visRange: 3,       // normalized units
   zExag: 12,
+  sensorRes: 1920,   // sensor resolution (pixels horizontal)
+  gsdMax: 5,         // max useful GSD in mm/px
 };
 
 let scene, camera, renderer, controls, gui;
@@ -180,8 +182,16 @@ export function initCoverage() {
       <div id="coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
     </div>
     <div style="text-align:center">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couverture photo.</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couv. photo.</div>
       <div id="ascent-coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couv. utile</div>
+      <div id="useful-coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">GSD moyen</div>
+      <div id="gsd-value" style="font-size:36px;font-weight:800;color:#e4eef6;font-variant-numeric:tabular-nums">--</div>
     </div>
     <div style="display:flex;gap:12px;align-items:center;font-size:11px;color:#7a97b0;margin-left:8px">
       <span><span style="color:#f97316">●</span> Ancre</span>
@@ -560,6 +570,8 @@ function computeCoverage() {
 function computeAscentCoverage(groundFaces) {
   if (faceData.length === 0 || state.cameras.length === 0) {
     updateAscentDisplay(0);
+    updateUsefulDisplay(0);
+    updateGsdDisplay(null);
     return 0;
   }
 
@@ -567,10 +579,19 @@ function computeAscentCoverage(groundFaces) {
   const cosHalf = Math.cos(halfAngle);
   const DOWN = new THREE.Vector3(0, -1, 0);
   const toFace = new THREE.Vector3();
-  const ascentSteps = 10; // sample 10 altitudes during ascent
+  const ascentSteps = 10;
 
-  // Start from ground coverage and add photogrammetric
+  // Real-world scale: mesh is ~7500m wide normalized to ~10 units
+  const metersPerUnit = 7500 / 10;
+
+  // GSD = altitude_m * 2 * tan(fov/2) / sensor_pixels
+  // altitude in real meters = (camY - faceY) * metersPerUnit / zExag
+  const tanHalf = Math.tan(halfAngle);
+
   const allVisible = new Set(groundFaces);
+  const usefulVisible = new Set(groundFaces); // faces with GSD <= gsdMax
+  let gsdSum = 0;
+  let gsdCount = 0;
 
   for (const cam of state.cameras) {
     const anchorY = cam.anchorPos.y;
@@ -580,7 +601,6 @@ function computeAscentCoverage(groundFaces) {
       const t = s / ascentSteps;
       const camY = anchorY + (surfaceY - anchorY) * t;
 
-      // Visibility range decreases with depth (deeper = more turbidity)
       const depthFrac = 1 - (camY - meshYMin) / ((meshYMax - meshYMin) || 1);
       const effRange = state.visRange * Math.max(0.3, 1 - depthFrac * 0.6);
 
@@ -588,30 +608,51 @@ function computeAscentCoverage(groundFaces) {
       const cz = cam.anchorPos.z;
 
       for (let fi = 0; fi < faceData.length; fi++) {
-        if (allVisible.has(fi)) continue;
+        if (allVisible.has(fi) && usefulVisible.has(fi)) continue;
         const fc = faceData[fi].center;
 
         toFace.set(fc.x - cx, fc.y - camY, fc.z - cz);
         const dist = toFace.length();
         if (dist > effRange) continue;
-
-        // Must be below camera
         if (toFace.y >= 0) continue;
 
-        // Check downward FOV cone
         toFace.normalize();
         if (toFace.dot(DOWN) < cosHalf) continue;
 
+        // Compute GSD for this face from this altitude
+        const altNorm = camY - fc.y; // normalized altitude above face
+        const altMeters = altNorm * metersPerUnit / state.zExag;
+        const footprint = altMeters * 2 * tanHalf; // width in meters at face distance
+        const gsd = (footprint / state.sensorRes) * 1000; // mm/px
+
         allVisible.add(fi);
+
+        if (gsd <= state.gsdMax) {
+          usefulVisible.add(fi);
+        }
+
+        gsdSum += gsd;
+        gsdCount++;
       }
     }
   }
 
+  // All photogrammetric coverage
   let coveredArea = 0;
   for (const fi of allVisible) coveredArea += faceData[fi].area;
   const pct = totalArea > 0 ? (coveredArea / totalArea * 100) : 0;
-
   updateAscentDisplay(pct);
+
+  // Useful coverage (GSD <= threshold)
+  let usefulArea = 0;
+  for (const fi of usefulVisible) usefulArea += faceData[fi].area;
+  const usefulPct = totalArea > 0 ? (usefulArea / totalArea * 100) : 0;
+  updateUsefulDisplay(usefulPct);
+
+  // Average GSD
+  const avgGsd = gsdCount > 0 ? gsdSum / gsdCount : 0;
+  updateGsdDisplay(avgGsd);
+
   return pct;
 }
 
@@ -620,6 +661,21 @@ function updateAscentDisplay(pct) {
   if (!el) return;
   el.textContent = pct.toFixed(1) + '%';
   el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
+}
+
+function updateUsefulDisplay(pct) {
+  const el = document.getElementById('useful-coverage-value');
+  if (!el) return;
+  el.textContent = pct.toFixed(1) + '%';
+  el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
+}
+
+function updateGsdDisplay(gsd) {
+  const el = document.getElementById('gsd-value');
+  if (!el) return;
+  if (gsd === null || gsd === 0) { el.textContent = '--'; el.style.color = '#e4eef6'; return; }
+  el.textContent = gsd < 10 ? gsd.toFixed(1) + 'mm' : (gsd / 10).toFixed(1) + 'cm';
+  el.style.color = gsd <= state.gsdMax ? '#34d399' : gsd <= state.gsdMax * 2 ? '#fbbf24' : '#f87171';
 }
 
 function paintCoverage(visibleFaces) {
@@ -769,6 +825,8 @@ function clearCameras() {
   covDisplay.pct = '0%';
   updateCoverageDisplay(0);
   updateAscentDisplay(0);
+  updateUsefulDisplay(0);
+  updateGsdDisplay(null);
   updateCameraCount();
 }
 
@@ -799,6 +857,8 @@ function setupGUI(container) {
 
   const params = gui.addFolder('Camera');
   params.add(state, 'visRange', 0.5, 8, 0.1).name('Portee (unites)').onChange(computeCoverage);
+  params.add(state, 'sensorRes', 640, 4096, 1).name('Resolution capteur (px)').onChange(computeCoverage);
+  params.add(state, 'gsdMax', 1, 20, 0.5).name('GSD max (mm/px)').onChange(computeCoverage);
   params.add(state, 'zExag', 1, 20, 0.5).name('Exag. Z').onChange(v => {
     if (reefGroup) {
       reefGroup.scale.y = meshScale * v;
