@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>CORAL — Simulation de Mouillage 3D</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="status" class="status ok">OK</div>
+
+  <div id="angle-display">
+    <div class="angle-label">Deviation verticale max</div>
+    <div class="angle-value" id="angle-value">0.0°</div>
+  </div>
+
+  <div id="readouts">
+    <div class="r"><span>Profondeur dispositif</span><b id="ro-depth">--</b></div>
+    <div class="r"><span>Hauteur / fond</span><b id="ro-h">--</b></div>
+    <div class="r"><span>Excursion horizontale</span><b id="ro-exc">--</b></div>
+    <div class="r"><span>Angle max / vertical</span><b id="ro-ang">--</b></div>
+    <div class="r hl"><span>Tension max cable</span><b id="ro-tmax">--</b></div>
+    <div class="r"><span>Ancrage — vertical</span><b id="ro-av">--</b></div>
+    <div class="r"><span>Ancrage — horizontal</span><b id="ro-ah">--</b></div>
+    <div class="r hl"><span>Ancrage — total</span><b id="ro-at">--</b></div>
+    <div class="r"><span>Resistance cable (MBL)</span><b id="ro-mbl">--</b></div>
+    <div class="r hl"><span>Coeff. de securite</span><b id="ro-sf">--</b></div>
+    <div class="r"><span>Cable deploye</span><b id="ro-cable">--</b></div>
+    <div class="r"><span>Vitesse deploiement</span><b id="ro-speed">--</b></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
