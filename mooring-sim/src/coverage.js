@@ -790,17 +790,17 @@ function setupGUI(container) {
   });
   params.open();
 
-  const ascent = gui.addFolder('Remontee');
-  ascent.add(state, 'ascent', 0, 1, 0.01).name('0=fond  1=surface').onChange(updateAscent);
-  ascent.open();
-
-  const readouts = gui.addFolder('Resultats');
-  readouts.add(covDisplay, 'pct').name('Couverture').listen().disable();
-  readouts.open();
-
   const optim = gui.addFolder('Optimisation');
   optim.add(state, 'numCameras', 1, 100, 1).name('Nb cameras');
-  optim.add({ optimize: optimizePlacement }, 'optimize').name('Optimiser');
+  optim.add({ optimize: optimizePlacement }, 'optimize').name('Optimiser *');
   optim.add({ clear: clearCameras }, 'clear').name('Tout effacer');
   optim.open();
+
+  const legend = gui.addFolder('Legende');
+  legend.add({ _: '' }, '_').name('● Orange : ancre (fond)').disable();
+  legend.add({ _: '' }, '_').name('◆ Jaune : visibilite max').disable();
+  legend.add({ _: '' }, '_').name('○ Cyan : surface (remontee)').disable();
+  legend.add({ _: '' }, '_').name('--- Ligne : trajet remontee').disable();
+  legend.add({ _: '' }, '_').name('* Optimisation approximative').disable();
+  legend.open();
 }
