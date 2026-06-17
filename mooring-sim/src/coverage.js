@@ -324,7 +324,8 @@ function precomputeFaces() {
       const ac = new THREE.Vector3().subVectors(vc, va);
       const area = ab.cross(ac).length() * 0.5;
 
-      if (area > 1e-8) {
+      if (area > 1e-8 && center.y < meshYMax - 0.01) {
+        // Only underwater faces (exclude surface at y ≈ meshYMax)
         faceData.push({ center, area, meshRef: mesh, faceIdx: f });
         totalArea += area;
       }
@@ -446,7 +447,6 @@ function computeCoverage() {
   for (const fi of visibleFaces) coveredArea += faceData[fi].area;
   const pct = totalArea > 0 ? (coveredArea / totalArea * 100) : 0;
   covDisplay.pct = pct.toFixed(1) + '%';
-  covDisplay.count = visibleFaces.size + ' / ' + faceData.length + ' faces';
 
   console.timeEnd('viewshed-r2');
 
@@ -526,43 +526,52 @@ function viewshedForPosition(cx, cy, cz, excludeSet) {
   return { visible, totalNewArea };
 }
 
-function optimizePlacement() {
+async function optimizePlacement() {
   clearCameras();
   if (faceData.length === 0) return;
 
-  console.time('optimize');
-
-  // Sample candidates from face centers
-  const step = Math.max(1, Math.floor(faceData.length / 300));
+  // Fewer candidates for speed (100 instead of 300)
+  const step = Math.max(1, Math.floor(faceData.length / 100));
   const candidates = [];
   for (let i = 0; i < faceData.length; i += step) {
     candidates.push(faceData[i].center.clone());
   }
 
+  covDisplay.pct = 'Calcul...';
+  covDisplay.count = '';
+
   const globalCovered = new Set();
 
   for (let n = 0; n < state.numCameras; n++) {
+    // Yield to UI between each camera placement
+    await new Promise(r => setTimeout(r, 0));
+
     let bestScore = -1, bestIdx = -1;
 
-    for (let ci = 0; ci < candidates.length; ci++) {
-      const c = candidates[ci];
-      const { totalNewArea } = viewshedForPosition(c.x, c.y + 0.1, c.z, globalCovered);
-      if (totalNewArea > bestScore) { bestScore = totalNewArea; bestIdx = ci; }
+    // Score candidates in batches to avoid freeze
+    const batchSize = 20;
+    for (let start = 0; start < candidates.length; start += batchSize) {
+      const end = Math.min(start + batchSize, candidates.length);
+      for (let ci = start; ci < end; ci++) {
+        const c = candidates[ci];
+        const { totalNewArea } = viewshedForPosition(c.x, c.y + 0.1, c.z, globalCovered);
+        if (totalNewArea > bestScore) { bestScore = totalNewArea; bestIdx = ci; }
+      }
+      // Yield every batch
+      if (end < candidates.length) await new Promise(r => setTimeout(r, 0));
     }
 
     if (bestIdx < 0 || bestScore <= 0) break;
 
     const pos = candidates[bestIdx].clone();
     addCamera(pos);
+    covDisplay.pct = 'Camera ' + (n + 1) + '/' + state.numCameras + '...';
 
-    // Mark covered
     const { visible } = viewshedForPosition(pos.x, pos.y + 0.1, pos.z, null);
     for (const fi of visible) globalCovered.add(fi);
 
     candidates.splice(bestIdx, 1);
   }
-
-  console.timeEnd('optimize');
 }
 
 function clearCameras() {
@@ -622,7 +631,6 @@ function setupGUI(container) {
 
   const readouts = gui.addFolder('Resultats');
   readouts.add(covDisplay, 'pct').name('Couverture').listen().disable();
-  readouts.add(covDisplay, 'count').name('Faces').listen().disable();
   readouts.open();
 
   const optim = gui.addFolder('Optimisation');
