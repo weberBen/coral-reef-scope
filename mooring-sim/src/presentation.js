@@ -445,10 +445,16 @@ export function buildPresentation() {
   <div class="cta-glow"></div>
   <div class="deck-content">
     <p class="reveal big-statement">Testez le systeme vous-meme</p>
-    <button class="reveal d1 cta-big" onclick="document.querySelector('[data-tab=simulation]').click()">
-      Lancer la simulation
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4l6 6-6 6"/></svg>
-    </button>
+    <div style="display:flex;flex-direction:column;gap:16px;align-items:stretch;width:420px;margin:0 auto">
+      <button class="reveal d1 cta-big" style="justify-content:space-between;width:100%;text-align:left" onclick="document.querySelector('[data-tab=simulation]').click()">
+        <span>Lancer la simulation</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4l6 6-6 6"/></svg>
+      </button>
+      <button class="reveal d2 cta-big" style="justify-content:space-between;width:100%;text-align:left;background:linear-gradient(135deg,rgba(52,211,153,0.15),rgba(52,211,153,0.05));border-color:rgba(52,211,153,0.3);color:#86efac" onclick="document.querySelector('[data-tab=coverage]').click()">
+        <span>Tester la couverture photogrammetrique</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4l6 6-6 6"/></svg>
+      </button>
+    </div>
   </div>
 </section>
 
