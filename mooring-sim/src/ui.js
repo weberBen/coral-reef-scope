@@ -3,7 +3,11 @@ import { P, N, mbl } from './params.js';
 import { nodes, forces, getMaxAngle } from './physics.js';
 
 export function setupGUI(callbacks) {
-  const gui = new GUI({ title: 'Parametres', width: 310, container: document.getElementById('tab-simulation') });
+  const container = document.getElementById('tab-simulation');
+  const gui = new GUI({ title: 'Parametres', width: 310, container });
+  gui.domElement.style.position = 'absolute';
+  gui.domElement.style.bottom = '8px';
+  gui.domElement.style.right = '8px';
 
   // --- Deployment ---
   const deploy = gui.addFolder('Deroulement');

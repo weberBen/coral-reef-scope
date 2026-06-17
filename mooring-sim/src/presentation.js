@@ -10,9 +10,9 @@ export function buildPresentation() {
   <div class="hero-rays"></div>
   <div class="deck-content hero-content">
     <div class="hero-badge">Reef Monitoring System</div>
-    <h1 class="reveal">CORAL</h1>
+    <h1 class="reveal">ReefScope</h1>
     <p class="reveal d1">Surveillance autonome des recifs coralliens</p>
-    <p class="reveal d2 hero-sub">Un systeme ou chaque capteur remonte, se recharge,<br>et replonge — sans intervention humaine sous l'eau.</p>
+    <p class="reveal d2 hero-sub">Un systeme ou chaque capteur remonte, se recharge,<br>et replonge. Sans intervention humaine sous l'eau.</p>
   </div>
   <div class="scroll-cue reveal d3">
     <div class="scroll-line"></div>
@@ -84,7 +84,7 @@ export function buildPresentation() {
   </div>
 </section>
 
-<!-- ============ CYCLE — sticky scroll 4 phases ============ -->
+<!-- ============ CYCLE,sticky scroll 4 phases ============ -->
 <div class="cycle-scroll-wrap" id="cycle-wrap">
   <!-- Sticky diagram -->
   <div class="cycle-sticky">
@@ -226,7 +226,7 @@ export function buildPresentation() {
   </div>
 </div>
 
-<!-- ============ PHASES — sticky scroll ============ -->
+<!-- ============ PHASES,sticky scroll ============ -->
 <section class="deck phases-intro">
   <div class="deck-bg-gradient orange-glow"></div>
   <div class="deck-content">
@@ -287,10 +287,10 @@ export function buildPresentation() {
         <p class="phase-desc">Deux variantes possibles selon le site et le budget :</p>
 
         <div class="phase-variant">
-          <div class="pv-label">Option A — Active</div>
+          <div class="pv-label">Option A : Active</div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span><strong>Navigation en ligne droite</strong> vers la rive — algo trivial, le capteur vise la cote sans intelligence sous-marine</span>
+            <span><strong>Navigation en ligne droite</strong> vers la rive,algo trivial, le capteur vise la cote sans intelligence sous-marine</span>
           </div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
@@ -299,14 +299,14 @@ export function buildPresentation() {
         </div>
 
         <div class="phase-variant">
-          <div class="pv-label">Option B — Passive</div>
+          <div class="pv-label">Option B : Passive</div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span><strong>Derive naturelle</strong> — les capteurs flottent et le courant les ramene vers la cote</span>
+            <span><strong>Derive naturelle</strong>,les capteurs flottent et le courant les ramene vers la cote</span>
           </div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span><strong>Filet de collecte cotier</strong> type anti-pollution — recupere les capteurs sans intervention, comme un barrage flottant</span>
+            <span><strong>Filet de collecte cotier</strong> type anti-pollution,recupere les capteurs sans intervention, comme un barrage flottant</span>
           </div>
         </div>
 
@@ -339,7 +339,7 @@ export function buildPresentation() {
           </svg>
         </div>
         <h3>Essaim de capteurs</h3>
-        <p>Changement de paradigme : produire <strong>beaucoup de capteurs basse resolution</strong> plutot que peu de capteurs haute resolution. Largues par drone, descente lente par culbutage — robuste au vent, pose precise sans parachute.</p>
+        <p>Changement de paradigme : produire <strong>beaucoup de capteurs basse resolution</strong> plutot que peu de capteurs haute resolution. Largues par drone, descente lente par culbutage,robuste au vent, pose precise sans parachute.</p>
         <p>Le cout se concentre sur la <strong>production en masse</strong> de capteurs jetables, pas sur l'infrastructure. La couverture du recif scale lineairement avec le nombre de capteurs produits.</p>
         <div class="phase-highlights">
           <span class="ph-tag green">Cout = production uniquement</span>
@@ -347,7 +347,7 @@ export function buildPresentation() {
           <span class="ph-tag green">Zero infrastructure</span>
         </div>
         <div class="phase-refs">
-          <span>TumblerBots — arXiv 2410.23049</span>
+          <span>TumblerBots (arXiv 2410.23049)</span>
           <span>Ramsby 2026, Restoration Ecology</span>
         </div>
       </div>
