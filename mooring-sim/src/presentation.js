@@ -112,6 +112,8 @@ export function buildPresentation() {
 
       <!-- ===== PHASE 1: Device anchored, camera scanning ===== -->
       <g id="cy-phase1" class="cy-phase" opacity="0">
+        <!-- Rigid support mast from anchor to device -->
+        <rect x="297" y="332" width="6" height="51" rx="1" fill="#718096"/>
         <!-- Device at bottom -->
         <rect x="286" y="310" width="28" height="22" rx="4" fill="#e2e8f0" id="cy-dev1"/>
         <circle cx="300" cy="302" r="7" fill="#f97316"/>
@@ -211,7 +213,7 @@ export function buildPresentation() {
       <div class="cy-text-inner">
         <div class="cy-phase-num">03</div>
         <h3>Transit en surface</h3>
-        <p>Une fois en surface, le dispositif navigue vers la rive. La bouee du cable reste a sa position, marquant la station pour le prochain capteur.</p>
+        <p>Une fois en surface, le dispositif rejoint la rive par navigation autonome ou simple derive passive. La bouee reste en place, marquant la station pour le prochain capteur.</p>
       </div>
     </div>
     <div class="cy-text-phase" data-phase="4">
