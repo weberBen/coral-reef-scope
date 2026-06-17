@@ -22,6 +22,9 @@ let reefMeshes = [];
 let meshScale = 1;
 let raycaster = new THREE.Raycaster();
 let cameraMarkers = [];
+let surfaceMarkers = [];   // wireframe sphere at surface (y=0)
+let visMaxMarkers = [];    // small marker at max visibility altitude
+let verticalLines = [];    // line from anchor to surface
 
 let faceData = [];   // [{center, area, meshRef, faceIdx}]
 let totalArea = 0;
@@ -211,14 +214,30 @@ function onMouseMove(event) {
     -((event.clientY - rect.top) / rect.height) * 2 + 1
   );
 
-  // Check camera markers first
+  // Check all camera-related markers
   if (cameraMarkers.length > 0) {
     raycaster.setFromCamera(mouse, camera);
-    const camHits = raycaster.intersectObjects(cameraMarkers, false);
+    const allMarkers = [...cameraMarkers, ...surfaceMarkers, ...visMaxMarkers];
+    const camHits = raycaster.intersectObjects(allMarkers, false);
     if (camHits.length > 0) {
-      const idx = cameraMarkers.indexOf(camHits[0].object);
-      if (idx >= 0 && state.cameras[idx]) {
-        tooltip.textContent = 'Profondeur : ' + state.cameras[idx].realDepth.toFixed(1) + ' m';
+      const obj = camHits[0].object;
+      let idx = cameraMarkers.indexOf(obj);
+      let label = '';
+      if (idx >= 0) {
+        label = 'Ancre : ' + state.cameras[idx].realDepth.toFixed(1) + ' m';
+      } else {
+        idx = surfaceMarkers.indexOf(obj);
+        if (idx >= 0) {
+          label = 'Surface (remontee)';
+        } else {
+          idx = visMaxMarkers.indexOf(obj);
+          if (idx >= 0) {
+            label = 'Altitude visibilite max';
+          }
+        }
+      }
+      if (label) {
+        tooltip.textContent = label;
         tooltip.style.display = 'block';
         tooltip.style.left = (event.clientX - rect.left + 15) + 'px';
         tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
@@ -370,14 +389,54 @@ function addCamera(normPos) {
   const realDepth = -(1 - depthFrac) * 19.5;
   state.cameras.push({ anchorPos: normPos.clone(), realDepth });
 
+  const x = normPos.x, z = normPos.z;
+  const anchorY = normPos.y + 0.08;
+  const surfaceY = meshYMax + 0.5;
+
+  // Max visibility altitude: where turbidity cuts off useful range
+  // effRange = visRange * max(0.3, 1 - depthFrac*0.6)
+  // Useful above ~30% of range → altitude where depthFrac ≈ 0.5
+  const visMaxY = anchorY + (surfaceY - anchorY) * 0.6;
+
+  // 1. Anchor marker (orange, solid)
   const marker = new THREE.Mesh(
     new THREE.SphereGeometry(0.12, 12, 12),
     new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 0.5 })
   );
-  marker.position.copy(normPos);
-  marker.position.y += 0.08;
+  marker.position.set(x, anchorY, z);
   scene.add(marker);
   cameraMarkers.push(marker);
+
+  // 2. Surface marker (cyan, wireframe)
+  const surfMarker = new THREE.Mesh(
+    new THREE.SphereGeometry(0.1, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.6 })
+  );
+  surfMarker.position.set(x, surfaceY, z);
+  scene.add(surfMarker);
+  surfaceMarkers.push(surfMarker);
+
+  // 3. Max visibility marker (yellow, small)
+  const visMarker = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.08, 0),
+    new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.7 })
+  );
+  visMarker.position.set(x, visMaxY, z);
+  scene.add(visMarker);
+  visMaxMarkers.push(visMarker);
+
+  // 4. Vertical line connecting all three
+  const lineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(x, anchorY, z),
+    new THREE.Vector3(x, visMaxY, z),
+    new THREE.Vector3(x, surfaceY, z),
+  ]);
+  const line = new THREE.Line(lineGeo, new THREE.LineDashedMaterial({
+    color: 0x38bdf8, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity: 0.35
+  }));
+  line.computeLineDistances();
+  scene.add(line);
+  verticalLines.push(line);
 
   computeCoverage();
 }
@@ -675,7 +734,13 @@ function updateCoverageDisplay(pct) {
 
 function clearCameras() {
   for (const m of cameraMarkers) { scene.remove(m); m.geometry.dispose(); }
+  for (const m of surfaceMarkers) { scene.remove(m); m.geometry.dispose(); }
+  for (const m of visMaxMarkers) { scene.remove(m); m.geometry.dispose(); }
+  for (const l of verticalLines) { scene.remove(l); l.geometry.dispose(); }
   cameraMarkers = [];
+  surfaceMarkers = [];
+  visMaxMarkers = [];
+  verticalLines = [];
   state.cameras = [];
 
   for (const mesh of reefMeshes) {
