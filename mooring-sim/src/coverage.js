@@ -164,6 +164,16 @@ export function initCoverage() {
   tooltip.style.cssText = 'position:absolute;padding:6px 12px;background:rgba(5,15,30,0.9);border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:#7dd3fc;font-size:12px;pointer-events:none;display:none;z-index:20;font-family:Inter,sans-serif;white-space:nowrap';
   container.appendChild(tooltip);
 
+  // Big coverage display (like angle display in simulation)
+  const coverageDisplay = document.createElement('div');
+  coverageDisplay.id = 'coverage-display';
+  coverageDisplay.innerHTML = `
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:4px">Couverture du recif</div>
+    <div id="coverage-value" style="font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 20px rgba(0,0,0,.5);color:#34d399;transition:color .3s">0%</div>
+  `;
+  coverageDisplay.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);text-align:center;z-index:10;pointer-events:none';
+  container.appendChild(coverageDisplay);
+
   setupGUI(container);
 
   (function animate() {
@@ -447,6 +457,7 @@ function computeCoverage() {
   for (const fi of visibleFaces) coveredArea += faceData[fi].area;
   const pct = totalArea > 0 ? (coveredArea / totalArea * 100) : 0;
   covDisplay.pct = pct.toFixed(1) + '%';
+  updateCoverageDisplay(pct);
 
   console.timeEnd('viewshed-r2');
 
@@ -574,6 +585,13 @@ async function optimizePlacement() {
   }
 }
 
+function updateCoverageDisplay(pct) {
+  const el = document.getElementById('coverage-value');
+  if (!el) return;
+  el.textContent = pct.toFixed(1) + '%';
+  el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
+}
+
 function clearCameras() {
   for (const m of cameraMarkers) { scene.remove(m); m.geometry.dispose(); }
   cameraMarkers = [];
@@ -585,7 +603,7 @@ function clearCameras() {
     if (colors && base) { colors.array.set(base); colors.needsUpdate = true; }
   }
   covDisplay.pct = '0%';
-  covDisplay.count = '';
+  updateCoverageDisplay(0);
 }
 
 // =============================================
@@ -634,7 +652,7 @@ function setupGUI(container) {
   readouts.open();
 
   const optim = gui.addFolder('Optimisation');
-  optim.add(state, 'numCameras', 1, 20, 1).name('Nb cameras');
+  optim.add(state, 'numCameras', 1, 100, 1).name('Nb cameras');
   optim.add({ optimize: optimizePlacement }, 'optimize').name('Optimiser');
   optim.add({ clear: clearCameras }, 'clear').name('Tout effacer');
   optim.open();
