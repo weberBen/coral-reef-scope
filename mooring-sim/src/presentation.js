@@ -98,15 +98,16 @@ export function buildPresentation() {
       <path d="M720 75 L750 75 L900 75 L900 460 L720 460Z" fill="#3d2e1a" opacity="0.35"/>
       <text x="810" y="60" text-anchor="middle" fill="#c8b99a" font-size="13" font-weight="700" font-family="Inter,sans-serif">RIVE</text>
 
-      <!-- ===== PERMANENT: Anchor + cable + buoy ===== -->
+      <!-- ===== PERMANENT: Anchor only ===== -->
       <g id="cy-station">
-        <!-- Anchor -->
         <rect x="280" y="395" width="40" height="14" rx="4" fill="#64748b"/>
         <rect x="292" y="383" width="16" height="16" rx="3" fill="#718096"/>
-        <!-- Cable -->
-        <line x1="300" y1="383" x2="300" y2="83" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" id="cy-cable"/>
-        <!-- Buoy at top -->
-        <circle cx="300" cy="80" r="7" fill="#f97316" opacity="0.8" id="cy-buoy"/>
+      </g>
+
+      <!-- ===== Cable + buoy: appear from phase 2 ===== -->
+      <g id="cy-cable-group" opacity="0">
+        <line x1="300" y1="383" x2="300" y2="83" stroke="#38bdf8" stroke-width="2.5" opacity="0.6"/>
+        <circle cx="300" cy="80" r="7" fill="#f97316" opacity="0.8"/>
       </g>
 
       <!-- ===== PHASE 1: Device anchored, camera scanning ===== -->
@@ -379,6 +380,14 @@ function updateCyclePhase(phase) {
       g.style.transition = 'opacity 0.4s ease';
     }
   }
+
+  // Cable + buoy appear from phase 2 onward
+  const cableGroup = document.getElementById('cy-cable-group');
+  if (cableGroup) {
+    cableGroup.style.opacity = phase >= 2 ? (phase === 2 ? '1' : '0.5') : '0';
+    cableGroup.style.transition = 'opacity 0.8s ease';
+  }
+
   // Highlight current phase text
   document.querySelectorAll('.cy-text-phase').forEach(el => {
     const p = parseInt(el.dataset.phase);
