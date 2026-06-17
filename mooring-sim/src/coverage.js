@@ -167,20 +167,29 @@ export function initCoverage() {
   tooltip.style.cssText = 'position:absolute;padding:6px 12px;background:rgba(5,15,30,0.9);border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:#7dd3fc;font-size:12px;pointer-events:none;display:none;z-index:20;font-family:Inter,sans-serif;white-space:nowrap';
   container.appendChild(tooltip);
 
-  // Big coverage displays
-  const coverageDisplay = document.createElement('div');
-  coverageDisplay.innerHTML = `
-    <div style="margin-bottom:16px">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:4px">Couverture au fond</div>
-      <div id="coverage-value" style="font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 20px rgba(0,0,0,.5);color:#34d399;transition:color .3s">0%</div>
+  // Top bar: cameras count + coverage stats + legend
+  const topBar = document.createElement('div');
+  topBar.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:32px;align-items:center;z-index:10;pointer-events:none';
+  topBar.innerHTML = `
+    <div style="text-align:center">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Cameras</div>
+      <div id="camera-count" style="font-size:36px;font-weight:800;color:#e4eef6;font-variant-numeric:tabular-nums">0</div>
     </div>
-    <div>
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:4px">Couverture photogrammetrique</div>
-      <div id="ascent-coverage-value" style="font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 20px rgba(0,0,0,.5);color:#34d399;transition:color .3s">0%</div>
+    <div style="text-align:center">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couverture fond</div>
+      <div id="coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couverture photo.</div>
+      <div id="ascent-coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;font-size:11px;color:#7a97b0;margin-left:8px">
+      <span><span style="color:#f97316">●</span> Ancre</span>
+      <span><span style="color:#fbbf24">◆</span> Vis. max</span>
+      <span><span style="color:#38bdf8">○</span> Surface</span>
     </div>
   `;
-  coverageDisplay.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);text-align:center;z-index:10;pointer-events:none';
-  container.appendChild(coverageDisplay);
+  container.appendChild(topBar);
 
   setupGUI(container);
 
@@ -441,7 +450,13 @@ function addCamera(normPos) {
   scene.add(line);
   verticalLines.push(line);
 
+  updateCameraCount();
   computeCoverage();
+}
+
+function updateCameraCount() {
+  const el = document.getElementById('camera-count');
+  if (el) el.textContent = state.cameras.length;
 }
 
 // =============================================
@@ -754,6 +769,7 @@ function clearCameras() {
   covDisplay.pct = '0%';
   updateCoverageDisplay(0);
   updateAscentDisplay(0);
+  updateCameraCount();
 }
 
 // =============================================
