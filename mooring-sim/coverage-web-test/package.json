@@ -1,0 +1,9 @@
+{
+  "name": "coral-reef-scope-web",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "bun run server.ts",
+    "start": "bun run server.ts"
+  },
+  "dependencies": {}
+}
