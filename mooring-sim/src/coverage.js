@@ -228,11 +228,14 @@ function onMouseMove(event) {
       } else {
         idx = surfaceMarkers.indexOf(obj);
         if (idx >= 0) {
-          label = 'Surface (remontee)';
+          label = 'Surface : 0 m';
         } else {
           idx = visMaxMarkers.indexOf(obj);
           if (idx >= 0) {
-            label = 'Altitude visibilite max';
+            const markerY = visMaxMarkers[idx].position.y;
+            const frac = (markerY - meshYMin) / ((meshYMax - meshYMin) || 1);
+            const depth = -(1 - frac) * 19.5;
+            label = 'Visibilite max : ' + depth.toFixed(1) + ' m';
           }
         }
       }
@@ -796,11 +799,4 @@ function setupGUI(container) {
   optim.add({ clear: clearCameras }, 'clear').name('Tout effacer');
   optim.open();
 
-  const legend = gui.addFolder('Legende');
-  legend.add({ _: '' }, '_').name('● Orange : ancre (fond)').disable();
-  legend.add({ _: '' }, '_').name('◆ Jaune : visibilite max').disable();
-  legend.add({ _: '' }, '_').name('○ Cyan : surface (remontee)').disable();
-  legend.add({ _: '' }, '_').name('--- Ligne : trajet remontee').disable();
-  legend.add({ _: '' }, '_').name('* Optimisation approximative').disable();
-  legend.open();
 }
