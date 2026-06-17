@@ -5,400 +5,429 @@ export function buildPresentation() {
   el.innerHTML = `
 
 <!-- ============ HERO ============ -->
-<section class="deck-section hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <div class="hero-badge">Monitoring Recifal</div>
-    <h1>CORAL</h1>
-    <p class="hero-tagline">Surveillance autonome des recifs coralliens<br>par capteurs flottants et stations ancrees</p>
-    <div class="hero-scroll-hint">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M5 12l7 7 7-7"/>
-      </svg>
-    </div>
+<section class="deck hero">
+  <canvas class="hero-particles" id="hero-canvas"></canvas>
+  <div class="hero-rays"></div>
+  <div class="deck-content hero-content">
+    <div class="hero-badge">Reef Monitoring System</div>
+    <h1 class="reveal">CORAL</h1>
+    <p class="reveal d1">Surveillance autonome des recifs coralliens</p>
+    <p class="reveal d2 hero-sub">Un systeme ou chaque capteur remonte, se recharge,<br>et replonge — sans intervention humaine sous l'eau.</p>
+  </div>
+  <div class="scroll-cue reveal d3">
+    <div class="scroll-line"></div>
+    <span>Decouvrir</span>
   </div>
 </section>
 
-<!-- ============ LE PROBLEME ============ -->
-<section class="deck-section">
-  <div class="section-inner">
-    <h2 class="section-title">Le probleme</h2>
-    <p class="section-subtitle">Les methodes actuelles de monitoring sous-marin sont couteuses, risquees ou non scalables</p>
+<!-- ============ PROBLEME - immersif ============ -->
+<section class="deck dark-ocean">
+  <div class="deck-bg-anim bubbles-bg"></div>
+  <div class="deck-content">
+    <h2 class="reveal kicker">Le monitoring sous-marin aujourd'hui</h2>
+    <p class="reveal big-statement">Chaque methode existante impose un compromis<br>entre <em>cout</em>, <em>risque</em> et <em>couverture</em>.</p>
+  </div>
+</section>
 
-    <div class="card-grid three">
-      <div class="card">
-        <div class="card-icon">
-          <svg viewBox="0 0 48 48" width="48" height="48"><rect x="14" y="12" width="20" height="16" rx="3" stroke="#f97316" stroke-width="2" fill="none"/><circle cx="24" cy="20" r="4" stroke="#f97316" stroke-width="2" fill="none"/><path d="M24 32v10M18 42h12" stroke="#f97316" stroke-width="2"/><path d="M8 18c-2 1-3 3-3 3" stroke="#34d399" stroke-width="1.5" opacity="0.5"/><path d="M40 16c2 1 4 4 4 4" stroke="#34d399" stroke-width="1.5" opacity="0.5"/></svg>
+<section class="deck problem-cards">
+  <div class="deck-content">
+    <div class="problem-row">
+      <div class="pcard reveal">
+        <div class="pcard-visual">
+          <div class="pcard-icon camera-icon">
+            <div class="biofouling-layer"></div>
+          </div>
         </div>
         <h3>Cameras fixes</h3>
-        <ul>
-          <li>Biofouling rapide — nettoyage frequent</li>
-          <li>Cables d'alimentation couteux</li>
-          <li>Intervention de plongeurs pour l'entretien</li>
-          <li>Couverture limitee a la zone fixe</li>
-        </ul>
-        <div class="card-verdict bad">OPEX eleve</div>
+        <p>Biofouling en quelques semaines.<br>Plongeurs requis pour chaque maintenance.</p>
+        <div class="pcard-tag bad">OPEX eleve</div>
       </div>
-
-      <div class="card">
-        <div class="card-icon">
-          <svg viewBox="0 0 48 48" width="48" height="48"><ellipse cx="24" cy="24" rx="12" ry="6" stroke="#f97316" stroke-width="2" fill="none"/><path d="M12 24v4c0 3.3 5.4 6 12 6s12-2.7 12-6v-4" stroke="#f97316" stroke-width="2" fill="none"/><path d="M24 18v-8M20 10h8" stroke="#f97316" stroke-width="2"/><path d="M16 30l-6 8M32 30l6 8" stroke="#f97316" stroke-width="1.5"/></svg>
+      <div class="pcard reveal d1">
+        <div class="pcard-visual">
+          <div class="pcard-icon drone-icon">
+            <div class="collision-flash"></div>
+          </div>
         </div>
         <h3>Drones sous-marins</h3>
-        <ul>
-          <li>R&D couteuse — controle en eau difficile</li>
-          <li>Risque de collision avec le corail</li>
-          <li>Autonomie limitee</li>
-          <li>Recuperation complexe</li>
-        </ul>
-        <div class="card-verdict bad">CAPEX + risque</div>
+        <p>Controle en eau complexe.<br>Risque de collision avec le corail.</p>
+        <div class="pcard-tag bad">Risque + cout R&D</div>
       </div>
-
-      <div class="card">
-        <div class="card-icon">
-          <svg viewBox="0 0 48 48" width="48" height="48"><path d="M10 8h28v6H10z" stroke="#f97316" stroke-width="2" fill="none" rx="2"/><path d="M24 14v20" stroke="#f97316" stroke-width="2"/><circle cx="24" cy="38" r="4" stroke="#f97316" stroke-width="2" fill="none"/><path d="M8 8c0-3 3-5 6-5M40 8c0-3-3-5-6-5" stroke="#38bdf8" stroke-width="1.5" opacity="0.4"/></svg>
+      <div class="pcard reveal d2">
+        <div class="pcard-visual">
+          <div class="pcard-icon power-icon">
+            <div class="power-pulse"></div>
+          </div>
         </div>
         <h3>Alimentation</h3>
-        <ul>
-          <li>Cable principal = infrastructure lourde</li>
-          <li>Bouees solaires en surface = pollution visuelle</li>
-          <li>Batteries = autonomie limitee</li>
-          <li>Chaque solution ajoute de la complexite</li>
-        </ul>
-        <div class="card-verdict bad">Pas de solution ideale</div>
+        <p>Cables sous-marins ou bouees solaires.<br>Infrastructure lourde, impact visuel.</p>
+        <div class="pcard-tag bad">Non scalable</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ SOLUTION NAIVE ============ -->
-<section class="deck-section alt">
-  <div class="section-inner">
-    <h2 class="section-title">Approche naive : capteurs jetables</h2>
-    <div class="split">
-      <div class="split-text">
-        <p>Produire en masse des capteurs bas cout avec courte autonomie. Une fois la batterie HS, le capteur remonte par flottabilite et est recupere en surface.</p>
-        <div class="pro-con">
-          <div class="pro">
-            <h4>Avantages</h4>
-            <ul>
-              <li>Cout unitaire tres bas</li>
-              <li>Couverture massive du recif</li>
-              <li>Pas de cable, pas d'infrastructure</li>
-            </ul>
-          </div>
-          <div class="con">
-            <h4>Problemes</h4>
-            <ul>
-              <li>Chocs repetes avec le corail lors du largage</li>
-              <li>Materiel non degradable en cas de perte</li>
-              <li>Empetrement possible dans les coraux</li>
-              <li>Aucun controle de la zone de pose</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="split-visual">
-        <svg viewBox="0 0 300 400" class="illustration">
-          <!-- Water -->
-          <rect x="0" y="60" width="300" height="340" fill="url(#waterGrad)" rx="0"/>
-          <!-- Surface wave -->
-          <path d="M0 60 Q50 50 100 60 T200 60 T300 60 V0 H0Z" fill="#0a1628"/>
-          <!-- Scattered sensors -->
-          <rect x="60" y="180" width="18" height="14" rx="3" fill="#e2e8f0" opacity="0.8"/>
-          <circle cx="69" cy="172" r="5" fill="#f97316" opacity="0.8"/>
-          <rect x="180" y="250" width="18" height="14" rx="3" fill="#e2e8f0" opacity="0.7"/>
-          <circle cx="189" cy="242" r="5" fill="#f97316" opacity="0.7"/>
-          <rect x="120" y="310" width="18" height="14" rx="3" fill="#e2e8f0" opacity="0.6"/>
-          <circle cx="129" cy="302" r="5" fill="#f97316" opacity="0.6"/>
-          <!-- Coral -->
-          <path d="M40 380 Q60 340 80 380 Q100 350 120 380 Q140 330 160 380 Q180 345 200 380 Q220 340 240 380 Q260 350 280 380" stroke="#34d399" stroke-width="2" fill="none" opacity="0.5"/>
-          <!-- X marks -->
-          <g stroke="#ef4444" stroke-width="2" opacity="0.7">
-            <path d="M115 305 l12 12 M127 305 l-12 12"/>
-            <path d="M55 175 l12 12 M67 175 l-12 12"/>
-          </g>
-          <!-- Arrow up -->
-          <path d="M189 240 L189 90" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
-          <polygon points="185,95 189,80 193,95" fill="#38bdf8" opacity="0.5"/>
-          <defs>
-            <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#0c3a5e" stop-opacity="0.3"/>
-              <stop offset="1" stop-color="#051525" stop-opacity="0.6"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-    </div>
+<!-- ============ TRANSITION ============ -->
+<section class="deck transition-section">
+  <div class="deck-content">
+    <p class="reveal big-statement">Et si on inversait le probleme ?</p>
+    <p class="reveal d1 big-statement accent">Au lieu d'aller entretenir les capteurs...<br>les capteurs viennent a nous.</p>
   </div>
 </section>
 
-<!-- ============ NOTRE SOLUTION ============ -->
-<section class="deck-section highlight">
-  <div class="section-inner">
-    <h2 class="section-title">Notre solution : systeme hybride cable</h2>
-    <p class="section-subtitle">Stations ancrees avec dispositifs interchangeables — tout l'entretien se fait en surface</p>
+<!-- ============ SOLUTION TITLE ============ -->
+<section class="deck solution-hero">
+  <div class="deck-bg-gradient cyan-glow"></div>
+  <div class="deck-content">
+    <h2 class="reveal kicker">Notre approche</h2>
+    <h3 class="reveal mega-title">Systeme hybride<br>cable + flotteur</h3>
+    <p class="reveal d1 sub-text" style="text-align:center;margin:16px auto 0">Scrollez pour voir le cycle complet</p>
+  </div>
+</section>
 
-    <div class="system-diagram">
-      <svg viewBox="0 0 800 500" class="illustration wide">
-        <!-- Ocean background -->
-        <rect x="0" y="70" width="800" height="430" fill="url(#oceanGrad)" rx="0"/>
-        <!-- Surface -->
-        <path d="M0 70 Q100 55 200 70 T400 70 T600 70 T800 70 V0 H0Z" fill="#0a1628"/>
-        <!-- Seabed -->
-        <rect x="0" y="440" width="800" height="60" fill="#3a2c1c" opacity="0.6"/>
+<!-- ============ CYCLE — sticky scroll 4 phases ============ -->
+<div class="cycle-scroll-wrap" id="cycle-wrap">
+  <!-- Sticky diagram -->
+  <div class="cycle-sticky">
+    <svg viewBox="0 0 900 460" class="cycle-svg" id="cycle-svg">
+      <!-- Ocean -->
+      <rect x="0" y="75" width="900" height="385" fill="url(#cyOcean)"/>
+      <path d="M0 75 Q112 60 225 75 T450 75 T675 75 T900 75" fill="none" stroke="rgba(56,189,248,0.25)" stroke-width="1.5"/>
+      <!-- Seabed -->
+      <rect x="0" y="400" width="720" height="60" fill="#2a1f14"/>
+      <!-- Shore -->
+      <path d="M720 75 L750 75 L900 75 L900 460 L720 460Z" fill="#3d2e1a" opacity="0.35"/>
+      <text x="810" y="60" text-anchor="middle" fill="#c8b99a" font-size="13" font-weight="700" font-family="Inter,sans-serif">RIVE</text>
 
-        <!-- == Station 1: Deployed == -->
+      <!-- ===== PERMANENT: Anchor + cable + buoy ===== -->
+      <g id="cy-station">
         <!-- Anchor -->
-        <rect x="180" y="435" width="40" height="12" rx="3" fill="#64748b"/>
-        <rect x="192" y="425" width="16" height="14" rx="2" fill="#718096"/>
+        <rect x="280" y="395" width="40" height="14" rx="4" fill="#64748b"/>
+        <rect x="292" y="383" width="16" height="16" rx="3" fill="#718096"/>
         <!-- Cable -->
-        <line x1="200" y1="425" x2="200" y2="140" stroke="#38bdf8" stroke-width="2"/>
-        <!-- Device at depth -->
-        <rect x="186" y="130" width="28" height="22" rx="4" fill="#e2e8f0"/>
-        <circle cx="200" cy="138" r="4" fill="#1a202c"/>
-        <circle cx="200" cy="118" r="8" fill="#f97316"/>
-        <!-- Label -->
-        <text x="200" y="100" text-anchor="middle" fill="#7dd3fc" font-size="11" font-weight="600">EN SERVICE</text>
+        <line x1="300" y1="383" x2="300" y2="83" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" id="cy-cable"/>
+        <!-- Buoy at top -->
+        <circle cx="300" cy="80" r="7" fill="#f97316" opacity="0.8" id="cy-buoy"/>
+      </g>
 
-        <!-- == Station 2: Ascending == -->
-        <!-- Anchor -->
-        <rect x="380" y="435" width="40" height="12" rx="3" fill="#64748b"/>
-        <!-- Cable with buoy at top -->
-        <line x1="400" y1="425" x2="400" y2="80" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 3"/>
-        <circle cx="400" cy="78" r="7" fill="#f97316" opacity="0.8"/>
-        <!-- Device ascending (detached) -->
-        <rect x="420" y="180" width="28" height="22" rx="4" fill="#e2e8f0" opacity="0.9"/>
-        <circle cx="434" cy="168" r="8" fill="#f97316" opacity="0.9"/>
+      <!-- ===== PHASE 1: Device anchored, camera scanning ===== -->
+      <g id="cy-phase1" class="cy-phase" opacity="0">
+        <!-- Device at bottom -->
+        <rect x="286" y="310" width="28" height="22" rx="4" fill="#e2e8f0" id="cy-dev1"/>
+        <circle cx="300" cy="302" r="7" fill="#f97316"/>
+        <!-- Camera lens -->
+        <circle cx="300" cy="319" r="4" fill="#1a202c"/>
+        <!-- Scan cone -->
+        <path d="M290 332 L240 400 L360 400Z" fill="rgba(56,189,248,0.06)" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.5"/>
+        <!-- Rotating scan line -->
+        <line x1="300" y1="332" x2="260" y2="395" stroke="#38bdf8" stroke-width="1" opacity="0.4" class="scan-rotate"/>
+        <line x1="300" y1="332" x2="340" y2="395" stroke="#38bdf8" stroke-width="1" opacity="0.4" class="scan-rotate2"/>
+      </g>
+
+      <!-- ===== PHASE 2: Device ascending ===== -->
+      <g id="cy-phase2" class="cy-phase" opacity="0">
+        <!-- 24h indicator -->
+        <rect x="340" y="220" width="52" height="24" rx="12" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="366" y="237" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="700" font-family="Inter,sans-serif">24h</text>
+        <!-- Device rising (animated) -->
+        <g class="device-rise-anim">
+          <rect x="286" y="180" width="28" height="22" rx="4" fill="#e2e8f0"/>
+          <circle cx="300" cy="172" r="7" fill="#f97316"/>
+          <!-- Bubbles trail -->
+          <circle cx="294" cy="210" r="2" fill="#38bdf8" opacity="0.3" class="bubble-trail"/>
+          <circle cx="306" cy="220" r="1.5" fill="#38bdf8" opacity="0.2" class="bubble-trail d1"/>
+          <circle cx="298" cy="230" r="2.5" fill="#38bdf8" opacity="0.25" class="bubble-trail d2"/>
+        </g>
         <!-- Arrow up -->
-        <path d="M434 175 L434 90" stroke="#34d399" stroke-width="2" stroke-dasharray="5 3"/>
-        <polygon points="430,95 434,80 438,95" fill="#34d399"/>
-        <!-- Arrow to shore -->
-        <path d="M448 85 Q550 75 650 85" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 3"/>
-        <polygon points="645,80 660,85 645,90" fill="#fbbf24"/>
-        <text x="400" y="100" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">REMONTEE</text>
-        <text x="550" y="68" text-anchor="middle" fill="#fbbf24" font-size="10">vers la rive</text>
+        <path d="M300 168 L300 95" stroke="#34d399" stroke-width="2" stroke-dasharray="5 4" class="arrow-up-anim"/>
+        <polygon points="296,100 300,85 304,100" fill="#34d399" opacity="0.8"/>
+      </g>
 
-        <!-- == Shore == -->
-        <path d="M700 70 Q720 65 740 70 L800 70 V500 H700Z" fill="#5c4a32" opacity="0.4"/>
-        <text x="750" y="50" text-anchor="middle" fill="#e8f0fa" font-size="12" font-weight="600">RIVE</text>
-        <!-- Fresh device -->
-        <rect x="720" y="130" width="28" height="22" rx="4" fill="#e2e8f0"/>
-        <circle cx="734" cy="118" r="8" fill="#34d399"/>
-        <text x="734" y="165" text-anchor="middle" fill="#34d399" font-size="9">PRET</text>
-        <!-- Arrow from shore to buoy -->
-        <path d="M720 135 Q600 120 450 80" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+      <!-- ===== PHASE 3: Surface transit to shore ===== -->
+      <g id="cy-phase3" class="cy-phase" opacity="0">
+        <!-- Device at surface, detached, moving right -->
+        <g class="device-surface-anim">
+          <rect x="480" y="64" width="28" height="22" rx="4" fill="#e2e8f0"/>
+          <circle cx="494" cy="56" r="7" fill="#f97316"/>
+        </g>
+        <!-- Trail path to shore -->
+        <path d="M510 75 Q600 70 720 75" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 4" class="trail-to-shore"/>
+        <!-- Arrow -->
+        <polygon points="710,70 725,75 710,80" fill="#fbbf24" opacity="0.7"/>
+        <!-- Buoy stays (highlighted) -->
+        <circle cx="300" cy="80" r="9" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="3 2" class="buoy-highlight"/>
+      </g>
 
-        <defs>
-          <linearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0c3a5e" stop-opacity="0.4"/>
-            <stop offset="1" stop-color="#041020" stop-opacity="0.7"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
+      <!-- ===== PHASE 4: Replacement + collection ===== -->
+      <g id="cy-phase4" class="cy-phase" opacity="0">
+        <!-- New device (green) coming from shore to buoy -->
+        <g class="device-replace-anim">
+          <rect x="500" y="64" width="28" height="22" rx="4" fill="#e2e8f0"/>
+          <circle cx="514" cy="56" r="7" fill="#34d399"/>
+        </g>
+        <!-- Path from shore to buoy -->
+        <path d="M720 75 Q550 65 320 80" stroke="#34d399" stroke-width="2" stroke-dasharray="5 4" class="path-to-buoy"/>
+        <polygon points="325,75 310,80 325,85" fill="#34d399" opacity="0.7"/>
 
-    <div class="card-grid two">
-      <div class="card glow">
-        <h3>Cycle operationnel</h3>
-        <ol class="steps">
-          <li><span class="step-num">1</span> Le dispositif capture des images en profondeur</li>
-          <li><span class="step-num">2</span> Batterie HS — le dispositif se detache et remonte</li>
-          <li><span class="step-num">3</span> Le cable reste en place avec sa bouee en surface</li>
-          <li><span class="step-num">4</span> Le dispositif rejoint la rive (navigation surface)</li>
-          <li><span class="step-num">5</span> Nettoyage + recharge a terre</li>
-          <li><span class="step-num">6</span> Un dispositif frais rejoint la bouee et descend</li>
-        </ol>
+        <!-- Collection net on shore -->
+        <g class="collection-net">
+          <path d="M750 100 Q770 95 790 100 L795 160 Q770 165 750 160Z" fill="none" stroke="#8B7355" stroke-width="2" opacity="0.7"/>
+          <line x1="755" y1="110" x2="755" y2="155" stroke="#8B7355" stroke-width="1" opacity="0.4"/>
+          <line x1="770" y1="105" x2="770" y2="158" stroke="#8B7355" stroke-width="1" opacity="0.4"/>
+          <line x1="785" y1="108" x2="785" y2="156" stroke="#8B7355" stroke-width="1" opacity="0.4"/>
+          <!-- Old device in net -->
+          <rect x="762" y="125" width="20" height="16" rx="3" fill="#e2e8f0" opacity="0.6"/>
+          <circle cx="772" cy="119" r="5" fill="#f97316" opacity="0.5"/>
+        </g>
+        <text x="772" y="180" text-anchor="middle" fill="#8B7355" font-size="9" font-weight="600" font-family="Inter,sans-serif">COLLECTE</text>
+      </g>
+
+      <defs>
+        <linearGradient id="cyOcean" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#0e3654" stop-opacity="0.5"/>
+          <stop offset="1" stop-color="#061220" stop-opacity="0.8"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Scroll-triggered phase text blocks -->
+  <div class="cycle-phases">
+    <div class="cy-text-phase" data-phase="1">
+      <div class="cy-text-inner">
+        <div class="cy-phase-num">01</div>
+        <h3>Capture en profondeur</h3>
+        <p>Le dispositif est ancre au fond, camera active. Il capture des images en continu pendant toute la duree de sa batterie. Aucune intervention necessaire.</p>
       </div>
-      <div class="card glow">
-        <h3>Avantages cles</h3>
-        <ul class="check-list">
-          <li>Zero intervention de plongeurs</li>
-          <li>Tout l'entretien en surface / a terre</li>
-          <li>Remontee verticale = pas de contact avec le corail</li>
-          <li>Infrastructure permanente minimale (ancre + cable)</li>
-          <li>Dispositifs interchangeables et standardises</li>
-          <li>Scalable : ajouter des stations = ajouter des ancres</li>
-        </ul>
+    </div>
+    <div class="cy-text-phase" data-phase="2">
+      <div class="cy-text-inner">
+        <div class="cy-phase-num">02</div>
+        <h3>Remontee automatique</h3>
+        <p>Apres ~24h, la batterie est epuisee. Le dispositif se detache de l'ancrage et remonte par simple flottabilite. Le cable reste en place avec sa bouee en surface.</p>
+      </div>
+    </div>
+    <div class="cy-text-phase" data-phase="3">
+      <div class="cy-text-inner">
+        <div class="cy-phase-num">03</div>
+        <h3>Transit en surface</h3>
+        <p>Une fois en surface, le dispositif navigue vers la rive. La bouee du cable reste a sa position, marquant la station pour le prochain capteur.</p>
+      </div>
+    </div>
+    <div class="cy-text-phase" data-phase="4">
+      <div class="cy-text-inner">
+        <div class="cy-phase-num">04</div>
+        <h3>Remplacement et collecte</h3>
+        <p>Un capteur frais rejoint la bouee depuis la rive et descend s'amarrer. L'ancien capteur est recupere dans un filet de collecte passif, nettoye et recharge pour le prochain cycle.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PHASES — sticky scroll ============ -->
+<section class="deck phases-intro">
+  <div class="deck-bg-gradient orange-glow"></div>
+  <div class="deck-content">
+    <h2 class="reveal kicker">Evolution</h2>
+    <p class="reveal big-statement">Trois phases vers l'autonomie totale</p>
+  </div>
+</section>
+
+<section class="deck phases-detail">
+  <div class="deck-content">
+    <div class="phase-cards">
+      <div class="phase-card reveal" style="--accent:#38bdf8">
+        <div class="phase-num">01</div>
+        <h3>Recuperation manuelle</h3>
+        <p>Les dispositifs remontent et flottent. Un bateau les collecte. Validation du concept, infrastructure minimale.</p>
+        <div class="phase-metric">
+          <span class="metric-label">CAPEX</span><span class="metric-bar low"></span>
+          <span class="metric-label">OPEX</span><span class="metric-bar med"></span>
+        </div>
+      </div>
+      <div class="phase-card reveal d1" style="--accent:#f97316">
+        <div class="phase-num">02</div>
+        <h3>Collecte automatisee</h3>
+        <p>Anneau de collecte ancre au large. Recharge, nettoyage et relance automatiques. Cycle entierement autonome.</p>
+        <div class="phase-metric">
+          <span class="metric-label">CAPEX</span><span class="metric-bar med"></span>
+          <span class="metric-label">OPEX</span><span class="metric-bar low"></span>
+        </div>
+      </div>
+      <div class="phase-card reveal d2" style="--accent:#34d399">
+        <div class="phase-num">03</div>
+        <h3>Sans cable — TumblerBots</h3>
+        <p>Descente controlee par culbutage aerien. Les dispositifs se posent sur des zones predefinies. Zero infrastructure sous-marine.</p>
+        <div class="phase-refs">
+          <span>arXiv 2410.23049</span>
+          <span>Ramsby 2026</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ PHASES ============ -->
-<section class="deck-section">
-  <div class="section-inner">
-    <h2 class="section-title">Feuille de route</h2>
-
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-marker phase1"></div>
-        <div class="timeline-content">
-          <h3>Phase 1 — Recuperation manuelle</h3>
-          <p>Les dispositifs remontent en surface et flottent. Un bateau les collecte periodiquement. Infrastructure legere, validation du concept.</p>
-          <div class="card-verdict good">CAPEX bas — OPEX moyen</div>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-marker phase2"></div>
-        <div class="timeline-content">
-          <h3>Phase 2 — Collecte automatisee</h3>
-          <p>Un anneau de collecte ancre au large guide les dispositifs flottants. Recharge automatique, nettoyage, relance vers les bouees de station. Le cycle est entierement autonome.</p>
-          <div class="card-verdict good">CAPEX moyen — OPEX tres bas</div>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-marker phase3"></div>
-        <div class="timeline-content">
-          <h3>Phase 3 — Sans cable (TumblerBots)</h3>
-          <p>Elimination des cables. Descente controlee par culbutage aerien (TumblerBots) ou largage guide. Les dispositifs se posent precisement sur des zones d'atterrissage predefinies.</p>
-          <div class="refs">
-            <span>Ref: TumblerBots (arXiv 2410.23049)</span>
-            <span>Ref: Ramsby 2026, Restoration Ecology</span>
-          </div>
-          <div class="card-verdict good">Autonomie totale</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CARTOGRAPHIE ============ -->
-<section class="deck-section alt">
-  <div class="section-inner">
-    <h2 class="section-title">Bonus : cartographie photogrammetrique</h2>
-    <div class="split reverse">
-      <div class="split-text">
-        <p>Pendant la remontee, les cameras orientees vers le bas capturent une vue panoramique du recif a differentes altitudes.</p>
-        <p>Ces images assemblees par photogrammetrie permettent de reconstruire un modele 3D haute resolution du recif — sans survol de drone, sans plongeur.</p>
-        <p class="highlight-text">Chaque cycle de maintenance genere automatiquement une mise a jour de la cartographie.</p>
-      </div>
-      <div class="split-visual">
-        <svg viewBox="0 0 300 350" class="illustration">
-          <rect x="0" y="50" width="300" height="300" fill="url(#waterGrad2)" rx="0"/>
-          <!-- Device ascending -->
-          <rect x="136" y="100" width="28" height="22" rx="4" fill="#e2e8f0"/>
-          <circle cx="150" cy="88" r="8" fill="#f97316"/>
-          <!-- Camera cone below -->
-          <path d="M140 122 L80 280 L220 280Z" fill="#38bdf8" opacity="0.08" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 3"/>
-          <path d="M140 170 L100 240 L200 240Z" fill="#38bdf8" opacity="0.06"/>
-          <!-- Coral below -->
-          <path d="M60 300 Q80 270 100 300 Q120 275 140 300 Q160 265 180 300 Q200 270 220 300 Q240 280 260 300" stroke="#34d399" stroke-width="2" fill="none" opacity="0.6"/>
-          <!-- Arrow up -->
-          <path d="M150 95 L150 60" stroke="#34d399" stroke-width="2"/>
-          <polygon points="146,65 150,52 154,65" fill="#34d399"/>
-          <!-- Labels -->
-          <text x="150" y="260" text-anchor="middle" fill="#38bdf8" font-size="10" opacity="0.7">zone capturee</text>
-          <text x="245" y="140" fill="#7dd3fc" font-size="10">remontee</text>
-          <defs>
-            <linearGradient id="waterGrad2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#0c3a5e" stop-opacity="0.3"/>
-              <stop offset="1" stop-color="#051525" stop-opacity="0.6"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SECURITE ============ -->
-<section class="deck-section">
-  <div class="section-inner">
-    <h2 class="section-title">Securite et impact minimal</h2>
-    <div class="card-grid two">
-      <div class="card">
-        <h3>Verticalite du cable</h3>
-        <p>En conditions calmes et avec des zones bien choisies (loin des formations coralliennes sensibles), le cable reste vertical lors de la remontee.</p>
-        <p>La flottabilite nette du dispositif assure une tension constante vers le haut — pas de boucle, pas de raclage lateral.</p>
-        <button class="cta-btn" onclick="document.querySelector('[data-tab=simulation]').click()">Tester dans la simulation →</button>
-      </div>
-      <div class="card">
-        <h3>Zones d'ancrage</h3>
-        <p>Les stations sont positionnees sur des zones de substrat nu (sable, roche) identifiees par cartographie prealable.</p>
-        <p>La seule infrastructure en contact avec le fond est l'ancre — un bloc de beton de faible emprise.</p>
-        <p>Aucun contact avec les formations coralliennes vivantes.</p>
-      </div>
-    </div>
+<!-- ============ MAPPING BONUS ============ -->
+<section class="deck mapping-section">
+  <div class="mapping-bg"></div>
+  <div class="deck-content">
+    <h2 class="reveal kicker">Bonus</h2>
+    <p class="reveal big-statement">Chaque remontee genere une<br><em>cartographie 3D</em> du recif</p>
+    <p class="reveal d1 sub-text">Les cameras orientees vers le bas capturent le recif a differentes altitudes.<br>Assemblage photogrammetrique automatique a chaque cycle de maintenance.</p>
   </div>
 </section>
 
 <!-- ============ COMPARATIF ============ -->
-<section class="deck-section alt">
-  <div class="section-inner">
-    <h2 class="section-title">CAPEX vs OPEX</h2>
-    <div class="comparison-table">
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Cameras fixes</th>
-            <th>Drones</th>
-            <th class="highlight-col">CORAL (hybride)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>CAPEX initial</td>
-            <td>Moyen</td>
-            <td>Eleve</td>
-            <td class="highlight-col">Bas</td>
-          </tr>
-          <tr>
-            <td>OPEX / entretien</td>
-            <td class="bad-cell">Eleve (plongeurs)</td>
-            <td class="bad-cell">Eleve (R&D, reparations)</td>
-            <td class="good-cell">Bas (surface uniquement)</td>
-          </tr>
-          <tr>
-            <td>Risque corail</td>
-            <td>Faible</td>
-            <td class="bad-cell">Eleve (collisions)</td>
-            <td class="good-cell">Minimal (vertical)</td>
-          </tr>
-          <tr>
-            <td>Couverture</td>
-            <td class="bad-cell">Fixe, limitee</td>
-            <td>Mobile, bonne</td>
-            <td class="good-cell">Multi-stations + mapping</td>
-          </tr>
-          <tr>
-            <td>Scalabilite</td>
-            <td class="bad-cell">Lineaire (cout)</td>
-            <td class="bad-cell">Complexe</td>
-            <td class="good-cell">Ajout de stations</td>
-          </tr>
-          <tr>
-            <td>Autonomie</td>
-            <td>Manuelle</td>
-            <td>Semi-auto</td>
-            <td class="good-cell">Phase 2 : totale</td>
-          </tr>
-        </tbody>
-      </table>
+<section class="deck compare-section">
+  <div class="deck-content">
+    <h2 class="reveal kicker">Pourquoi CORAL</h2>
+    <div class="compare-grid reveal d1">
+      <div class="compare-col other">
+        <h4>Methodes classiques</h4>
+        <div class="compare-item bad">Plongeurs requis</div>
+        <div class="compare-item bad">Infrastructure lourde</div>
+        <div class="compare-item bad">Risque corallien</div>
+        <div class="compare-item bad">Couverture fixe</div>
+        <div class="compare-item bad">Cout lineaire</div>
+      </div>
+      <div class="compare-vs">VS</div>
+      <div class="compare-col ours">
+        <h4>CORAL</h4>
+        <div class="compare-item good">100% surface</div>
+        <div class="compare-item good">Ancre + cable uniquement</div>
+        <div class="compare-item good">Remontee verticale</div>
+        <div class="compare-item good">Multi-stations + mapping</div>
+        <div class="compare-item good">Scalable</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ FOOTER ============ -->
-<section class="deck-section footer-section">
-  <div class="section-inner">
-    <h2 class="section-title">Prochain pas</h2>
-    <p class="section-subtitle">Validez le concept avec notre simulation interactive, explorez les parametres, et contactez-nous pour un pilote.</p>
-    <button class="cta-btn large" onclick="document.querySelector('[data-tab=simulation]').click()">Ouvrir la simulation →</button>
+<!-- ============ CTA ============ -->
+<section class="deck cta-section">
+  <div class="cta-glow"></div>
+  <div class="deck-content">
+    <p class="reveal big-statement">Testez le systeme vous-meme</p>
+    <button class="reveal d1 cta-big" onclick="document.querySelector('[data-tab=simulation]').click()">
+      Lancer la simulation
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4l6 6-6 6"/></svg>
+    </button>
   </div>
 </section>
 
   `;
 
-  // Animate sections on scroll
-  const observer = new IntersectionObserver((entries) => {
+  // Scroll reveal observer
+  const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) e.target.classList.add('visible');
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.15 });
+  el.querySelectorAll('.reveal').forEach(r => obs.observe(r));
 
-  el.querySelectorAll('.deck-section').forEach(s => observer.observe(s));
+  // Cycle phases scroll observer
+  initCycleScroll();
+
+  // Hero particles canvas
+  initHeroParticles();
+}
+
+function initCycleScroll() {
+  const phases = document.querySelectorAll('.cy-text-phase');
+  let currentPhase = 0;
+
+  const phaseObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const p = parseInt(e.target.dataset.phase);
+        if (p > currentPhase) currentPhase = p;
+        updateCyclePhase(currentPhase);
+      }
+    });
+  }, { threshold: 0.5, root: null });
+
+  phases.forEach(p => phaseObs.observe(p));
+
+  // Also track scroll-up: reset phase when scrolling back
+  const scrollContainer = document.getElementById('tab-concept');
+  if (scrollContainer) {
+    scrollContainer.addEventListener('scroll', () => {
+      // Check which phases are still visible
+      let highest = 0;
+      phases.forEach(p => {
+        const rect = p.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.7) {
+          highest = Math.max(highest, parseInt(p.dataset.phase));
+        }
+      });
+      if (highest !== currentPhase) {
+        currentPhase = highest;
+        updateCyclePhase(currentPhase);
+      }
+    });
+  }
+}
+
+function updateCyclePhase(phase) {
+  for (let i = 1; i <= 4; i++) {
+    const g = document.getElementById(`cy-phase${i}`);
+    if (!g) continue;
+    if (i <= phase) {
+      g.style.opacity = i === phase ? '1' : '0.35';
+      g.style.transition = 'opacity 0.8s ease';
+    } else {
+      g.style.opacity = '0';
+      g.style.transition = 'opacity 0.4s ease';
+    }
+  }
+  // Highlight current phase text
+  document.querySelectorAll('.cy-text-phase').forEach(el => {
+    const p = parseInt(el.dataset.phase);
+    el.classList.toggle('active', p === phase);
+  });
+}
+
+function initHeroParticles() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  const particles = [];
+
+  function resize() {
+    w = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    h = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Create particles
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * (w / devicePixelRatio),
+      y: Math.random() * (h / devicePixelRatio),
+      r: Math.random() * 2 + 0.5,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -Math.random() * 0.4 - 0.1,
+      a: Math.random() * 0.3 + 0.1
+    });
+  }
+
+  function draw() {
+    const ww = w / devicePixelRatio, hh = h / devicePixelRatio;
+    ctx.clearRect(0, 0, ww, hh);
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < -10) { p.y = hh + 10; p.x = Math.random() * ww; }
+      if (p.x < -10) p.x = ww + 10;
+      if (p.x > ww + 10) p.x = -10;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(56,189,248,${p.a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
 }
