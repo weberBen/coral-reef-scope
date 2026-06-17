@@ -58,9 +58,9 @@ export function buildPresentation() {
             <div class="power-pulse"></div>
           </div>
         </div>
-        <h3>Alimentation</h3>
-        <p>Cables sous-marins ou bouees solaires.<br>Infrastructure lourde, impact visuel.</p>
-        <div class="pcard-tag bad">Non scalable</div>
+        <h3>Alimentation et impact</h3>
+        <p>Cables sous-marins ou bouees solaires en permanence. Infrastructure lourde qui deteriore l'aspect naturel du site et impacte sa reception aupres du public et des touristes.</p>
+        <div class="pcard-tag bad">Non scalable + impact visuel</div>
       </div>
     </div>
   </div>
@@ -206,7 +206,7 @@ export function buildPresentation() {
       <div class="cy-text-inner">
         <div class="cy-phase-num">02</div>
         <h3>Remontee automatique</h3>
-        <p>Apres ~24h, la batterie est epuisee. Le dispositif se detache de l'ancrage et remonte par simple flottabilite. Le cable reste en place avec sa bouee en surface.</p>
+        <p>Apres ~24h, la batterie est epuisee. Le dispositif se detache et remonte lentement par flottabilite. La remontee lente respecte la vie biomarine, sans mouvement brusque ni perturbation reguliere. Le cable reste en place, la bouee n'est visible en surface que temporairement, pour ne pas impacter la naturalite du lieu et sa perception aupres du public.</p>
       </div>
     </div>
     <div class="cy-text-phase" data-phase="3">

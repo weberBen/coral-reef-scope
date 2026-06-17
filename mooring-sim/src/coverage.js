@@ -9,13 +9,13 @@ import GUI from 'lil-gui';
 
 const state = {
   cameras: [],
-  fov: 120,          // horizontal FOV of each camera
+  fov: 70,           // horizontal FOV of each camera
   numCameras: 5,
   ascent: 0,
   visRange: 3,       // normalized units
   zExag: 12,
   sensorRes: 1920,   // sensor resolution (pixels horizontal)
-  gsdMax: 5,         // max useful GSD in mm/px
+  gsdMax: 10,        // max useful GSD in mm/px
 };
 
 let scene, camera, renderer, controls, gui;
@@ -173,33 +173,47 @@ export function initCoverage() {
   const topBar = document.createElement('div');
   topBar.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:32px;align-items:center;z-index:10;pointer-events:none';
   topBar.innerHTML = `
-    <div style="text-align:center">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Cameras</div>
-      <div id="camera-count" style="font-size:36px;font-weight:800;color:#e4eef6;font-variant-numeric:tabular-nums">0</div>
+    <div class="cov-stat" data-tip="Nombre de stations ancrees">
+      <div class="cov-label">Cameras</div>
+      <div id="camera-count" class="cov-num" style="color:#e4eef6">0</div>
     </div>
-    <div style="text-align:center">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couverture fond</div>
-      <div id="coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    <div class="cov-stat" data-tip="Surface du recif visible depuis les cameras au fond (viewshed avec occlusion terrain)">
+      <div class="cov-label">Couv. fond</div>
+      <div id="coverage-value" class="cov-num" style="color:#34d399">0%</div>
     </div>
-    <div style="text-align:center">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couv. photo.</div>
-      <div id="ascent-coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    <div class="cov-stat" data-tip="Surface totale vue pendant la remontee (camera vers le bas, toutes altitudes)">
+      <div class="cov-label">Couv. surface</div>
+      <div id="ascent-coverage-value" class="cov-num" style="color:#34d399">0%</div>
     </div>
-    <div style="text-align:center">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">Couv. utile</div>
-      <div id="useful-coverage-value" style="font-size:36px;font-weight:800;color:#34d399;transition:color .3s;font-variant-numeric:tabular-nums">0%</div>
+    <div class="cov-stat" data-tip="Part de la couverture photogrammetrique (remontee) exploitable : resolution suffisante (GSD ≤ seuil) et visibilite non limitee par la turbidite">
+      <div class="cov-label">Remontee utile</div>
+      <div id="useful-coverage-value" class="cov-num" style="color:#34d399">0%</div>
     </div>
-    <div style="text-align:center">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:2px">GSD moyen</div>
-      <div id="gsd-value" style="font-size:36px;font-weight:800;color:#e4eef6;font-variant-numeric:tabular-nums">--</div>
-    </div>
-    <div style="display:flex;gap:12px;align-items:center;font-size:11px;color:#7a97b0;margin-left:8px">
-      <span><span style="color:#f97316">●</span> Ancre</span>
-      <span><span style="color:#fbbf24">◆</span> Vis. max</span>
-      <span><span style="color:#38bdf8">○</span> Surface</span>
+    <div class="cov-stat" data-tip="Resolution moyenne au sol (Ground Sample Distance). Augmente avec l'altitude, depend du capteur">
+      <div class="cov-label">GSD moyen</div>
+      <div id="gsd-value" class="cov-num" style="color:#e4eef6">--</div>
     </div>
   `;
   container.appendChild(topBar);
+
+  // Inject styles for stat tooltips
+  const style = document.createElement('style');
+  style.textContent = `
+    .cov-stat { text-align:center; position:relative; cursor:default; pointer-events:auto; }
+    .cov-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:#7aa4c0; margin-bottom:2px; }
+    .cov-num { font-size:36px; font-weight:800; font-variant-numeric:tabular-nums; text-shadow:0 2px 20px rgba(0,0,0,.5); transition:color .3s; }
+    .cov-stat::after {
+      content: attr(data-tip);
+      position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      margin-top: 8px; padding: 8px 14px; max-width: 240px; width: max-content;
+      background: rgba(5,15,30,0.95); border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 8px; color: #8aa4bd; font-size: 11px; line-height: 1.5;
+      white-space: normal; text-align: left; pointer-events: none;
+      opacity: 0; transition: opacity 0.2s; z-index: 30;
+    }
+    .cov-stat:hover::after { opacity: 1; }
+  `;
+  container.appendChild(style);
 
   setupGUI(container);
 
@@ -589,7 +603,7 @@ function computeAscentCoverage(groundFaces) {
   const tanHalf = Math.tan(halfAngle);
 
   const allVisible = new Set(groundFaces);
-  const usefulVisible = new Set(groundFaces); // faces with GSD <= gsdMax
+  const usefulVisible = new Set(); // only faces seen during ascent with good GSD + visibility
   let gsdSum = 0;
   let gsdCount = 0;
 
@@ -625,9 +639,15 @@ function computeAscentCoverage(groundFaces) {
         const footprint = altMeters * 2 * tanHalf; // width in meters at face distance
         const gsd = (footprint / state.sensorRes) * 1000; // mm/px
 
+        // Turbidity: visibility range in meters decreases with depth
+        const camDepthMeters = Math.abs(camY - meshYMax) * metersPerUnit / state.zExag;
+        const visibilityMeters = Math.max(2, 30 - camDepthMeters * 0.8); // 30m at surface, decreases with depth
+        const distMeters = dist * metersPerUnit / state.zExag;
+
         allVisible.add(fi);
 
-        if (gsd <= state.gsdMax) {
+        // Useful = GSD ok AND within turbidity visibility range
+        if (gsd <= state.gsdMax && distMeters <= visibilityMeters) {
           usefulVisible.add(fi);
         }
 
