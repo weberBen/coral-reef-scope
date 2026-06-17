@@ -9,6 +9,73 @@ body {
 
 canvas { display: block; }
 
+/* ===== TAB BAR ===== */
+#tab-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(5, 12, 25, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 100;
+}
+.tab-logo {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #38bdf8, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.tab-buttons {
+  display: flex;
+  gap: 4px;
+}
+.tab-btn {
+  padding: 8px 20px;
+  border: none;
+  background: transparent;
+  color: #6a8ca5;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.tab-btn:hover {
+  color: #a5d0ea;
+  background: rgba(255,255,255,0.04);
+}
+.tab-btn.active {
+  color: #e8f4ff;
+  background: rgba(56,189,248,0.12);
+}
+
+/* ===== TAB CONTENT ===== */
+.tab-content {
+  padding-top: 48px;
+}
+#tab-concept {
+  overflow-y: auto;
+  height: 100vh;
+}
+#tab-simulation {
+  height: calc(100vh - 48px);
+  position: relative;
+}
+#tab-coverage {
+  height: 100vh;
+}
+
 /* --- Status badge --- */
 .status {
   position: fixed;

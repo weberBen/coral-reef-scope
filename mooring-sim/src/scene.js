@@ -11,7 +11,7 @@ export function initScene() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.2;
-  document.body.prepend(renderer.domElement);
+  document.getElementById('tab-simulation').prepend(renderer.domElement);
 
   const scene = new THREE.Scene();
 

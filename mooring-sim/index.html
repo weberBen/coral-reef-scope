@@ -2,31 +2,65 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>CORAL — Simulation de Mouillage 3D</title>
+  <title>CORAL — Monitoring Recifal Autonome</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/presentation.css">
 </head>
 <body>
-  <div id="status" class="status ok">OK</div>
+  <!-- ===== TAB BAR ===== -->
+  <nav id="tab-bar">
+    <div class="tab-logo">CORAL</div>
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="concept">Concept</button>
+      <button class="tab-btn" data-tab="simulation">Simulation</button>
+      <button class="tab-btn" data-tab="coverage">Couverture</button>
+    </div>
+  </nav>
 
-  <div id="angle-display">
-    <div class="angle-label">Deviation verticale max</div>
-    <div class="angle-value" id="angle-value">0.0°</div>
+  <!-- ===== TAB: CONCEPT ===== -->
+  <div id="tab-concept" class="tab-content active">
+    <div id="presentation"></div>
   </div>
 
-  <div id="readouts">
-    <div class="r"><span>Profondeur dispositif</span><b id="ro-depth">--</b></div>
-    <div class="r"><span>Hauteur / fond</span><b id="ro-h">--</b></div>
-    <div class="r"><span>Excursion horizontale</span><b id="ro-exc">--</b></div>
-    <div class="r"><span>Angle max / vertical</span><b id="ro-ang">--</b></div>
-    <div class="r hl"><span>Tension max cable</span><b id="ro-tmax">--</b></div>
-    <div class="r"><span>Ancrage — vertical</span><b id="ro-av">--</b></div>
-    <div class="r"><span>Ancrage — horizontal</span><b id="ro-ah">--</b></div>
-    <div class="r hl"><span>Ancrage — total</span><b id="ro-at">--</b></div>
-    <div class="r"><span>Resistance cable (MBL)</span><b id="ro-mbl">--</b></div>
-    <div class="r hl"><span>Coeff. de securite</span><b id="ro-sf">--</b></div>
-    <div class="r"><span>Cable deploye</span><b id="ro-cable">--</b></div>
-    <div class="r"><span>Vitesse deploiement</span><b id="ro-speed">--</b></div>
+  <!-- ===== TAB: SIMULATION ===== -->
+  <div id="tab-simulation" class="tab-content" style="display:none">
+    <div id="status" class="status ok">OK</div>
+    <div id="angle-display">
+      <div class="angle-label">Deviation verticale max</div>
+      <div class="angle-value" id="angle-value">0.0°</div>
+    </div>
+    <div id="readouts">
+      <div class="r"><span>Profondeur dispositif</span><b id="ro-depth">--</b></div>
+      <div class="r"><span>Hauteur / fond</span><b id="ro-h">--</b></div>
+      <div class="r"><span>Excursion horizontale</span><b id="ro-exc">--</b></div>
+      <div class="r"><span>Angle max / vertical</span><b id="ro-ang">--</b></div>
+      <div class="r hl"><span>Tension max cable</span><b id="ro-tmax">--</b></div>
+      <div class="r"><span>Ancrage — vertical</span><b id="ro-av">--</b></div>
+      <div class="r"><span>Ancrage — horizontal</span><b id="ro-ah">--</b></div>
+      <div class="r hl"><span>Ancrage — total</span><b id="ro-at">--</b></div>
+      <div class="r"><span>Resistance cable (MBL)</span><b id="ro-mbl">--</b></div>
+      <div class="r hl"><span>Coeff. de securite</span><b id="ro-sf">--</b></div>
+      <div class="r"><span>Cable deploye</span><b id="ro-cable">--</b></div>
+      <div class="r"><span>Vitesse deploiement</span><b id="ro-speed">--</b></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: COVERAGE ===== -->
+  <div id="tab-coverage" class="tab-content" style="display:none">
+    <div class="placeholder-tab">
+      <div class="placeholder-icon">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="35" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 4" opacity="0.5"/>
+          <circle cx="40" cy="40" r="6" fill="#38bdf8" opacity="0.6"/>
+          <path d="M40 15 L40 25 M40 55 L40 65 M15 40 L25 40 M55 40 L65 40" stroke="#38bdf8" stroke-width="1.5" opacity="0.4"/>
+        </svg>
+      </div>
+      <h2>Simulation de couverture camera</h2>
+      <p>Module en cours de developpement</p>
+    </div>
   </div>
 
   <script type="module" src="/src/main.js"></script>

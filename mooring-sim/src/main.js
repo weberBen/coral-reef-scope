@@ -5,9 +5,13 @@ import { initScene, handleResize } from './scene.js';
 import { MooringObjects } from './objects.js';
 import { setupGUI, updateReadouts } from './ui.js';
 import { exportOBJ } from './export.js';
+import { initTabs } from './tabs.js';
+import { buildPresentation } from './presentation.js';
 
 // ---------- Initialize ----------
 
+initTabs();
+buildPresentation();
 initNodes();
 
 const { scene, camera, renderer, controls, causticLight } = initScene();
