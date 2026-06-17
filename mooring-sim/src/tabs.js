@@ -1,3 +1,9 @@
+const listeners = [];
+
+export function onTabChange(callback) {
+  listeners.push(callback);
+}
+
 export function initTabs() {
   const buttons = document.querySelectorAll('.tab-btn');
   const tabs = document.querySelectorAll('.tab-content');
@@ -12,6 +18,11 @@ export function initTabs() {
       tabs.forEach(t => {
         t.style.display = t.id === `tab-${target}` ? '' : 'none';
         t.classList.toggle('active', t.id === `tab-${target}`);
+      });
+
+      // Notify listeners after display change
+      requestAnimationFrame(() => {
+        listeners.forEach(cb => cb(target));
       });
     });
   });

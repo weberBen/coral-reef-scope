@@ -5,13 +5,23 @@ import { initScene, handleResize } from './scene.js';
 import { MooringObjects } from './objects.js';
 import { setupGUI, updateReadouts } from './ui.js';
 import { exportOBJ } from './export.js';
-import { initTabs } from './tabs.js';
+import { initTabs, onTabChange } from './tabs.js';
 import { buildPresentation } from './presentation.js';
+import { initCoverage } from './coverage.js';
 
 // ---------- Initialize ----------
 
 initTabs();
 buildPresentation();
+
+// Lazy-init coverage when tab becomes visible
+let coverageLoaded = false;
+onTabChange((tab) => {
+  if (tab === 'coverage' && !coverageLoaded) {
+    coverageLoaded = true;
+    initCoverage();
+  }
+});
 initNodes();
 
 const { scene, camera, renderer, controls, causticLight } = initScene();
