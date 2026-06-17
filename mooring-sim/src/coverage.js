@@ -164,12 +164,17 @@ export function initCoverage() {
   tooltip.style.cssText = 'position:absolute;padding:6px 12px;background:rgba(5,15,30,0.9);border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:#7dd3fc;font-size:12px;pointer-events:none;display:none;z-index:20;font-family:Inter,sans-serif;white-space:nowrap';
   container.appendChild(tooltip);
 
-  // Big coverage display (like angle display in simulation)
+  // Big coverage displays
   const coverageDisplay = document.createElement('div');
-  coverageDisplay.id = 'coverage-display';
   coverageDisplay.innerHTML = `
-    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:4px">Couverture du recif</div>
-    <div id="coverage-value" style="font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 20px rgba(0,0,0,.5);color:#34d399;transition:color .3s">0%</div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:4px">Couverture au fond</div>
+      <div id="coverage-value" style="font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 20px rgba(0,0,0,.5);color:#34d399;transition:color .3s">0%</div>
+    </div>
+    <div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7aa4c0;margin-bottom:4px">Couverture photogrammetrique</div>
+      <div id="ascent-coverage-value" style="font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 20px rgba(0,0,0,.5);color:#34d399;transition:color .3s">0%</div>
+    </div>
   `;
   coverageDisplay.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);text-align:center;z-index:10;pointer-events:none';
   container.appendChild(coverageDisplay);
@@ -459,9 +464,85 @@ function computeCoverage() {
   covDisplay.pct = pct.toFixed(1) + '%';
   updateCoverageDisplay(pct);
 
+  // Also compute ascent (photogrammetric) coverage
+  const ascentPct = computeAscentCoverage(visibleFaces);
+
   console.timeEnd('viewshed-r2');
 
   paintCoverage(visibleFaces);
+}
+
+// =============================================
+//  ASCENT COVERAGE (photogrammetric)
+// =============================================
+// Each camera ascends from anchor to surface, looking DOWN.
+// At each altitude step, compute the downward FOV cone.
+// Visibility decreases with depth (turbidity).
+// Union of all visible faces across the ascent = photogrammetric coverage.
+
+function computeAscentCoverage(groundFaces) {
+  if (faceData.length === 0 || state.cameras.length === 0) {
+    updateAscentDisplay(0);
+    return 0;
+  }
+
+  const halfAngle = (state.fov / 2) * Math.PI / 180;
+  const cosHalf = Math.cos(halfAngle);
+  const DOWN = new THREE.Vector3(0, -1, 0);
+  const toFace = new THREE.Vector3();
+  const ascentSteps = 10; // sample 10 altitudes during ascent
+
+  // Start from ground coverage and add photogrammetric
+  const allVisible = new Set(groundFaces);
+
+  for (const cam of state.cameras) {
+    const anchorY = cam.anchorPos.y;
+    const surfaceY = meshYMax + 0.5;
+
+    for (let s = 0; s <= ascentSteps; s++) {
+      const t = s / ascentSteps;
+      const camY = anchorY + (surfaceY - anchorY) * t;
+
+      // Visibility range decreases with depth (deeper = more turbidity)
+      const depthFrac = 1 - (camY - meshYMin) / ((meshYMax - meshYMin) || 1);
+      const effRange = state.visRange * Math.max(0.3, 1 - depthFrac * 0.6);
+
+      const cx = cam.anchorPos.x;
+      const cz = cam.anchorPos.z;
+
+      for (let fi = 0; fi < faceData.length; fi++) {
+        if (allVisible.has(fi)) continue;
+        const fc = faceData[fi].center;
+
+        toFace.set(fc.x - cx, fc.y - camY, fc.z - cz);
+        const dist = toFace.length();
+        if (dist > effRange) continue;
+
+        // Must be below camera
+        if (toFace.y >= 0) continue;
+
+        // Check downward FOV cone
+        toFace.normalize();
+        if (toFace.dot(DOWN) < cosHalf) continue;
+
+        allVisible.add(fi);
+      }
+    }
+  }
+
+  let coveredArea = 0;
+  for (const fi of allVisible) coveredArea += faceData[fi].area;
+  const pct = totalArea > 0 ? (coveredArea / totalArea * 100) : 0;
+
+  updateAscentDisplay(pct);
+  return pct;
+}
+
+function updateAscentDisplay(pct) {
+  const el = document.getElementById('ascent-coverage-value');
+  if (!el) return;
+  el.textContent = pct.toFixed(1) + '%';
+  el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
 }
 
 function paintCoverage(visibleFaces) {
@@ -604,6 +685,7 @@ function clearCameras() {
   }
   covDisplay.pct = '0%';
   updateCoverageDisplay(0);
+  updateAscentDisplay(0);
 }
 
 // =============================================
