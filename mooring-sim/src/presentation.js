@@ -238,33 +238,120 @@ export function buildPresentation() {
 <section class="deck phases-detail">
   <div class="deck-content">
     <div class="phase-cards">
+
       <div class="phase-card reveal" style="--accent:#38bdf8">
         <div class="phase-num">01</div>
-        <h3>Recuperation manuelle</h3>
-        <p>Les dispositifs remontent et flottent. Un bateau les collecte. Validation du concept, infrastructure minimale.</p>
+        <div class="phase-icon-row">
+          <svg viewBox="0 0 80 60" width="80" height="60">
+            <path d="M10 30 Q40 20 70 30" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
+            <rect x="30" y="22" width="20" height="12" rx="3" fill="#64748b"/>
+            <path d="M28 34 L22 44 M52 34 L58 44" stroke="#64748b" stroke-width="1"/>
+            <rect x="36" y="12" width="8" height="6" rx="1" fill="#e2e8f0"/>
+            <circle cx="40" cy="10" r="3" fill="#f97316"/>
+          </svg>
+        </div>
+        <h3>Recuperation par bateau</h3>
+        <p>Les capteurs remontent et flottent. Un bateau les collecte lors de rondes periodiques. Infrastructure minimale, validation rapide du concept.</p>
+        <div class="phase-highlights">
+          <span class="ph-tag blue">Bateau de service</span>
+          <span class="ph-tag blue">GPS sur chaque capteur</span>
+        </div>
         <div class="phase-metric">
           <span class="metric-label">CAPEX</span><span class="metric-bar low"></span>
           <span class="metric-label">OPEX</span><span class="metric-bar med"></span>
         </div>
       </div>
+
       <div class="phase-card reveal d1" style="--accent:#f97316">
         <div class="phase-num">02</div>
+        <div class="phase-icon-row">
+          <svg viewBox="0 0 120 70" width="120" height="70">
+            <!-- Shore -->
+            <rect x="90" y="0" width="30" height="70" fill="#3d2e1a" opacity="0.3" rx="4"/>
+            <!-- Net barrier -->
+            <path d="M85 15 Q80 35 85 55" stroke="#8B7355" stroke-width="2" fill="none"/>
+            <line x1="85" y1="20" x2="85" y2="50" stroke="#8B7355" stroke-width="0.8" stroke-dasharray="3 2"/>
+            <!-- Device drifting toward net -->
+            <rect x="50" y="24" width="14" height="10" rx="2" fill="#e2e8f0"/>
+            <circle cx="57" cy="21" r="4" fill="#f97316"/>
+            <path d="M64 29 L80 32" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 2"/>
+            <!-- Catapult arc -->
+            <path d="M100 40 Q70 0 30 30" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+            <polygon points="33,26 28,33 36,33" fill="#34d399" opacity="0.7"/>
+            <!-- New device launched -->
+            <rect x="95" y="38" width="14" height="10" rx="2" fill="#e2e8f0" opacity="0.7"/>
+            <circle cx="102" cy="35" r="4" fill="#34d399" opacity="0.7"/>
+          </svg>
+        </div>
         <h3>Collecte automatisee</h3>
-        <p>Anneau de collecte ancre au large. Recharge, nettoyage et relance automatiques. Cycle entierement autonome.</p>
+        <p class="phase-desc">Deux variantes possibles selon le site et le budget :</p>
+
+        <div class="phase-variant">
+          <div class="pv-label">Option A — Active</div>
+          <div class="pd-item">
+            <span class="pd-icon">→</span>
+            <span><strong>Navigation en ligne droite</strong> vers la rive — algo trivial, le capteur vise la cote sans intelligence sous-marine</span>
+          </div>
+          <div class="pd-item">
+            <span class="pd-icon">→</span>
+            <span>Station cotiere de recharge + nettoyage, puis <strong>relance par catapulte</strong> vers les bouees. Amarrage au contact</span>
+          </div>
+        </div>
+
+        <div class="phase-variant">
+          <div class="pv-label">Option B — Passive</div>
+          <div class="pd-item">
+            <span class="pd-icon">→</span>
+            <span><strong>Derive naturelle</strong> — les capteurs flottent et le courant les ramene vers la cote</span>
+          </div>
+          <div class="pd-item">
+            <span class="pd-icon">→</span>
+            <span><strong>Filet de collecte cotier</strong> type anti-pollution — recupere les capteurs sans intervention, comme un barrage flottant</span>
+          </div>
+        </div>
+
+        <div class="phase-highlights">
+          <span class="ph-tag orange">Zero intelligence sous-marine</span>
+          <span class="ph-tag orange">Filet passif ou algo ligne droite</span>
+          <span class="ph-tag orange">Amarrage au contact</span>
+        </div>
         <div class="phase-metric">
           <span class="metric-label">CAPEX</span><span class="metric-bar med"></span>
           <span class="metric-label">OPEX</span><span class="metric-bar low"></span>
         </div>
       </div>
+
       <div class="phase-card reveal d2" style="--accent:#34d399">
         <div class="phase-num">03</div>
-        <h3>Sans cable — TumblerBots</h3>
-        <p>Descente controlee par culbutage aerien. Les dispositifs se posent sur des zones predefinies. Zero infrastructure sous-marine.</p>
+        <div class="phase-icon-row">
+          <svg viewBox="0 0 80 70" width="80" height="70">
+            <!-- Drone -->
+            <rect x="30" y="5" width="20" height="6" rx="2" fill="#64748b"/>
+            <line x1="28" y1="8" x2="22" y2="8" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="52" y1="8" x2="58" y2="8" stroke="#64748b" stroke-width="1.5"/>
+            <!-- Tumbling device falling -->
+            <rect x="36" y="25" width="10" height="8" rx="2" fill="#e2e8f0" transform="rotate(15,41,29)"/>
+            <circle cx="41" cy="23" r="3" fill="#34d399"/>
+            <!-- Spiral descent -->
+            <path d="M41 33 Q50 40 38 48 Q28 55 42 62" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" fill="none"/>
+            <!-- Landing zone -->
+            <ellipse cx="42" cy="65" rx="15" ry="3" fill="none" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
+          </svg>
+        </div>
+        <h3>Essaim de capteurs</h3>
+        <p>Changement de paradigme : produire <strong>beaucoup de capteurs basse resolution</strong> plutot que peu de capteurs haute resolution. Largues par drone, descente lente par culbutage — robuste au vent, pose precise sans parachute.</p>
+        <p>Le cout se concentre sur la <strong>production en masse</strong> de capteurs jetables, pas sur l'infrastructure. La couverture du recif scale lineairement avec le nombre de capteurs produits.</p>
+        <div class="phase-highlights">
+          <span class="ph-tag green">Cout = production uniquement</span>
+          <span class="ph-tag green">Quantite > resolution</span>
+          <span class="ph-tag green">Zero infrastructure</span>
+        </div>
         <div class="phase-refs">
-          <span>arXiv 2410.23049</span>
-          <span>Ramsby 2026</span>
+          <span>TumblerBots — arXiv 2410.23049</span>
+          <span>Ramsby 2026, Restoration Ecology</span>
         </div>
       </div>
+
     </div>
   </div>
 </section>

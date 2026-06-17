@@ -604,6 +604,88 @@
   border: 1px solid rgba(255,255,255,0.05);
 }
 
+/* Phase card enhancements */
+.phase-icon-row {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+.phase-icon-row svg {
+  opacity: 0.85;
+}
+
+.phase-desc strong {
+  color: #e0ecf5;
+}
+
+.phase-detail-list {
+  margin: 16px 0;
+}
+.pd-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #8aa4bd;
+  line-height: 1.5;
+}
+.pd-item strong {
+  color: #e0ecf5;
+}
+.pd-icon {
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.phase-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0;
+}
+.ph-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+.ph-tag.blue {
+  background: rgba(56,189,248,0.1);
+  color: #7dd3fc;
+  border: 1px solid rgba(56,189,248,0.15);
+}
+.ph-tag.orange {
+  background: rgba(249,115,22,0.1);
+  color: #fdba74;
+  border: 1px solid rgba(249,115,22,0.15);
+}
+.ph-tag.green {
+  background: rgba(52,211,153,0.1);
+  color: #86efac;
+  border: 1px solid rgba(52,211,153,0.15);
+}
+
+/* Phase variants (Option A / Option B) */
+.phase-variant {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.pv-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
 /* ===== MAPPING ===== */
 .mapping-section {
   text-align: center;
