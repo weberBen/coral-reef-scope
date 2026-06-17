@@ -688,11 +688,30 @@
 
 /* ===== MAPPING ===== */
 .mapping-section {
-  text-align: center;
   background: radial-gradient(ellipse at 50% 100%, #0a2540 0%, #030d1a 70%);
 }
-.mapping-section .big-statement { margin: 0 auto; }
-.mapping-section .sub-text { margin: 20px auto 0; text-align: center; }
+.mapping-section .split {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+}
+.mapping-section .split.reverse { flex-direction: row-reverse; }
+.mapping-text { flex: 1; }
+.mapping-illustration {
+  flex: 0 0 500px;
+}
+.mapping-illustration .illustration {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+@media (max-width: 900px) {
+  .mapping-section .split,
+  .mapping-section .split.reverse { flex-direction: column; }
+  .mapping-illustration { flex: auto; max-width: 300px; }
+}
 
 .mapping-bg {
   position: absolute;
