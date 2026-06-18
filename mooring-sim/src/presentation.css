@@ -854,7 +854,9 @@
   .mapping-section .split.reverse { flex-direction: column; }
   .mapping-illustration { order: -1; flex: auto; max-width: 100%; }
 
-  /* CTA buttons: no truncation */
-  .cta-big { font-size: 15px; padding: 14px 20px; white-space: normal; }
-  .cta-big svg { flex-shrink: 0; }
+  /* CTA buttons: fit mobile */
+  .cta-big { font-size: 13px; padding: 12px 16px; white-space: normal; width: 100% !important; box-sizing: border-box; }
+  .cta-big svg { flex-shrink: 0; width: 16px; height: 16px; }
+  .cta-big span { flex: 1; }
+  .deck.cta-section .deck-content > div { width: 100% !important; max-width: 100%; padding: 0 8px; }
 }

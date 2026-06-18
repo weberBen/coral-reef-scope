@@ -215,6 +215,10 @@ canvas { display: block; }
     grid-template-columns: 1fr;
     font-size: 11px;
   }
+  #angle-display {
+    top: 52px;
+  }
+  .angle-label { font-size: 9px; letter-spacing: 1px; }
   .angle-value { font-size: 28px; }
 
   /* Tab bar: shrink to fit all tabs */
