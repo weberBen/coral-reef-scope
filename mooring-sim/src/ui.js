@@ -77,6 +77,76 @@ export function setupGUI(callbacks) {
   actions.add({ reset: callbacks.onReset }, 'reset').name('Reinitialiser');
   actions.close();
 
+  // --- Mobile toggle bar ---
+  const toggleBar = document.createElement('div');
+  toggleBar.className = 'sim-toggle-bar';
+  toggleBar.innerHTML = `
+    <button class="sim-toggle-btn" data-panel="readouts">Donnees</button>
+    <button class="sim-toggle-btn" data-panel="angle">Angle</button>
+    <button class="sim-toggle-btn" data-panel="gui">Controles</button>
+  `;
+  container.appendChild(toggleBar);
+
+  toggleBar.querySelectorAll('.sim-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = btn.dataset.panel;
+      btn.classList.toggle('active');
+      if (panel === 'readouts') document.getElementById('readouts')?.classList.toggle('show');
+      if (panel === 'angle') document.getElementById('angle-display')?.classList.toggle('show');
+      if (panel === 'gui') {
+        gui.domElement.classList.toggle('show');
+        if (gui.domElement.classList.contains('show')) deploy.open();
+      }
+    });
+  });
+
+  // --- Auto demo loop (mobile) ---
+  const isMobile = window.innerWidth <= 900;
+  if (isMobile) {
+    // Close all folders except deploy
+    env.close(); cable.close(); device.close(); display.close(); actions.close();
+  }
+
+  // Auto loop: deploy → wait → retract → wait → repeat
+  let autoPhase = 'deploy';
+  let autoTimer = 0;
+  const SURFACE_WAIT = 3; // seconds at surface before retract
+
+  setInterval(() => {
+    if (P.paused) return;
+    const atTarget = Math.abs(P.L - P.targetL) < 0.5;
+    const atSurface = nodes[N] && nodes[N].y > -1;
+    const atBottom = P.L <= 3;
+
+    if (autoPhase === 'deploy') {
+      if (!atTarget) return; // still deploying
+      if (atSurface) {
+        autoPhase = 'wait-surface';
+        autoTimer = 0;
+      }
+    } else if (autoPhase === 'wait-surface') {
+      autoTimer += 0.1;
+      if (autoTimer >= SURFACE_WAIT) {
+        P.targetL = 2;
+        autoPhase = 'retract';
+      }
+    } else if (autoPhase === 'retract') {
+      if (atBottom) {
+        autoPhase = 'wait-bottom';
+        autoTimer = 0;
+      }
+    } else if (autoPhase === 'wait-bottom') {
+      autoTimer += 0.1;
+      if (autoTimer >= 2) {
+        P.targetL = Math.min(P.D + 2, 60);
+        autoPhase = 'deploy';
+      }
+    }
+  }, 100);
+
+  // Start with deploy
+  P.targetL = Math.min(P.D + 2, 60);
+
   return gui;
 }
 

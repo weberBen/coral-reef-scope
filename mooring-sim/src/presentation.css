@@ -824,12 +824,34 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .hero h1 { font-size: 64px; }
-  .big-statement { font-size: 28px; }
-  .mega-title { font-size: 36px; }
+  .hero h1 { font-size: 56px; }
+  .big-statement { font-size: 24px; }
+  .mega-title { font-size: 32px; }
   .problem-row, .phase-cards { grid-template-columns: 1fr; }
   .compare-grid { flex-direction: column; }
   .compare-vs { justify-content: center; padding: 12px; }
-  .deck { padding: 80px 20px 60px; }
+  .deck { padding: 70px 16px 50px; }
   .feature-pills { flex-direction: column; align-items: center; }
+
+  /* Cycle animation: bigger diagram */
+  .cycle-sticky { padding: 5px 4px; }
+  .cycle-svg { min-height: 50vh; }
+  .cy-text-phase { min-height: 120vh; padding: 20px 12px; }
+  .cy-text-inner { max-width: 240px; padding: 16px; }
+  .cy-phase-num { font-size: 32px; }
+  .cy-text-inner h3 { font-size: 15px; }
+  .cy-text-inner p { font-size: 11px; }
+
+  /* More delay between animations on mobile */
+  .reveal.d1 { transition-delay: 0.5s; }
+  .reveal.d2 { transition-delay: 1.0s; }
+  .reveal.d3 { transition-delay: 1.5s; }
+
+  /* Mapping: illustration before text on mobile */
+  .mapping-section .split.reverse { flex-direction: column; }
+  .mapping-illustration { order: -1; flex: auto; max-width: 100%; }
+
+  /* CTA buttons: no truncation */
+  .cta-big { font-size: 15px; padding: 14px 20px; white-space: normal; }
+  .cta-big svg { flex-shrink: 0; }
 }

@@ -155,14 +155,17 @@ export function initCoverage() {
     controls.update();
 
     container.querySelector('#coverage-loading')?.remove();
-    console.log('Reef: faces=' + faceData.length + ' area=' + totalArea.toFixed(1) + ' rays=' + rayDirs.length);
+    console.log('Reef: faces=' + faceData.length + ' area=' + totalArea.toFixed(1));
+
+    // Start auto-demo loop
+    startAutoDemo();
   }, null, err => {
     console.error('GLB error:', err);
     const el = container.querySelector('#coverage-loading');
     if (el) el.textContent = 'Erreur: ' + err.message;
   });
 
-  renderer.domElement.addEventListener('click', onClickPlace);
+  renderer.domElement.addEventListener('click', (e) => { stopAutoDemo(); onClickPlace(e); });
   renderer.domElement.addEventListener('mousemove', onMouseMove);
 
   tooltip = document.createElement('div');
@@ -171,7 +174,8 @@ export function initCoverage() {
 
   // Top bar: cameras count + coverage stats + legend
   const topBar = document.createElement('div');
-  topBar.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:32px;align-items:center;z-index:10;pointer-events:none';
+  topBar.id = 'cov-topbar';
+  topBar.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:20px;align-items:center;z-index:10;pointer-events:none;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 320px);padding:0 8px';
   topBar.innerHTML = `
     <div class="cov-stat" data-tip="Nombre de stations ancrees">
       <div class="cov-label">Cameras</div>
@@ -198,6 +202,14 @@ export function initCoverage() {
     .cov-stat { text-align:center; position:relative; cursor:default; pointer-events:auto; }
     .cov-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:#7aa4c0; margin-bottom:2px; }
     .cov-num { font-size:36px; font-weight:800; font-variant-numeric:tabular-nums; text-shadow:0 2px 20px rgba(0,0,0,.5); transition:color .3s; }
+    @media (max-width: 900px) {
+      .cov-num { font-size: 22px; }
+      .cov-label { font-size: 8px; letter-spacing: 1px; }
+      #cov-topbar { max-width: 100% !important; top: 52px; gap: 8px 20px; display: grid !important; grid-template-columns: 1fr 1fr; }
+      #tab-coverage > .lil-gui { display: none; }
+      #tab-coverage > .lil-gui.show { display: block; top: 140px !important; bottom: auto !important; right: 8px; max-height: 55vh; overflow-y: auto; }
+      .cov-toggle-bar { display: flex !important; }
+    }
     .cov-stat::after {
       content: attr(data-tip);
       position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
@@ -865,6 +877,53 @@ function updateAscent() {
 //  GUI
 // =============================================
 
+// =============================================
+//  AUTO DEMO (place random → optimize → clear → repeat)
+// =============================================
+
+let autoRunning = false;
+
+async function startAutoDemo() {
+  if (autoRunning || faceData.length === 0) return;
+  autoRunning = true;
+
+  while (autoRunning) {
+    // Phase 1: place 3-6 random cameras
+    const numRandom = 3 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < numRandom; i++) {
+      const fi = Math.floor(Math.random() * faceData.length);
+      addCamera(faceData[fi].center.clone());
+      await new Promise(r => setTimeout(r, 600));
+      if (!autoRunning) return;
+    }
+
+    // Wait
+    await new Promise(r => setTimeout(r, 2000));
+    if (!autoRunning) return;
+
+    // Phase 2: clear and optimize
+    clearCameras();
+    await new Promise(r => setTimeout(r, 500));
+    if (!autoRunning) return;
+
+    state.numCameras = numRandom;
+    await optimizePlacement();
+    if (!autoRunning) return;
+
+    // Wait to show result
+    await new Promise(r => setTimeout(r, 4000));
+    if (!autoRunning) return;
+
+    // Phase 3: clear and restart
+    clearCameras();
+    await new Promise(r => setTimeout(r, 1000));
+  }
+}
+
+function stopAutoDemo() {
+  autoRunning = false;
+}
+
 function setupGUI(container) {
   gui = new GUI({ title: 'Couverture', width: 300, container });
   gui.domElement.style.position = 'absolute';
@@ -887,8 +946,19 @@ function setupGUI(container) {
 
   const optim = gui.addFolder('Optimisation');
   optim.add(state, 'numCameras', 1, 100, 1).name('Nb cameras');
-  optim.add({ optimize: optimizePlacement }, 'optimize').name('Optimiser *');
-  optim.add({ clear: clearCameras }, 'clear').name('Tout effacer');
+  optim.add({ optimize() { stopAutoDemo(); optimizePlacement(); } }, 'optimize').name('Optimiser *');
+  optim.add({ clear() { stopAutoDemo(); clearCameras(); } }, 'clear').name('Tout effacer');
   optim.open();
 
+  // Mobile toggle button for GUI panel
+  const toggleBar = document.createElement('div');
+  toggleBar.className = 'cov-toggle-bar';
+  toggleBar.style.cssText = 'display:none;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:15';
+  toggleBar.innerHTML = '<button class="sim-toggle-btn" id="cov-toggle-ctrl">Controles</button>';
+  container.appendChild(toggleBar);
+
+  document.getElementById('cov-toggle-ctrl')?.addEventListener('click', (e) => {
+    e.target.classList.toggle('active');
+    gui.domElement.classList.toggle('show');
+  });
 }
