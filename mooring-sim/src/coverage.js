@@ -151,21 +151,46 @@ export function initCoverage() {
 
     precomputeFaces();
 
-    // Find a deep zone to focus on (lowest Y point)
+    // Depth-weighted barycenter: deeper faces attract the focus more
     const nb = new THREE.Box3().setFromObject(reefGroup);
-    const nc = nb.getCenter(new THREE.Vector3());
-    const ns = nb.getSize(new THREE.Vector3());
+    const meshSize = nb.getSize(new THREE.Vector3());
 
-    // Target: offset toward a deeper area (lower Y)
-    const focusTarget = new THREE.Vector3(nc.x + ns.x * 0.1, nc.y - ns.y * 0.3, nc.z);
+    let bx = 0, by = 0, bz = 0, bw = 0;
+    for (const f of faceData) {
+      const depthBelow = meshYMax - f.center.y;
+      const weight = f.area * depthBelow * depthBelow;
+      bx += f.center.x * weight;
+      by += f.center.y * weight;
+      bz += f.center.z * weight;
+      bw += weight;
+    }
+    const focusTarget = bw > 0
+      ? new THREE.Vector3(bx / bw, by / bw, bz / bw)
+      : nb.getCenter(new THREE.Vector3());
+
     controls.target.copy(focusTarget);
 
-    // Camera at 45 degrees, zoomed in
-    const dist = ns.x * 0.4;
+    // Find principal axis of deep features (covariance eigenvector)
+    let covXX = 0, covXZ = 0, covZZ = 0;
+    for (const f of faceData) {
+      const depthBelow = meshYMax - f.center.y;
+      const w = f.area * depthBelow;
+      const dx = f.center.x - focusTarget.x;
+      const dz = f.center.z - focusTarget.z;
+      covXX += dx * dx * w;
+      covXZ += dx * dz * w;
+      covZZ += dz * dz * w;
+    }
+    // View perpendicular to principal spread axis for best overview
+    const principalAngle = 0.5 * Math.atan2(2 * covXZ, covXX - covZZ);
+    const azimuth = principalAngle + Math.PI / 2;
+    const tiltAngle = 35 * Math.PI / 180;
+    const camDist = Math.max(meshSize.x, meshSize.z) * 0.7;
+
     camera.position.set(
-      focusTarget.x + dist * 0.7,
-      focusTarget.y + dist * 0.7,  // 45 deg angle
-      focusTarget.z + dist * 0.5
+      focusTarget.x + Math.cos(azimuth) * Math.cos(tiltAngle) * camDist,
+      focusTarget.y + Math.sin(tiltAngle) * camDist,
+      focusTarget.z + Math.sin(azimuth) * Math.cos(tiltAngle) * camDist
     );
     controls.update();
 
@@ -240,10 +265,24 @@ export function initCoverage() {
 
   setupGUI(container);
 
+  let lastLogPos = '';
   (function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
+
+    // Log camera orientation when it changes
+    const p = camera.position;
+    const t = controls.target;
+    const dx = p.x - t.x, dy = p.y - t.y, dz = p.z - t.z;
+    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+    const tilt = Math.asin(dy / dist) * 180 / Math.PI;
+    const azimuth = Math.atan2(dz, dx) * 180 / Math.PI;
+    const key = `${azimuth.toFixed(0)},${tilt.toFixed(0)},${dist.toFixed(1)}`;
+    if (key !== lastLogPos) {
+      lastLogPos = key;
+      console.log(`Camera: azimuth=${azimuth.toFixed(1)}° tilt=${tilt.toFixed(1)}° dist=${dist.toFixed(1)}`);
+    }
   })();
 
   window.addEventListener('resize', () => {
