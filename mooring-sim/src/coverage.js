@@ -27,6 +27,7 @@ let cameraMarkers = [];
 let surfaceMarkers = [];   // wireframe sphere at surface (y=0)
 let visMaxMarkers = [];    // small marker at max visibility altitude
 let verticalLines = [];    // line from anchor to surface
+let reefMeta = {};         // metadata from GLB (label, bbox, etc.)
 
 let faceData = [];   // [{center, area, meshRef, faceIdx}]
 let totalArea = 0;
@@ -99,6 +100,35 @@ export function initCoverage() {
 
   const loader = new GLTFLoader();
   loader.load('/data/reef.glb', (gltf) => {
+    // Extract metadata from GLB (stored in mesh extras by trimesh)
+    let extras = {};
+    gltf.scene.traverse(child => {
+      if (child.isMesh && child.userData) {
+        Object.assign(extras, child.userData);
+      }
+    });
+    // Also check asset-level extras
+    try {
+      const assetExtras = gltf.parser.json.asset?.extras || {};
+      Object.assign(extras, assetExtras);
+    } catch(e) {}
+    // Also check mesh-level extras in raw JSON
+    try {
+      const meshes = gltf.parser.json.meshes || [];
+      for (const m of meshes) {
+        if (m.extras) Object.assign(extras, m.extras);
+      }
+    } catch(e) {}
+
+    reefMeta = {
+      label: extras.label || '',
+      location: extras.location || '',
+      bbox: extras.bbox || null,
+      resolution: extras.resolution || null,
+      source: extras.source || '',
+    };
+    console.log('Reef metadata:', reefMeta);
+
     const root = gltf.scene;
     root.rotation.x = -Math.PI / 2;
     root.updateMatrixWorld(true);
@@ -197,6 +227,27 @@ export function initCoverage() {
     container.querySelector('#coverage-loading')?.remove();
     console.log('Reef: faces=' + faceData.length + ' area=' + totalArea.toFixed(1));
 
+    // Display reef label with GPS on hover
+    if (reefMeta.label) {
+      const bb = reefMeta.bbox;
+      const gpsText = bb ? `${((bb[1]+bb[3])/2).toFixed(4)}, ${((bb[0]+bb[2])/2).toFixed(4)}` : '';
+      const labelEl = document.createElement('div');
+      labelEl.id = 'reef-label';
+      labelEl.style.cssText = 'position:absolute;top:60px;left:16px;z-index:10;cursor:default';
+      labelEl.innerHTML = `
+        <div style="font-size:18px;font-weight:700;color:#e4eef6">${reefMeta.label}</div>
+        <div style="font-size:12px;color:#7a97b0;margin-top:2px">${reefMeta.location || ''}</div>
+        <div class="reef-label-gps" style="font-size:11px;color:#38bdf8;margin-top:4px;opacity:0;transition:opacity .2s">${gpsText}</div>
+      `;
+      labelEl.addEventListener('mouseenter', () => {
+        labelEl.querySelector('.reef-label-gps').style.opacity = '1';
+      });
+      labelEl.addEventListener('mouseleave', () => {
+        labelEl.querySelector('.reef-label-gps').style.opacity = '0';
+      });
+      container.appendChild(labelEl);
+    }
+
     // Start auto-demo loop
     startAutoDemo();
   }, null, err => {
@@ -249,6 +300,7 @@ export function initCoverage() {
       #tab-coverage > .lil-gui { display: none; }
       #tab-coverage > .lil-gui.show { display: block; top: 140px !important; bottom: auto !important; right: 8px; max-height: 55vh; overflow-y: auto; }
       .cov-toggle-bar { display: flex !important; }
+      #reef-label { top: auto !important; bottom: 50px !important; left: 12px !important; }
     }
     .cov-stat::after {
       content: attr(data-tip);
@@ -337,23 +389,40 @@ function onMouseMove(event) {
       if (label) {
         tooltip.textContent = label;
         tooltip.style.display = 'block';
-        tooltip.style.left = (event.clientX - rect.left + 15) + 'px';
-        tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
+        const tx = Math.min(event.clientX - rect.left + 15, rect.width - 200);
+        tooltip.style.left = Math.max(8, tx) + 'px';
+        tooltip.style.top = (event.clientY - rect.top - 30) + 'px';
         return;
       }
     }
   }
 
-  // Check mesh surface for contour
-  if (reefMeshes.length > 0) {
+  // Check mesh surface for contour + geo coords
+  {
     raycaster.setFromCamera(mouse, camera);
     const meshHits = raycaster.intersectObjects(reefMeshes, true);
-    if (meshHits.length > 0) {
-      const hitY = meshHits[0].point.y;
-      const depthFrac = (hitY - meshYMin) / ((meshYMax - meshYMin) || 1);
+    if (meshHits.length > 0 && tooltip) {
+      const hitPt = meshHits[0].point;
+      const depthFrac = (hitPt.y - meshYMin) / ((meshYMax - meshYMin) || 1);
       const realDepth = -(1 - depthFrac) * 19.5;
 
-      tooltip.textContent = 'Profondeur : ' + realDepth.toFixed(1) + ' m';
+      // Compute geo coordinates from normalized XZ position
+      let geoText = '';
+      if (reefMeta.bbox && reefGroup) {
+        const bb = reefMeta.bbox;
+        if (!reefGroup._cachedBox) {
+          reefGroup._cachedBox = new THREE.Box3().setFromObject(reefGroup);
+        }
+        const nmin = reefGroup._cachedBox.min;
+        const nmax = reefGroup._cachedBox.max;
+        const xFrac = (hitPt.x - nmin.x) / ((nmax.x - nmin.x) || 1);
+        const zFrac = (hitPt.z - nmin.z) / ((nmax.z - nmin.z) || 1);
+        const lon = bb[0] + xFrac * (bb[2] - bb[0]);
+        const lat = bb[1] + zFrac * (bb[3] - bb[1]);
+        geoText = ' | ' + lat.toFixed(4) + ', ' + lon.toFixed(4);
+      }
+
+      tooltip.textContent = realDepth.toFixed(1) + ' m' + geoText;
       tooltip.style.display = 'block';
       tooltip.style.left = (event.clientX - rect.left + 15) + 'px';
       tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
