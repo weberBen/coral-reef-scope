@@ -845,84 +845,76 @@
   box-shadow: 0 8px 32px rgba(56,189,248,0.15);
 }
 
-/* ===== COMPARISON ROWS ===== */
-.cmp-row {
-  display: flex;
-  gap: 32px;
-  align-items: flex-start;
-  margin-bottom: 48px;
-  padding: 28px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 20px;
+/* ===== GRID COMPARISON TABLE ===== */
+.grid-compare {
+  overflow-x: auto;
 }
-.cmp-criterion {
-  flex: 0 0 180px;
+.grid-compare table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 8px;
+}
+.grid-compare th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a97b0;
+  padding: 0 8px 12px;
   text-align: center;
 }
-.cmp-icon {
-  margin-bottom: 12px;
+.grid-compare th.gc-ours {
+  color: #34d399;
+  font-size: 15px;
+  font-weight: 800;
 }
-.cmp-criterion h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: #e0ecf5;
-  margin: 0 0 6px;
-}
-.cmp-criterion p {
-  font-size: 11px;
-  color: #5a7a92;
-  line-height: 1.4;
-  margin: 0;
-}
-.cmp-bars {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.cmp-bar-row {
-  display: grid;
-  grid-template-columns: 110px 1fr auto;
-  align-items: center;
-  gap: 12px;
-}
-.cmp-bar-row.cmp-ours {
-  padding: 6px 10px;
-  margin: 4px -10px 0;
-  background: rgba(52,211,153,0.04);
-  border-radius: 10px;
-  border: 1px solid rgba(52,211,153,0.1);
-}
-.cmp-label {
-  font-size: 12px;
+.gc-criterion {
+  font-size: 14px;
   font-weight: 600;
-  color: #8aa4bd;
+  color: #c8daea;
+  padding-right: 20px;
   white-space: nowrap;
 }
-.cmp-ours .cmp-label { color: #86efac; }
-.cmp-bar {
-  height: 8px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 4px;
-  overflow: hidden;
+.gc-cell {
+  width: 72px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: transform 0.3s;
 }
-.cmp-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 1s ease-out;
+.gc-cell:hover { transform: scale(1.1); }
+.gc-score {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
-.cmp-fill-good {
-  background: linear-gradient(90deg, #34d399, #22d3ee) !important;
-}
-.cmp-note {
+.gc-sub {
   font-size: 10px;
-  color: #5a7a92;
-  white-space: nowrap;
+  color: #8aa4bd;
+  text-align: center;
+  margin-top: 6px;
+  line-height: 1.4;
+  max-width: 100px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.cmp-ours .cmp-note { color: #6ee7b7; }
+.gc-best .gc-score { font-size: 17px; }
+.gc-best { border: 2px solid rgba(52,211,153,0.4); box-shadow: 0 0 12px rgba(52,211,153,0.15); }
 
-/* Animated icons */
+/* Score colors: 0.1=red -> 0.5=yellow -> 0.9=green */
+.gc-1 { background: linear-gradient(135deg, #dc2626, #ef4444); }
+.gc-2 { background: linear-gradient(135deg, #ef4444, #f97316); }
+.gc-3 { background: linear-gradient(135deg, #f97316, #fbbf24); }
+.gc-4 { background: linear-gradient(135deg, #fbbf24, #facc15); }
+.gc-5 { background: linear-gradient(135deg, #facc15, #a3e635); }
+.gc-6 { background: linear-gradient(135deg, #a3e635, #4ade80); }
+.gc-7 { background: linear-gradient(135deg, #4ade80, #34d399); }
+.gc-8 { background: linear-gradient(135deg, #34d399, #22d3ee); }
+.gc-9 { background: linear-gradient(135deg, #22d3ee, #38bdf8); }
+
+/* Animated icons in table */
 .cmp-pulse { animation: cmpPulse 2s ease-in-out infinite; }
 @keyframes cmpPulse {
   0%, 100% { r: 16; opacity: 0.8; }
@@ -936,11 +928,11 @@
 .cmp-scale1 { animation: cmpScale 2s ease-in-out infinite; }
 .cmp-scale2 { animation: cmpScale 2s ease-in-out infinite 0.3s; }
 .cmp-scale3 { animation: cmpScale 2s ease-in-out infinite 0.6s; }
-.cmp-scale4 { animation: cmpScale 2s ease-in-out infinite 0.9s; }
 @keyframes cmpScale {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
@@ -976,8 +968,9 @@
   .cta-big svg { flex-shrink: 0; width: 16px; height: 16px; }
   .cta-big span { flex: 1; }
   .deck.cta-section .deck-content > div { width: 100% !important; max-width: 100%; padding: 0 8px; }
-  .cmp-row { flex-direction: column; gap: 16px; padding: 20px 16px; }
-  .cmp-criterion { flex: auto; }
-  .cmp-bar-row { grid-template-columns: 80px 1fr; }
-  .cmp-note { display: none; }
+  .grid-compare table { font-size: 12px; }
+  .gc-cell { width: 50px; height: 30px; }
+  .gc-score { font-size: 11px; }
+  .gc-sub { font-size: 7px; }
+  .gc-criterion { font-size: 11px; white-space: normal; }
 }
