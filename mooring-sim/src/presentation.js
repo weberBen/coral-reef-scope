@@ -158,6 +158,22 @@ export function buildPresentation() {
         <polygon points="710,70 725,75 710,80" fill="#fbbf24" opacity="0.7"/>
         <!-- Buoy stays (highlighted) -->
         <circle cx="300" cy="80" r="9" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="3 2" class="buoy-highlight"/>
+
+        <!-- Antenna on shore -->
+        <line x1="770" y1="30" x2="770" y2="65" stroke="#94a3b8" stroke-width="2"/>
+        <line x1="770" y1="30" x2="760" y2="40" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="770" y1="30" x2="780" y2="40" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="770" y1="36" x2="762" y2="44" stroke="#94a3b8" stroke-width="1"/>
+        <line x1="770" y1="36" x2="778" y2="44" stroke="#94a3b8" stroke-width="1"/>
+
+        <!-- Radio signals from device to antenna -->
+        <circle cx="520" cy="55" r="8" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0" class="radio-wave rw1"/>
+        <circle cx="520" cy="55" r="16" fill="none" stroke="#ffffff" stroke-width="2" opacity="0" class="radio-wave rw2"/>
+        <circle cx="520" cy="55" r="24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0" class="radio-wave rw3"/>
+
+        <!-- Signal path -->
+        <path d="M530 56 Q650 40 762 35" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="signal-path"/>
+        <text x="650" y="30" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="600" font-family="Inter,sans-serif" opacity="0.8">DATA</text>
       </g>
 
       <!-- ===== PHASE 4: Replacement + collection ===== -->
@@ -214,6 +230,7 @@ export function buildPresentation() {
         <div class="cy-phase-num">03</div>
         <h3>Transit en surface</h3>
         <p>Une fois en surface, le dispositif rejoint la rive par navigation autonome ou simple derive passive. La bouee reste en place, marquant la station pour le prochain capteur.</p>
+        <p>En surface, les donnees capturees sont transmises par radio vers la rive. La diffusion est asynchrone avec un delai de ~24h, ce qui reste acceptable au regard de la temporalite des ecosystemes coralliens et de l'experience utilisateur.</p>
       </div>
     </div>
     <div class="cy-text-phase" data-phase="4">

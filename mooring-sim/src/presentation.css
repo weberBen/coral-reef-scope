@@ -433,6 +433,26 @@
   50% { transform: translateX(-20px); }
 }
 
+/* Radio waves */
+.radio-wave {
+  animation: radioExpand 2s ease-out infinite;
+}
+.rw1 { animation-delay: 0s; }
+.rw2 { animation-delay: 0.4s; }
+.rw3 { animation-delay: 0.8s; }
+@keyframes radioExpand {
+  0% { r: 4; opacity: 0.6; }
+  100% { r: 30; opacity: 0; }
+}
+
+.signal-path {
+  stroke-dashoffset: 40;
+  animation: signalDash 1.5s linear infinite;
+}
+@keyframes signalDash {
+  to { stroke-dashoffset: 0; }
+}
+
 /* Trail to shore dash */
 .trail-to-shore {
   stroke-dashoffset: 50;
