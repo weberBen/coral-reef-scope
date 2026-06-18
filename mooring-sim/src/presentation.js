@@ -477,38 +477,23 @@ export function buildPresentation() {
 
 function initCycleScroll() {
   const phases = document.querySelectorAll('.cy-text-phase');
-  let currentPhase = 0;
+  const visiblePhases = new Set();
 
+  // Single IntersectionObserver handles both scroll-down and scroll-up
   const phaseObs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
+      const p = parseInt(e.target.dataset.phase);
       if (e.isIntersecting) {
-        const p = parseInt(e.target.dataset.phase);
-        if (p > currentPhase) currentPhase = p;
-        updateCyclePhase(currentPhase);
+        visiblePhases.add(p);
+      } else {
+        visiblePhases.delete(p);
       }
     });
-  }, { threshold: 0.5, root: null });
+    const highest = visiblePhases.size > 0 ? Math.max(...visiblePhases) : 0;
+    updateCyclePhase(highest);
+  }, { threshold: 0.3 });
 
   phases.forEach(p => phaseObs.observe(p));
-
-  // Also track scroll-up: reset phase when scrolling back
-  const scrollContainer = document.getElementById('tab-concept');
-  if (scrollContainer) {
-    scrollContainer.addEventListener('scroll', () => {
-      // Check which phases are still visible
-      let highest = 0;
-      phases.forEach(p => {
-        const rect = p.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.7) {
-          highest = Math.max(highest, parseInt(p.dataset.phase));
-        }
-      });
-      if (highest !== currentPhase) {
-        currentPhase = highest;
-        updateCyclePhase(currentPhase);
-      }
-    });
-  }
 }
 
 function updateCyclePhase(phase) {
@@ -565,7 +550,13 @@ function initHeroParticles() {
     });
   }
 
+  // Pause particles when hero is not visible
+  let heroVisible = true;
+  const heroObs = new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }, { threshold: 0 });
+  heroObs.observe(canvas.parentElement);
+
   function draw() {
+    if (!heroVisible) { requestAnimationFrame(draw); return; }
     const ww = w / devicePixelRatio, hh = h / devicePixelRatio;
     ctx.clearRect(0, 0, ww, hh);
     for (const p of particles) {

@@ -4,18 +4,19 @@
    ============================================ */
 
 #presentation {
-  scroll-snap-type: y proximity;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* --- Base section --- */
 .deck {
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   padding: 100px 48px 80px;
+  will-change: transform;
 }
 
 .deck-content {
@@ -29,10 +30,11 @@
 /* --- Scroll reveal --- */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  will-change: opacity, transform;
 }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.visible { opacity: 1; transform: translateY(0); will-change: auto; }
 .reveal.d1 { transition-delay: 0.15s; }
 .reveal.d2 { transition-delay: 0.3s; }
 .reveal.d3 { transition-delay: 0.45s; }
@@ -337,13 +339,15 @@
 
 .cycle-sticky {
   position: sticky;
-  top: 48px; /* below tab bar */
+  top: 48px;
   height: calc(100vh - 48px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px 40px;
   z-index: 1;
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
 }
 
 .cycle-svg {
@@ -463,10 +467,9 @@
 
 .cy-text-inner {
   max-width: 320px;
-  background: rgba(5, 15, 30, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(5, 15, 30, 0.93);
   border: 1px solid rgba(255,255,255,0.08);
+  transform: translate3d(0,0,0);
   border-radius: 20px;
   padding: 32px;
   opacity: 0.5;

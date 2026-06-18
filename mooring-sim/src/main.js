@@ -8,11 +8,27 @@ import { exportOBJ } from './export.js';
 import { initTabs, onTabChange } from './tabs.js';
 import { buildPresentation } from './presentation.js';
 import { initCoverage } from './coverage.js';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 
 // ---------- Initialize ----------
 
 initTabs();
 buildPresentation();
+
+// Smooth scroll on concept tab
+const conceptTab = document.getElementById('tab-concept');
+const lenis = new Lenis({
+  wrapper: conceptTab,
+  content: conceptTab,
+  smooth: true,
+  lerp: 0.08,
+});
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
 
 // Lazy-init coverage when tab becomes visible
 let coverageLoaded = false;
