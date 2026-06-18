@@ -1002,9 +1002,52 @@
   .cta-big svg { flex-shrink: 0; width: 16px; height: 16px; }
   .cta-big span { flex: 1; }
   .deck.cta-section .deck-content > div { width: 100% !important; max-width: 100%; padding: 0 8px; }
-  .grid-compare table { font-size: 12px; }
-  .gc-cell { width: 50px; height: 30px; }
-  .gc-score { font-size: 11px; }
-  .gc-sub { font-size: 7px; }
-  .gc-criterion { font-size: 11px; white-space: normal; }
+  /* Comparison table: stack vertically on mobile */
+  .grid-compare { transform: none; margin-bottom: 0; }
+  .grid-compare table,
+  .grid-compare thead,
+  .grid-compare tbody,
+  .grid-compare tr,
+  .grid-compare td,
+  .grid-compare th {
+    display: block;
+    width: 100%;
+  }
+  .grid-compare thead { display: none; }
+  .grid-compare tr {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+  }
+  .gc-criterion {
+    font-size: 15px;
+    white-space: normal;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+  }
+  .grid-compare td:not(:first-child) {
+    width: 100%;
+    margin-bottom: 6px;
+  }
+  .grid-compare td:not(:first-child)::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    color: #5a7a92;
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .gc-cell {
+    height: 48px;
+    width: 100%;
+  }
+  .gc-score { font-size: 16px; width: 48px; min-width: 48px; }
+  .gc-sub { font-size: 12px; }
 }
