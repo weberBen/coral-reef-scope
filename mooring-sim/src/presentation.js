@@ -534,6 +534,9 @@ export function buildPresentation() {
   // Cycle phases scroll observer
   initCycleScroll();
 
+  // Auto-switch table to cards when text overflows any cell
+  // Hidden probe cell: switches to stacked when probe text overflows
+
   // Hero particles canvas
   initHeroParticles();
 }
