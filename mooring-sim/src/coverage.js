@@ -84,15 +84,18 @@ export function initCoverage() {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
 
-  scene.add(new THREE.AmbientLight(0x405060, 0.8));
-  const d1 = new THREE.DirectionalLight(0xffffff, 1.4);
+  scene.add(new THREE.AmbientLight(0x8899aa, 1.2));
+  const d1 = new THREE.DirectionalLight(0xffffff, 1.8);
   d1.position.set(5, 10, 8);
   scene.add(d1);
-  const d2 = new THREE.DirectionalLight(0x8899aa, 0.5);
+  const d2 = new THREE.DirectionalLight(0xaabbcc, 0.8);
   d2.position.set(-5, -3, 4);
   scene.add(d2);
+  const d3 = new THREE.DirectionalLight(0x667788, 0.5);
+  d3.position.set(0, -8, 0);
+  scene.add(d3);
 
-  scene.add(new THREE.GridHelper(20, 40, 0x1a2a3a, 0x0d1520));
+  scene.add(new THREE.GridHelper(20, 40, 0x445566, 0x2a3a4a));
 
   const loader = new GLTFLoader();
   loader.load('/data/reef.glb', (gltf) => {
@@ -148,10 +151,22 @@ export function initCoverage() {
 
     precomputeFaces();
 
+    // Find a deep zone to focus on (lowest Y point)
     const nb = new THREE.Box3().setFromObject(reefGroup);
     const nc = nb.getCenter(new THREE.Vector3());
-    controls.target.copy(nc);
-    camera.position.set(nc.x, nc.y + 12, nc.z + 5);
+    const ns = nb.getSize(new THREE.Vector3());
+
+    // Target: offset toward a deeper area (lower Y)
+    const focusTarget = new THREE.Vector3(nc.x + ns.x * 0.1, nc.y - ns.y * 0.3, nc.z);
+    controls.target.copy(focusTarget);
+
+    // Camera at 45 degrees, zoomed in
+    const dist = ns.x * 0.4;
+    camera.position.set(
+      focusTarget.x + dist * 0.7,
+      focusTarget.y + dist * 0.7,  // 45 deg angle
+      focusTarget.z + dist * 0.5
+    );
     controls.update();
 
     container.querySelector('#coverage-loading')?.remove();
