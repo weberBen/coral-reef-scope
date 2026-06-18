@@ -304,6 +304,45 @@
   margin: 0 auto 20px;
 }
 
+/* ===== Ripple wave ===== */
+.ripple-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.ripple-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 50%;
+  border: 1px solid rgba(56,189,248,0.15);
+  opacity: 0;
+  transform: scale(0);
+  will-change: transform, opacity;
+}
+.ripple-container.visible .ripple-ring {
+  animation: rippleExpand 5s ease-out forwards;
+}
+.ripple-container.visible .r1 { animation-delay: 0.5s; }
+.ripple-container.visible .r2 { animation-delay: 1.3s; }
+.ripple-container.visible .r3 { animation-delay: 2.1s; }
+.ripple-container.visible .r4 { animation-delay: 2.9s; }
+.ripple-container.visible .r5 { animation-delay: 3.7s; }
+@keyframes rippleExpand {
+  0% { transform: scale(0); opacity: 0; }
+  5% { opacity: 0.3; }
+  30% { opacity: 0.15; }
+  100% { transform: scale(35); opacity: 0; }
+}
+
 /* ===== CAPA animation ===== */
 .capa-expand {
   font-size: 20px;

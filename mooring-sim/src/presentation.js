@@ -77,6 +77,13 @@ export function buildPresentation() {
 <!-- ============ SOLUTION TITLE ============ -->
 <section class="deck solution-hero">
   <div class="deck-bg-gradient cyan-glow"></div>
+  <div class="ripple-container reveal">
+    <div class="ripple-ring r1"></div>
+    <div class="ripple-ring r2"></div>
+    <div class="ripple-ring r3"></div>
+    <div class="ripple-ring r4"></div>
+    <div class="ripple-ring r5"></div>
+  </div>
   <div class="deck-content">
     <h2 class="reveal kicker">Notre approche</h2>
     <h3 class="reveal mega-title">APAC</h3>
