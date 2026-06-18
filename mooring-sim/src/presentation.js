@@ -79,8 +79,13 @@ export function buildPresentation() {
   <div class="deck-bg-gradient cyan-glow"></div>
   <div class="deck-content">
     <h2 class="reveal kicker">Notre approche</h2>
-    <h3 class="reveal mega-title">Systeme hybride<br>cable + flotteur</h3>
-    <p class="reveal d1 sub-text" style="text-align:center;margin:16px auto 0">Scrollez pour voir le cycle complet</p>
+    <h3 class="reveal mega-title">APAC</h3>
+    <div class="capa-expand reveal d1" style="margin:24px auto 0">
+      <div class="capa-item"><span class="capa-letter">A</span><span class="capa-word">synchronous</span></div>
+      <div class="capa-item"><span class="capa-letter">P</span><span class="capa-word">eriodic</span></div>
+      <div class="capa-item"><span class="capa-letter">A</span><span class="capa-word">utonomous</span></div>
+      <div class="capa-item"><span class="capa-letter">C</span><span class="capa-word">apture</span></div>
+    </div>
   </div>
 </section>
 
