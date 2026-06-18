@@ -476,25 +476,25 @@ export function buildPresentation() {
         </thead>
         <tbody>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="28" height="28" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="#34d399" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="#34d399" opacity="0.6"/></svg>Naturalite</td>
-            <td><div class="gc-cell gc-4"><span class="gc-score">0.4</span></div><div class="gc-sub">Infra au fond</div></td>
-            <td><div class="gc-cell gc-1"><span class="gc-score">0.1</span></div><div class="gc-sub">Surface permanente</div></td>
-            <td><div class="gc-cell gc-2"><span class="gc-score">0.2</span></div><div class="gc-sub">Plateforme solaire 24/7</div></td>
-            <td><div class="gc-cell gc-9 gc-best"><span class="gc-score">0.9</span></div><div class="gc-sub">Bouee temporaire</div></td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="#34d399" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="#34d399" opacity="0.6"/></svg>Naturalite</td>
+            <td><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Infra au fond</span></div></td>
+            <td><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Surface permanente</span></div></td>
+            <td><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">Plateforme solaire 24/7</span></div></td>
+            <td><div class="gc-cell gc-9 gc-best"><span class="gc-score">0.9</span><span class="gc-sub">Bouee temporaire</span></div></td>
           </tr>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="28" height="28" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="#fbbf24" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="#fbbf24" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="#fbbf24" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>OPEX</td>
-            <td><div class="gc-cell gc-5"><span class="gc-score">0.5</span></div><div class="gc-sub">Biofouling + cables</div></td>
-            <td><div class="gc-cell gc-2"><span class="gc-score">0.2</span></div><div class="gc-sub">Plongeurs + panneaux</div></td>
-            <td><div class="gc-cell gc-3"><span class="gc-score">0.3</span></div><div class="gc-sub">Plongeurs + WiFi</div></td>
-            <td><div class="gc-cell gc-8 gc-best"><span class="gc-score">0.8</span></div><div class="gc-sub">Nettoyage a terre</div></td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="#fbbf24" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="#fbbf24" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="#fbbf24" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>OPEX</td>
+            <td><div class="gc-cell gc-5"><span class="gc-score">0.5</span><span class="gc-sub">Biofouling + cables</span></div></td>
+            <td><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">Plongeurs + panneaux</span></div></td>
+            <td><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs + WiFi</span></div></td>
+            <td><div class="gc-cell gc-8 gc-best"><span class="gc-score">0.8</span><span class="gc-sub">Nettoyage a terre</span></div></td>
           </tr>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="28" height="28" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="#38bdf8" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="#38bdf8" stroke-width="1" opacity="0.4"/></svg>Scalabilite</td>
-            <td><div class="gc-cell gc-1"><span class="gc-score">0.1</span></div><div class="gc-sub">Cout lineaire</div></td>
-            <td><div class="gc-cell gc-4"><span class="gc-score">0.4</span></div><div class="gc-sub">Entretien / unite</div></td>
-            <td><div class="gc-cell gc-3"><span class="gc-score">0.3</span></div><div class="gc-sub">Cout / station eleve</div></td>
-            <td><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.7</span></div><div class="gc-sub">1 ancre = 1 station</div></td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="#38bdf8" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="#38bdf8" stroke-width="1" opacity="0.4"/></svg>Scalabilite</td>
+            <td><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Cout lineaire</span></div></td>
+            <td><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Entretien / unite</span></div></td>
+            <td><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Cout / station eleve</span></div></td>
+            <td><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.7</span><span class="gc-sub">1 ancre = 1 station</span></div></td>
           </tr>
         </tbody>
       </table>
