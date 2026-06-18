@@ -461,7 +461,7 @@ export function buildPresentation() {
 <section class="deck">
   <div class="deck-content">
     <h2 class="reveal kicker">Comparaison</h2>
-    <p class="reveal big-statement" style="margin-bottom:48px">ReefScope face aux solutions existantes</p>
+    <p class="reveal big-statement" style="margin-bottom:48px">Face aux solutions existantes</p>
 
     <div class="grid-compare reveal d1">
       <table>
@@ -477,24 +477,24 @@ export function buildPresentation() {
         <tbody>
           <tr>
             <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="#34d399" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="#34d399" opacity="0.6"/></svg>Naturalite</td>
-            <td data-label="Cable sous-marin"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Infra en fond, cable traversant recif</span></div></td>
-            <td data-label="Bouees solaires"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Bouees en surface en permanence</span></div></td>
-            <td data-label="ReefOS"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">Plateforme concentree mais permanente</span></div></td>
-            <td data-label="ReefScope"><div class="gc-cell gc-8 gc-best"><span class="gc-score">0.75</span><span class="gc-sub">Infra en fond, bouee temporaire</span></div></td>
+            <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Infra en fond, câble traversant le récif</span></div></td>
+            <td data-label="Bouees solaires"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Bouées en surface en permanence</span></div></td>
+            <td data-label="ReefOS"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">Plateforme concentrée mais permanente</span></div></td>
+            <td data-label="ReefScope"><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.65</span><span class="gc-sub">Infra en fond, bouée temporaire</span></div></td>
           </tr>
           <tr>
             <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="#fbbf24" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="#fbbf24" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="#fbbf24" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>OPEX</td>
-            <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Plongeurs biofouling + entretien cables</span></div></td>
+            <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Plongeurs biofouling + entretien câbles</span></div></td>
             <td data-label="Bouees solaires"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs biofouling + entretien panneaux</span></div></td>
             <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs + plateforme + maillage WiFi</span></div></td>
-            <td data-label="ReefScope"><div class="gc-cell gc-5 gc-best"><span class="gc-score">0.5</span><span class="gc-sub">Nettoyage a terre, entretien en fond limite</span></div></td>
+            <td data-label="ReefScope"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">Nettoyage à terre, entretien en fond limité</span></div></td>
           </tr>
           <tr>
             <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="#38bdf8" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="#38bdf8" stroke-width="1" opacity="0.4"/></svg>Scalabilite</td>
-            <td data-label="Cable sous-marin"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Cout lineaire, extension couteuse</span></div></td>
-            <td data-label="Bouees solaires"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Deployable mais entretien par unite</span></div></td>
-            <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Cout / station eleve, surveillance accrue</span></div></td>
-            <td data-label="ReefScope"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">A terme, zero installation au fond</span></div></td>
+            <td data-label="Cable sous-marin"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Coût linéaire, extension coûteuse</span></div></td>
+            <td data-label="Bouees solaires"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Déployable mais entretien par unité</span></div></td>
+            <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Coût / station élevé, surveillance accrue</span></div></td>
+            <td data-label="ReefScope"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">À terme, zéro installation au fond</span></div></td>
           </tr>
         </tbody>
       </table>
