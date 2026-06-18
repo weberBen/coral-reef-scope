@@ -245,6 +245,12 @@ export function initCoverage() {
       labelEl.addEventListener('mouseleave', () => {
         labelEl.querySelector('.reef-label-gps').style.opacity = '0';
       });
+      labelEl.style.cursor = 'pointer';
+      labelEl.addEventListener('click', () => {
+        const cx = bb ? ((bb[0] + bb[2]) / 2) : 0;
+        const cy = bb ? ((bb[1] + bb[3]) / 2) : 0;
+        window.open(`https://allencoralatlas.org/atlas/#14.00/${cy.toFixed(4)}/${cx.toFixed(4)}`, '_blank');
+      });
       container.appendChild(labelEl);
     }
 
