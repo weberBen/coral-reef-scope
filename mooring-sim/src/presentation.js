@@ -457,6 +457,129 @@ export function buildPresentation() {
   </div>
 </section>
 
+<!-- ============ COMPARATIF SYSTEMES ============ -->
+<section class="deck">
+  <div class="deck-content">
+    <h2 class="reveal kicker">Comparaison</h2>
+    <p class="reveal big-statement" style="margin-bottom:48px">ReefScope face aux solutions existantes</p>
+
+    <!-- Naturalite -->
+    <div class="cmp-row reveal">
+      <div class="cmp-criterion">
+        <div class="cmp-icon">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <circle cx="20" cy="20" r="16" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/>
+            <path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="#34d399" stroke-width="2" fill="none"/>
+            <circle cx="20" cy="12" r="2" fill="#34d399" opacity="0.6"/>
+          </svg>
+        </div>
+        <h3>Naturalite</h3>
+        <p>Impact visuel sur le site et perception publique</p>
+      </div>
+      <div class="cmp-bars">
+        <div class="cmp-bar-row">
+          <span class="cmp-label">Cables terrestres</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:70%;background:#f87171"></div></div>
+          <span class="cmp-note">Infrastructure visible au fond</span>
+        </div>
+        <div class="cmp-bar-row">
+          <span class="cmp-label">Bouees solaires</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:90%;background:#f87171"></div></div>
+          <span class="cmp-note">Presence permanente en surface</span>
+        </div>
+        <div class="cmp-bar-row">
+          <span class="cmp-label">ReefOS</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:75%;background:#fbbf24"></div></div>
+          <span class="cmp-note">Plateforme solaire visible 24/7</span>
+        </div>
+        <div class="cmp-bar-row cmp-ours">
+          <span class="cmp-label">ReefScope</span>
+          <div class="cmp-bar"><div class="cmp-fill cmp-fill-good" style="width:15%"></div></div>
+          <span class="cmp-note">Bouee temporaire, ancre invisible</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cout d'operation -->
+    <div class="cmp-row reveal d1">
+      <div class="cmp-criterion">
+        <div class="cmp-icon">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <circle cx="20" cy="20" r="14" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+            <path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="#fbbf24" stroke-width="2"/>
+            <path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="#fbbf24" stroke-width="1.5" fill="none" class="cmp-coin"/>
+          </svg>
+        </div>
+        <h3>Cout d'operation</h3>
+        <p>Entretien, biofouling, plongeurs, maintenance</p>
+      </div>
+      <div class="cmp-bars">
+        <div class="cmp-bar-row">
+          <span class="cmp-label">Cables terrestres</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:50%;background:#fbbf24"></div></div>
+          <span class="cmp-note">Biofouling cameras, reparation cables</span>
+        </div>
+        <div class="cmp-bar-row">
+          <span class="cmp-label">Bouees solaires</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:75%;background:#f87171"></div></div>
+          <span class="cmp-note">Plongeurs + panneaux + biofouling</span>
+        </div>
+        <div class="cmp-bar-row">
+          <span class="cmp-label">ReefOS</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:65%;background:#fbbf24"></div></div>
+          <span class="cmp-note">Plongeurs, WiFi, plateforme solaire</span>
+        </div>
+        <div class="cmp-bar-row cmp-ours">
+          <span class="cmp-label">ReefScope</span>
+          <div class="cmp-bar"><div class="cmp-fill cmp-fill-good" style="width:20%"></div></div>
+          <span class="cmp-note">Nettoyage a terre, zero plongeur</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scalabilite -->
+    <div class="cmp-row reveal d2">
+      <div class="cmp-criterion">
+        <div class="cmp-icon">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <circle cx="12" cy="20" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale1"/>
+            <circle cx="24" cy="14" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale2"/>
+            <circle cx="24" cy="26" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale3"/>
+            <line x1="16" y1="20" x2="20" y2="15" stroke="#38bdf8" stroke-width="1" opacity="0.4"/>
+            <line x1="16" y1="20" x2="20" y2="25" stroke="#38bdf8" stroke-width="1" opacity="0.4"/>
+            <circle cx="34" cy="20" r="3" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2 2" opacity="0.4" class="cmp-scale4"/>
+          </svg>
+        </div>
+        <h3>Scalabilite</h3>
+        <p>Capacite a couvrir de grandes surfaces recifales</p>
+      </div>
+      <div class="cmp-bars">
+        <div class="cmp-bar-row">
+          <span class="cmp-label">Cables terrestres</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:20%;background:#f87171"></div></div>
+          <span class="cmp-note">Cout lineaire, infrastructure fixe</span>
+        </div>
+        <div class="cmp-bar-row">
+          <span class="cmp-label">Bouees solaires</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:45%;background:#fbbf24"></div></div>
+          <span class="cmp-note">Deployable mais entretien par unite</span>
+        </div>
+        <div class="cmp-bar-row">
+          <span class="cmp-label">ReefOS</span>
+          <div class="cmp-bar"><div class="cmp-fill" style="width:40%;background:#fbbf24"></div></div>
+          <span class="cmp-note">Cout eleve par station</span>
+        </div>
+        <div class="cmp-bar-row cmp-ours">
+          <span class="cmp-label">ReefScope</span>
+          <div class="cmp-bar"><div class="cmp-fill cmp-fill-good" style="width:90%"></div></div>
+          <span class="cmp-note">Ajouter une ancre = ajouter une station</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- ============ CTA ============ -->
 <section class="deck cta-section">
   <div class="cta-glow"></div>
