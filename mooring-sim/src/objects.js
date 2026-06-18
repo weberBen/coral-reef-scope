@@ -380,7 +380,7 @@ export class MooringObjects {
   // --- Cable ---
 
   _updateCable(tensions) {
-    const radius = Math.max(0.008, P.dia / 2000);
+    const radius = Math.max(0.008, P.dia / 2000) * 8; // visual scale factor
 
     // Find max force magnitude for auto-scaling the gradient
     let maxF = 1;
@@ -608,7 +608,7 @@ export class MooringObjects {
     // Cable as tube
     const points = nodes.map(n => new THREE.Vector3(n.x, n.y, n.z));
     const curve = new THREE.CatmullRomCurve3(points);
-    const radius = Math.max(0.008, P.dia / 2000);
+    const radius = Math.max(0.008, P.dia / 2000) * 8; // visual scale factor
     const tubeGeo = new THREE.TubeGeometry(curve, N * 4, radius, 8, false);
     const tubeMat = new THREE.MeshStandardMaterial({ color: 0x888888 });
     const tube = new THREE.Mesh(tubeGeo, tubeMat);

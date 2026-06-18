@@ -37,8 +37,8 @@ export const P = {
   // Device & floats
   dm: 18,              // device mass in air (kg)
   db: 80,              // device net buoyancy (N) — positive = floats up
-  fn: 0,               // number of intermediate floats
-  fb: 40,              // buoyancy per intermediate float (N)
+  fn: 5,               // number of intermediate floats
+  fb: 60,             // buoyancy per intermediate float (N)
 
   // Display toggles
   showForces: false,
