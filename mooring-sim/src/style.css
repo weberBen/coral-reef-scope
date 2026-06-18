@@ -109,7 +109,7 @@ canvas { display: block; }
 /* --- Large angle display --- */
 #angle-display {
   position: fixed;
-  top: 16px;
+  top: 56px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
