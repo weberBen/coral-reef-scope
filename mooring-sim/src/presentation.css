@@ -438,8 +438,8 @@
 
 .cycle-sticky {
   position: sticky;
-  top: 48px;
-  height: calc(100vh - 48px);
+  top: 72px;
+  height: calc(100vh - 72px);
   display: flex;
   align-items: center;
   justify-content: center;
