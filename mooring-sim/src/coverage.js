@@ -490,6 +490,7 @@ function onMouseMove(event) {
   if (mouseOverMesh) {
     mouseOverMesh = false;
     contourY = null;
+    clearContour();
   }
   tooltip.style.display = 'none';
 }
@@ -560,15 +561,18 @@ function createContourLineObject(segments, color, linewidth, opacity) {
 
 function buildAllContourLines() {
   clearAllContourLines();
+  lastActiveIdx = -1;
+  mouseOverMesh = false;
+  state.contourPlay = true;
+  state.contourLevel = 0;
   const range = meshYMax - meshYMin;
   if (range < 0.01 || reefMeshes.length === 0) return;
   const spacing = range / state.contourSteps;
 
   for (let y = meshYMin + spacing * 0.5; y < meshYMax; y += spacing) {
     const segs = extractContour(y);
-    const lineColor = isDark() ? 0xffffff : 0x1e3a5f;
-    const subtle = createContourLineObject(segs, lineColor, 1, 0.15);
-    const bright = createContourLineObject(segs, lineColor, 2, 0.8);
+    const subtle = createContourLineObject(segs, 0xffffff, 1, 0.15);
+    const bright = createContourLineObject(segs, 0xffffff, 2, 0.8);
     if (subtle && bright) {
       scene.add(subtle);
       bright.visible = false;
@@ -618,8 +622,7 @@ function paintContour(targetY) {
     activeContourLine.material.dispose();
   }
   const segs = extractContour(targetY);
-  const lineColor = isDark() ? 0xffffff : 0x1e3a5f;
-  activeContourLine = createContourLineObject(segs, lineColor, 2, 0.8);
+  activeContourLine = createContourLineObject(segs, 0xffffff, 2, 0.8);
   if (activeContourLine) scene.add(activeContourLine);
 }
 
@@ -1267,6 +1270,9 @@ export function updateCoverageTheme() {
 
   // Repaint depth map vertex colors
   repaintDepthColors();
+
+  // Rebuild contour lines with theme-appropriate colors
+  buildAllContourLines();
 }
 
 function repaintDepthColors() {
