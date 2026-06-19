@@ -82,6 +82,25 @@ reef_export.py                 ─► data/reef.glb  (standalone, Allen → GLB)
 
 All paths are relative to `data_dir` (default `./data/`).
 
+## Test devices (Playwright)
+
+First :
+
+```bash
+cd mooring-sim
+```
+
+```bash
+# iPhone Safari
+bunx playwright open --device="iPhone 13" --browser=webkit http://localhost:5173
+
+# iPad Safari
+bunx playwright open --device="iPad (gen 7)" --browser=webkit http://localhost:5173
+
+# Laptop
+bunx playwright open --viewport-size=1366,768 --browser=chromium http://localhost:5173
+```
+
 ## Config
 
 Edit `config.yaml` to change source (`allen`/`procedural`), bbox, resolution, colony params, etc.

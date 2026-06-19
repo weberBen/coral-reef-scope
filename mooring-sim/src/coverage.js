@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import GUI from 'lil-gui';
-import { getCoverageColors } from './theme.js';
+import { getCoverageColors, isDark } from './theme.js';
 
 // =============================================
 //  STATE
@@ -17,6 +17,9 @@ const state = {
   zExag: 12,
   sensorRes: 1920,   // sensor resolution (pixels horizontal)
   gsdMax: 10,        // max useful GSD in mm/px
+  contourSteps: 8,   // number of contour lines
+  contourLevel: 0,   // 0-1 slider, selects active contour line
+  contourPlay: true, // auto-sweep on by default
 };
 
 let scene, camera, renderer, controls, gui;
@@ -37,13 +40,30 @@ let initialized = false;
 let tooltip = null;
 let meshYMin = 0, meshYMax = 0;
 
-// Depth colormap — vivid
-const CMAP = [
-  [0.0, [250, 230, 180]], [0.1, [200, 220, 130]], [0.2, [120, 210, 140]],
-  [0.35, [60, 200, 180]], [0.5, [40, 170, 210]], [0.7, [50, 120, 200]],
-  [0.85, [40, 80, 170]], [1.0, [30, 50, 130]],
+// Depth colormaps — high contrast, many stops for fine depth discrimination
+const CMAP_DARK = [
+  [0.0,  [255, 240, 140]], [0.05, [240, 230, 80]],
+  [0.1,  [200, 220, 50]],  [0.15, [140, 215, 60]],
+  [0.2,  [80, 210, 90]],   [0.25, [40, 205, 140]],
+  [0.3,  [20, 200, 180]],  [0.4,  [15, 180, 210]],
+  [0.5,  [20, 150, 230]],  [0.6,  [35, 110, 220]],
+  [0.7,  [50, 75, 200]],   [0.8,  [60, 45, 180]],
+  [0.9,  [50, 25, 150]],   [1.0,  [30, 10, 110]],
 ];
+const CMAP_LIGHT = [
+  [0.0,  [255, 245, 160]], [0.05, [245, 235, 100]],
+  [0.1,  [220, 230, 70]],  [0.15, [170, 225, 80]],
+  [0.2,  [110, 215, 110]], [0.25, [60, 210, 150]],
+  [0.3,  [30, 200, 180]],  [0.4,  [25, 180, 210]],
+  [0.5,  [30, 155, 225]],  [0.6,  [45, 120, 210]],
+  [0.7,  [55, 85, 195]],   [0.8,  [65, 55, 175]],
+  [0.9,  [55, 35, 150]],   [1.0,  [40, 20, 120]],
+];
+function getCmap() {
+  return isDark() ? CMAP_DARK : CMAP_LIGHT;
+}
 function depthColor(t) {
+  const CMAP = getCmap();
   t = Math.max(0, Math.min(1, t));
   for (let i = 0; i < CMAP.length - 1; i++) {
     const [t0, c0] = CMAP[i], [t1, c1] = CMAP[i + 1];
@@ -52,7 +72,7 @@ function depthColor(t) {
       return [(c0[0] + f * (c1[0] - c0[0])) / 255, (c0[1] + f * (c1[1] - c0[1])) / 255, (c0[2] + f * (c1[2] - c0[2])) / 255];
     }
   }
-  return [30 / 255, 50 / 255, 130 / 255];
+  return [60 / 255, 100 / 255, 180 / 255];
 }
 
 const AZIMUTH_BINS = 360; // angular resolution for viewshed sweep
@@ -180,6 +200,7 @@ export function initCoverage() {
         vertexColors: true, side: THREE.DoubleSide, shininess: 20,
       });
       child.userData.baseColors = new Float32Array(colors);
+
     }
 
     precomputeFaces();
@@ -257,6 +278,12 @@ export function initCoverage() {
       container.appendChild(labelEl);
     }
 
+    // Apply light colormap if needed at load time
+    if (!isDark()) repaintDepthColors();
+
+    // Build contour lines
+    buildAllContourLines();
+
     // Start auto-demo loop
     startAutoDemo();
   }, null, err => {
@@ -328,8 +355,16 @@ export function initCoverage() {
   setupGUI(container);
 
   let lastLogPos = '';
+  let lastAnimTime = performance.now();
   (function animate() {
     requestAnimationFrame(animate);
+    const now = performance.now();
+    const dt = (now - lastAnimTime) / 1000;
+    lastAnimTime = now;
+    if (state.contourPlay && !mouseOverMesh && contourLines.length > 0) {
+      state.contourLevel = (state.contourLevel + dt * 0.5) % 1;
+    }
+    updateContourLevel();
     controls.update();
     renderer.render(scene, camera);
 
@@ -437,70 +472,164 @@ function onMouseMove(event) {
       tooltip.style.left = (event.clientX - rect.left + 15) + 'px';
       tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
 
-      // Throttle contour update (every 3 frames)
+      // Pause animation, show contour at mouse position
+      mouseOverMesh = true;
       const now = performance.now();
       if (now - contourThrottle > 50) {
         contourThrottle = now;
-        if (contourY === null || Math.abs(hitY - contourY) > 0.05) {
-          contourY = hitY;
-          paintContour(hitY);
+        if (contourY === null || Math.abs(hitPt.y - contourY) > 0.05) {
+          contourY = hitPt.y;
+          paintContour(hitPt.y);
         }
       }
       return;
     }
   }
 
-  // Nothing hovered: clear contour
-  if (contourY !== null) {
+  // Nothing hovered: resume animation
+  if (mouseOverMesh) {
+    mouseOverMesh = false;
     contourY = null;
-    clearContour();
   }
   tooltip.style.display = 'none';
 }
 
-function paintContour(targetY) {
-  const bandwidth = 0.15; // thickness of the contour band in normalized units
+// =============================================
+//  TRUE CONTOUR LINES (plane-mesh intersection)
+// =============================================
+
+let contourLines = [];      // THREE.LineSegments objects in scene
+let activeContourLine = null; // the bright animated one
+let mouseOverMesh = false;
+
+// Extract contour line segments at a given Y level by intersecting all triangles
+function extractContour(yLevel) {
+  const segments = [];
+  const va = new THREE.Vector3(), vb = new THREE.Vector3(), vc = new THREE.Vector3();
 
   for (const mesh of reefMeshes) {
-    const colors = mesh.geometry.attributes.color;
-    const base = mesh.userData.baseColors;
-    if (!colors || !base) continue;
-
-    // Start from current colors (may include coverage red)
-    // We paint contour on top
-    const pos = mesh.geometry.attributes.position;
+    const geo = mesh.geometry;
+    const pos = geo.attributes.position;
+    const idx = geo.index;
     mesh.updateMatrixWorld(true);
-    const v = new THREE.Vector3();
+    const mat = mesh.matrixWorld;
+    const count = idx ? idx.count / 3 : pos.count / 3;
 
-    for (let i = 0; i < pos.count; i++) {
-      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
-      const dist = Math.abs(v.y - targetY);
+    for (let f = 0; f < count; f++) {
+      if (idx) {
+        va.fromBufferAttribute(pos, idx.getX(f * 3)).applyMatrix4(mat);
+        vb.fromBufferAttribute(pos, idx.getX(f * 3 + 1)).applyMatrix4(mat);
+        vc.fromBufferAttribute(pos, idx.getX(f * 3 + 2)).applyMatrix4(mat);
+      } else {
+        va.fromBufferAttribute(pos, f * 3).applyMatrix4(mat);
+        vb.fromBufferAttribute(pos, f * 3 + 1).applyMatrix4(mat);
+        vc.fromBufferAttribute(pos, f * 3 + 2).applyMatrix4(mat);
+      }
 
-      if (dist < bandwidth) {
-        // White contour line, strongest at center
-        const intensity = 1 - dist / bandwidth;
-        const w = intensity * 0.8;
-        colors.array[i * 3] = colors.array[i * 3] * (1 - w) + w;
-        colors.array[i * 3 + 1] = colors.array[i * 3 + 1] * (1 - w) + w;
-        colors.array[i * 3 + 2] = colors.array[i * 3 + 2] * (1 - w) + w;
+      // Find which edges cross yLevel
+      const pts = [];
+      const edges = [[va, vb], [vb, vc], [vc, va]];
+      for (const [p1, p2] of edges) {
+        if ((p1.y - yLevel) * (p2.y - yLevel) < 0) {
+          const t = (yLevel - p1.y) / (p2.y - p1.y);
+          pts.push(new THREE.Vector3(
+            p1.x + t * (p2.x - p1.x),
+            yLevel,
+            p1.z + t * (p2.z - p1.z)
+          ));
+        }
+      }
+      if (pts.length === 2) {
+        segments.push(pts[0], pts[1]);
       }
     }
-    colors.needsUpdate = true;
+  }
+  return segments;
+}
+
+function createContourLineObject(segments, color, linewidth, opacity) {
+  if (segments.length === 0) return null;
+  const geo = new THREE.BufferGeometry().setFromPoints(segments);
+  const mat = new THREE.LineBasicMaterial({
+    color, transparent: opacity < 1, opacity, depthTest: true,
+  });
+  const line = new THREE.LineSegments(geo, mat);
+  line.renderOrder = 10;
+  return line;
+}
+
+function buildAllContourLines() {
+  clearAllContourLines();
+  const range = meshYMax - meshYMin;
+  if (range < 0.01 || reefMeshes.length === 0) return;
+  const spacing = range / state.contourSteps;
+
+  for (let y = meshYMin + spacing * 0.5; y < meshYMax; y += spacing) {
+    const segs = extractContour(y);
+    const subtle = createContourLineObject(segs, 0xffffff, 1, 0.15);
+    const bright = createContourLineObject(segs, 0xffffff, 2, 0.8);
+    if (subtle && bright) {
+      scene.add(subtle);
+      bright.visible = false;
+      scene.add(bright);
+      contourLines.push({ subtle, bright, y });
+    }
   }
 }
 
-function clearContour() {
-  // Restore colors (base + coverage if any)
-  // Simplest: just repaint coverage which resets to base first
-  if (state.cameras.length > 0) {
-    computeCoverage();
-  } else {
-    for (const mesh of reefMeshes) {
-      const colors = mesh.geometry.attributes.color;
-      const base = mesh.userData.baseColors;
-      if (colors && base) { colors.array.set(base); colors.needsUpdate = true; }
-    }
+function clearAllContourLines() {
+  for (const cl of contourLines) {
+    scene.remove(cl.subtle); cl.subtle.geometry.dispose(); cl.subtle.material.dispose();
+    scene.remove(cl.bright); cl.bright.geometry.dispose(); cl.bright.material.dispose();
   }
+  contourLines = [];
+  if (activeContourLine) {
+    scene.remove(activeContourLine);
+    activeContourLine.geometry.dispose();
+    activeContourLine.material.dispose();
+    activeContourLine = null;
+  }
+}
+
+let lastActiveIdx = -1;
+
+function updateContourLevel() {
+  if (!state.contourPlay || mouseOverMesh || contourLines.length === 0) return;
+  const idx = Math.min(Math.floor(state.contourLevel * contourLines.length), contourLines.length - 1);
+  if (idx === lastActiveIdx) return;
+  lastActiveIdx = idx;
+
+  for (let i = 0; i < contourLines.length; i++) {
+    contourLines[i].bright.visible = (i === idx);
+    contourLines[i].subtle.visible = (i !== idx);
+  }
+}
+
+function paintContour(targetY) {
+  // Hide all pre-built lines, show a single contour at mouse Y
+  for (const cl of contourLines) {
+    cl.subtle.visible = false;
+    cl.bright.visible = false;
+  }
+  if (activeContourLine) {
+    scene.remove(activeContourLine);
+    activeContourLine.geometry.dispose();
+    activeContourLine.material.dispose();
+  }
+  const segs = extractContour(targetY);
+  activeContourLine = createContourLineObject(segs, 0xffffff, 2, 0.8);
+  if (activeContourLine) scene.add(activeContourLine);
+}
+
+function clearContour() {
+  if (activeContourLine) {
+    scene.remove(activeContourLine);
+    activeContourLine.geometry.dispose();
+    activeContourLine.material.dispose();
+    activeContourLine = null;
+  }
+  // Restore pre-built lines visibility
+  lastActiveIdx = -1;
 }
 
 // =============================================
@@ -861,10 +990,11 @@ function paintCoverage(visibleFaces) {
       if (!visibleFaces.has(fi)) continue;
       for (let v = 0; v < 3; v++) {
         const vi = idx ? idx.getX(faceIdx * 3 + v) : faceIdx * 3 + v;
-        // Tint visible faces red
-        colors.array[vi * 3] = Math.min(1, base[vi * 3] * 0.3 + 0.7);
-        colors.array[vi * 3 + 1] = base[vi * 3 + 1] * 0.25;
-        colors.array[vi * 3 + 2] = base[vi * 3 + 2] * 0.25;
+        // Tint visible faces pure red (#ff0000)
+        const tint = 0.85;
+        colors.array[vi * 3]     = base[vi * 3]     * (1 - tint) + (255 / 255) * tint;
+        colors.array[vi * 3 + 1] = base[vi * 3 + 1] * (1 - tint) + (0 / 255) * tint;
+        colors.array[vi * 3 + 2] = base[vi * 3 + 2] * (1 - tint) + (0 / 255) * tint;
       }
     }
     colors.needsUpdate = true;
@@ -1039,8 +1169,10 @@ async function startAutoDemo() {
     await new Promise(r => setTimeout(r, 500));
     if (!autoRunning) return;
 
+    const savedNum = state.numCameras;
     state.numCameras = numRandom;
     await optimizePlacement();
+    state.numCameras = savedNum;
     if (!autoRunning) return;
 
     // Wait to show result
@@ -1077,6 +1209,24 @@ function setupGUI(container) {
   });
   params.open();
 
+  const contour = gui.addFolder('Contours');
+  contour.add(state, 'contourSteps', 2, 20, 1).name('Nb lignes').onChange(buildAllContourLines);
+  contour.add(state, 'contourLevel', 0, 1, 0.01).name('Profondeur').listen();
+  contour.add({ toggle() {
+    state.contourPlay = !state.contourPlay;
+    // Reset all lines
+    for (const cl of contourLines) { cl.subtle.visible = true; cl.bright.visible = false; }
+    if (activeContourLine) {
+      scene.remove(activeContourLine);
+      activeContourLine.geometry.dispose();
+      activeContourLine.material.dispose();
+      activeContourLine = null;
+    }
+    lastActiveIdx = -1;
+    state.contourLevel = 0;
+  } }, 'toggle').name('Parcours ▶/⏸');
+  contour.open();
+
   const optim = gui.addFolder('Optimisation');
   optim.add(state, 'numCameras', 1, 100, 1).name('Nb cameras');
   optim.add({ optimize() { stopAutoDemo(); optimizePlacement(); } }, 'optimize').name('Optimiser *');
@@ -1112,4 +1262,30 @@ export function updateCoverageTheme() {
   }
   scene._grid = new THREE.GridHelper(20, 40, cc.grid1, cc.grid2);
   scene.add(scene._grid);
+
+  // Repaint depth map vertex colors
+  repaintDepthColors();
+}
+
+function repaintDepthColors() {
+  if (reefMeshes.length === 0) return;
+  const v = new THREE.Vector3();
+  for (const mesh of reefMeshes) {
+    const pos = mesh.geometry.attributes.position;
+    const colors = mesh.geometry.attributes.color;
+    if (!pos || !colors) continue;
+    mesh.updateMatrixWorld(true);
+    const newBase = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      const t = (v.y - meshYMin) / ((meshYMax - meshYMin) || 1);
+      const [r, g, b] = depthColor(t);
+      newBase[i * 3] = r; newBase[i * 3 + 1] = g; newBase[i * 3 + 2] = b;
+    }
+    mesh.userData.baseColors = newBase;
+    colors.array.set(newBase);
+    colors.needsUpdate = true;
+  }
+  // Re-apply coverage overlay if cameras are placed
+  if (state.cameras.length > 0) computeCoverage();
 }
