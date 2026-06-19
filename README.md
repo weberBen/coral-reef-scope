@@ -1,11 +1,27 @@
-# coral
+# ReefScope
 
-Procedural coral reef generation and 3D visualization.
+Autonomous coral reef monitoring — simulation, presentation deck, and photogrammetric coverage analysis.
+
+## Project Structure
+
+```
+coral-reef-scope/
+    coral_sim/          # Python library: terrain generation, coral growth, mooring analysis
+    mooring-sim/        # Final web application (Vite + Three.js): deck, simulation, coverage
+    tools/              # Standalone CLI scripts for data generation
+    experiments/        # Prototypes & tests (2D Verlet, Infinigen, etc.)
+    data/               # Generated files (gitignored)
+    cache/              # Allen Coral Atlas WFS response cache
+```
 
 ## Install
 
 ```bash
+# Python backend
 uv sync
+
+# Web app
+cd mooring-sim && bun install
 ```
 
 ## Usage
@@ -14,31 +30,25 @@ uv sync
 # Generate terrain from Allen Coral Atlas (Moorea, French Polynesia)
 uv run python -m coral_sim.terrain config.yaml
 
-# Visualize in 3D
+# Visualize in 3D (Viser)
 uv run python -m coral_sim.viz config.yaml
 
 # Both at once
-uv run python run.py config.yaml
+uv run python tools/run.py config.yaml
 
-# Export GLB from a GPS coordinate (standalone)
-uv run python reef_export.py --lat -17.52 --lon -149.83 --label "Moorea Nord" --location "French Polynesia" -o data/reef.glb
-```
-
-### GLB Export from a Location
-
-Standalone script (`reef_export.py`): from a GPS coordinate, downloads Allen Coral Atlas data
-(geomorphic + benthic), generates the depth map, and exports a `.glb` with embedded geo metadata.
-
-```bash
-uv run python reef_export.py \
+# Export GLB from GPS coordinates
+uv run python tools/reef_export.py \
   --lat -17.52 --lon -149.83 \
   --radius 4 \
   --label "Moorea Nord" \
   --location "French Polynesia" \
-  -o data/reef.glb
+  -o mooring-sim/data/reef.glb
+
+# Web app (dev server)
+cd mooring-sim && bun dev
 ```
 
-Options:
+### GLB Export Options
 
 | Option         | Default          | Description                                |
 |----------------|------------------|--------------------------------------------|
@@ -51,7 +61,7 @@ Options:
 | `--cache-dir`  | `cache/`         | Cache directory for WFS requests           |
 | `-o`           | `data/reef.glb`  | Output GLB file                            |
 
-The produced GLB file contains the following glTF extras in the mesh:
+The produced GLB embeds glTF extras:
 
 ```json
 {
@@ -69,27 +79,23 @@ The produced GLB file contains the following glTF extras in the mesh:
 ```
 config.yaml
     |
-    +-- terrain/allen.py        --> data/terrain.npz
-    +-- terrain/procedural.py   --> data/terrain.npz
+    +-- coral_sim/terrain/      --> data/terrain.npz (Allen WFS or procedural)
+    +-- coral_sim/colony.py     --> data/reef.glb (KJMA coral growth)
+    +-- coral_sim/viz.py        --> Viser 3D viewer (localhost:8080)
     |
-    +-- colony.py               --> data/reef.glb      (TODO)
+    +-- tools/reef_export.py    --> data/reef.glb (standalone GPS → GLB)
     |
-    +-- viz.py                  --> 3D interactive window
-
-reef_export.py                  --> data/reef.glb  (standalone, Allen --> GLB)
+    +-- mooring-sim/            --> Web app (localhost:5173)
+        +-- Concept tab         --> Presentation deck
+        +-- Simulation tab      --> 3D mooring physics
+        +-- Coverage tab        --> Photogrammetric viewshed analysis
 ```
 
-All paths are relative to `data_dir` (default `./data/`).
-
-## Test devices (Playwright)
-
-First:
+## Test Devices (Playwright)
 
 ```bash
 cd mooring-sim
-```
 
-```bash
 # iPhone Safari
 bunx playwright open --device="iPhone 13" --browser=webkit http://localhost:5173
 
@@ -103,3 +109,4 @@ bunx playwright open --viewport-size=1366,768 --browser=chromium http://localhos
 ## Config
 
 Edit `config.yaml` to change source (`allen`/`procedural`), bbox, resolution, colony params, etc.
+See `ARCHITECTURE.md` for full reference.

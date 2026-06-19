@@ -8,7 +8,7 @@ Summary of all approaches considered, tested, or adopted for the reef and coral 
 
 ### 1.1 Verlet 2D -- Discrete Elements (HTML)
 
-**File**: `reef-mooring-sim.html`
+**File**: `experiments/mooring-2d-verlet.html`
 **Status**: Implemented (2D prototype)
 
 - Verlet integrator with distance constraints (iterative relaxation, 18 passes)
@@ -180,7 +180,7 @@ Summary of all approaches considered, tested, or adopted for the reef and coral 
 
 ### 3.3 Sketchfab Photogrammetry (legacy)
 
-**File**: `reef_3d.py`
+**File**: `tools/reef_3d.py` (HTML output: `experiments/reef-plotly-viewer.html`)
 
 - Download of 3D scanned models (Structure-from-Motion)
 - Models used: REXCOR (Marseille), Cousteau Reserve (Guadeloupe)
@@ -199,7 +199,7 @@ Summary of all approaches considered, tested, or adopted for the reef and coral 
 | Solution | Status | Notes |
 |----------|--------|-------|
 | **Viser** (adopted) | Implemented | Python --> WebSocket --> Three.js, port 8080 |
-| **Plotly** | Legacy (`reef_3d.py`) | Static HTML, no real-time control |
+| **Plotly** | Legacy (`tools/reef_3d.py`) | Static HTML, no real-time control |
 | **Pure Three.js** | Explored | Better shaders (hover contour lines), but too much custom JS |
 | **MapLibre** | Explored | Displayed the island instead of the reef (satellite tiles) |
 

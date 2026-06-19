@@ -1,20 +1,11 @@
-# Python-generated files
+# Python
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
 *.egg-info
-
-# Virtual environments
-.venv
-
-# Dependencies
-node_modules/
-
-# Environment
-.env
-.env.*
+.venv/
 
 # OS
 .DS_Store
@@ -27,14 +18,17 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Données téléchargées et sorties
-models/
-cache/
-data/
-.npz
-*.glb
-reef_3d.html
-*_log.*
-*_LOG.*
+# Environment
+.env
+.env.*
+
+# Logs
 *.log
 *.LOG
+*_log.*
+*_LOG.*
+MUJOCO_LOG.TXT
+
+# Generated data
+data/
+cache/

@@ -8,25 +8,29 @@ Goal: visualize a reef, place mooring stations, simulate wave/current forces, ev
 ## Architecture
 
 ```
-coral/
+coral-reef-scope/
     config.yaml                     # All parameters (terrain, colony, mooring, viz)
-    run.py                          # Quick launcher
-    data/                           # Generated files (gitignored)
-        terrain.npz                 # Depth map (Allen or procedural)
-        reef.glb                    # Terrain + coral deformation
-        mooring.dat                 # Mooring system (MoorDyn format)
+    tools/
+        run.py                      # Quick launcher (terrain + viz)
+        reef_export.py              # GPS → GLB export
+        reef_3d.py                  # Legacy Sketchfab viewer
     coral_sim/
         __init__.py
         __main__.py
         terrain/
             __init__.py             # get_terrain(), load_config(), resolve_path()
-            io.py                   # TerrainData dataclass + save/load .npz
+            io.py                   # TerrainData dataclass + save/load .npz + .glb export
             allen.py                # Allen Coral Atlas (WFS public, geomorphic + benthic)
             procedural.py           # Procedural terrain (multi-zone, spline profiles, fBm)
         colony.py                   # KJMA anisotropic coral growth (deforms terrain mesh)
         mooring.py                  # MoorDyn file loading via MoorPy
+        anchor_sim.py               # MuJoCo 3D dynamic mooring simulation + Viser GUI
         viz.py                      # Viser 3D interactive browser visualization
-    reef_3d.py                      # Legacy standalone Sketchfab viewer (unused)
+    mooring-sim/                    # Final web app (Vite + Three.js)
+        src/                        # JS/CSS sources (presentation, simulation, coverage)
+    legacy/                         # Archived prototypes
+    data/                           # Generated files (gitignored)
+    cache/                          # WFS response cache
 ```
 
 ## Modules — Current State

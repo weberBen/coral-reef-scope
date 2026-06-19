@@ -47,15 +47,20 @@ The project includes:
 coral-reef-scope/
     config.yaml                         # All parameters (terrain, colony, mooring, viz)
     pyproject.toml                      # Python deps (uv)
-    run.py                              # Quick launcher for terrain + viz
-    reef_export.py                      # Standalone GLB export from GPS coordinates
-    reef_3d.py                          # Legacy Sketchfab/Plotly viewer
-    reef_3d.html                        # Legacy 3D HTML viewer
-    reef-mooring-sim.html               # 2D Verlet mooring prototype (standalone)
     ARCHITECTURE.md                     # This file
     EXPLORED_SOLUTIONS.md               # All approaches tried/abandoned/adopted
     LLM.md                              # LLM context file
     README.md                           # Quick start guide
+
+    tools/                              # Standalone CLI scripts
+        run.py                          # Quick launcher for terrain + viz
+        reef_export.py                  # GPS → GLB export
+        reef_3d.py                      # Legacy Sketchfab/Plotly viewer
+
+    experiments/                         # Prototypes & tests
+        mooring-2d-verlet.html          # 2D Verlet mooring prototype
+        reef-plotly-viewer.html         # Plotly 3D reef viewer prototype
+        infinigen-test/                 # Infinigen render output
 
     coral_sim/                          # Python modules
         __init__.py
@@ -497,7 +502,7 @@ uv run python -m coral_sim.terrain \                  # Direct from GPS
   --lat -17.4894 --lon -149.8268 --radius 4 \
   --label "Moorea Nord" -o mooring-sim/data/reef.glb
 uv run python -m coral_sim.viz config.yaml            # Viser 3D viewer
-uv run python run.py config.yaml                      # Terrain + viz in one
+uv run python tools/run.py config.yaml                 # Terrain + viz in one
 
 # -- MuJoCo anchor simulation --
 uv run python -m coral_sim.anchor_sim config.yaml     # Viser GUI on port 8080
