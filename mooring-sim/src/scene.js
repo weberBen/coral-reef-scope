@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { P } from './params.js';
-import { getSceneColors } from './theme.js';
+import { getSceneColors, isDark } from './theme.js';
 
 export function initScene() {
   const tc = getSceneColors();
@@ -110,6 +110,11 @@ export function updateSceneTheme(scene, camera, renderer, objects) {
     bgTex.mapping = THREE.EquirectangularReflectionMapping;
     scene.background = bgTex;
     if (old && old.dispose) old.dispose();
+  }
+
+  // Update seabed tint
+  if (objects && objects.seabed) {
+    objects.seabed.material.color.set(isDark() ? 0x8B7355 : 0xd4b896);
   }
 
   // Update water shader uniforms

@@ -56,6 +56,9 @@ initNodes();
 const { scene, camera, renderer, controls, causticLight } = initScene();
 const objects = new MooringObjects(scene);
 
+// Apply theme at startup (scene is created with dark defaults)
+if (!isDark()) updateSceneTheme(scene, camera, renderer, objects);
+
 const callbacks = {
   onDepthChange() {
     initNodes();

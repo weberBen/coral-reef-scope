@@ -408,14 +408,16 @@ export class MooringObjects {
       mesh.scale.set(radius, len, radius);
       mesh.quaternion.setFromUnitVectors(UP, _dir.normalize());
 
-      // Color by force magnitude at upper node (green → yellow → red)
+      // Color by force: green (low) → yellow → red (high), smooth Hermite blend
+      const LOW = new THREE.Color('#34d399');
+      const MID = new THREE.Color('#fbbf24');
+      const HIGH = new THREE.Color('#ef4444');
       const f = forces[i + 1].total;
       const frac = Math.min(1, Math.hypot(f.x, f.y, f.z) / maxF);
-      mesh.material.color.setHSL(
-        (1 - frac) * 0.38,  // hue: 0.38 (green) → 0 (red)
-        0.8,                 // saturation
-        0.45 + frac * 0.1    // lightness
-      );
+      const t = frac * frac * (3 - 2 * frac); // smoothstep
+      const cLow = new THREE.Color().lerpColors(LOW, MID, t);
+      const cHigh = new THREE.Color().lerpColors(MID, HIGH, t);
+      mesh.material.color.lerpColors(cLow, cHigh, t);
     }
   }
 
