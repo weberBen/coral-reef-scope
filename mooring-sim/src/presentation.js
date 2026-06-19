@@ -1,5 +1,7 @@
 import { isDark, onThemeChange } from './theme.js';
 import { t } from './i18n.js';
+import { createSocialPanel } from 'social-links-panel';
+import socialConfig from './social.config.js';
 
 export function buildPresentation() {
   const el = document.getElementById('presentation');
@@ -554,6 +556,32 @@ export function buildPresentation() {
 
   // Hero particles canvas
   initHeroParticles();
+
+  // Social links panel (appended after CTA)
+  const panel = createSocialPanel({
+    ...socialConfig,
+    modal: isDark() ? 'dark' : 'light',
+  });
+  panel.appendTo(el);
+
+  // Social link icons in the utility bar (icon-only, next to lang/theme)
+  const tabUtils = document.querySelector('.tab-utils');
+  if (tabUtils && !tabUtils.querySelector('.slp-toolbar-icon')) {
+    const icons = panel.createToolbarIcons('tab-btn');
+    const firstUtil = tabUtils.firstChild;
+    icons.forEach(icon => tabUtils.insertBefore(icon, firstUtil));
+  }
+
+  // Nav buttons in the tab bar (from config.nav)
+  const tabButtons = document.querySelector('.tab-buttons');
+  if (tabButtons) {
+    panel.createNavButtons('tab-btn').forEach(btn => {
+      if (!document.getElementById(btn.id)) tabButtons.appendChild(btn);
+    });
+  }
+
+  // Sync modal theme with dark/light toggle
+  onThemeChange(() => panel.setModalTheme(isDark() ? 'dark' : 'light'));
 }
 
 function initCycleScroll() {
