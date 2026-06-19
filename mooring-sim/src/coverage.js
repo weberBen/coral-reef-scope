@@ -566,8 +566,9 @@ function buildAllContourLines() {
 
   for (let y = meshYMin + spacing * 0.5; y < meshYMax; y += spacing) {
     const segs = extractContour(y);
-    const subtle = createContourLineObject(segs, 0xffffff, 1, 0.15);
-    const bright = createContourLineObject(segs, 0xffffff, 2, 0.8);
+    const lineColor = isDark() ? 0xffffff : 0x1e3a5f;
+    const subtle = createContourLineObject(segs, lineColor, 1, 0.15);
+    const bright = createContourLineObject(segs, lineColor, 2, 0.8);
     if (subtle && bright) {
       scene.add(subtle);
       bright.visible = false;
@@ -617,7 +618,8 @@ function paintContour(targetY) {
     activeContourLine.material.dispose();
   }
   const segs = extractContour(targetY);
-  activeContourLine = createContourLineObject(segs, 0xffffff, 2, 0.8);
+  const lineColor = isDark() ? 0xffffff : 0x1e3a5f;
+  activeContourLine = createContourLineObject(segs, lineColor, 2, 0.8);
   if (activeContourLine) scene.add(activeContourLine);
 }
 

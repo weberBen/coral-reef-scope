@@ -44,8 +44,8 @@ export function getCoverageColors() {
     grid1: 0x445566,
     grid2: 0x2a3a4a,
   } : {
-    clearColor: 0xf0f4f8,
-    bg: 0xf0f4f8,
+    clearColor: 0xc8dce8,
+    bg: 0xc8dce8,
     grid1: 0xcccccc,
     grid2: 0xe0e0e0,
   };
