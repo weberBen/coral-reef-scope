@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import GUI from 'lil-gui';
 import { getCoverageColors, isDark } from './theme.js';
+import { t } from './i18n.js';
 
 // =============================================
 //  STATE
@@ -86,7 +87,7 @@ export function initCoverage() {
   initialized = true;
 
   const container = document.getElementById('tab-coverage');
-  container.innerHTML = '<div id="coverage-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--t3);font-size:16px;z-index:5">Chargement du recif...</div>';
+  container.innerHTML = `<div id="coverage-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--t3);font-size:16px;z-index:5">${t('covLoading')}</div>`;
 
   const cc = getCoverageColors();
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -304,20 +305,20 @@ export function initCoverage() {
   topBar.id = 'cov-topbar';
   topBar.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:20px;align-items:center;z-index:10;pointer-events:none;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 320px);padding:0 8px';
   topBar.innerHTML = `
-    <div class="cov-stat" data-tip="Nombre de stations ancrees">
-      <div class="cov-label">Cameras</div>
+    <div class="cov-stat" data-tip="${t('covTipCam')}">
+      <div class="cov-label">${t('covCameras')}</div>
       <div id="camera-count" class="cov-num" style="color:var(--t1)">0</div>
     </div>
-    <div class="cov-stat" data-tip="Surface du recif visible depuis les cameras au fond (viewshed avec occlusion terrain)">
-      <div class="cov-label">Couv. fond</div>
+    <div class="cov-stat" data-tip="${t('covTipGround')}">
+      <div class="cov-label">${t('covGround')}</div>
       <div id="coverage-value" class="cov-num" style="color:var(--green)">0%</div>
     </div>
-    <div class="cov-stat" data-tip="Surface totale vue pendant la remontee (camera vers le bas, toutes altitudes)">
-      <div class="cov-label">Couv. surface</div>
+    <div class="cov-stat" data-tip="${t('covTipSurface')}">
+      <div class="cov-label">${t('covSurface')}</div>
       <div id="ascent-coverage-value" class="cov-num" style="color:var(--green)">0%</div>
     </div>
-    <div class="cov-stat" data-tip="Resolution moyenne au sol (Ground Sample Distance). Augmente avec l'altitude, depend du capteur">
-      <div class="cov-label">GSD moyen</div>
+    <div class="cov-stat" data-tip="${t('covTipGsd')}">
+      <div class="cov-label">${t('covGsdMean')}</div>
       <div id="gsd-value" class="cov-num" style="color:var(--t1)">--</div>
     </div>
   `;
@@ -1195,16 +1196,16 @@ function stopAutoDemo() {
 }
 
 function setupGUI(container) {
-  gui = new GUI({ title: 'Couverture', width: 300, container });
+  gui = new GUI({ title: t('covTitle'), width: 300, container });
   gui.domElement.style.position = 'absolute';
   gui.domElement.style.top = '60px';
   gui.domElement.style.right = '8px';
 
-  const params = gui.addFolder('Camera');
-  params.add(state, 'visRange', 0.5, 8, 0.1).name('Portee (unites)').onChange(computeCoverage);
-  params.add(state, 'sensorRes', 640, 4096, 1).name('Resolution capteur (px)').onChange(computeCoverage);
-  params.add(state, 'gsdMax', 1, 20, 0.5).name('GSD max (mm/px)').onChange(computeCoverage);
-  params.add(state, 'zExag', 1, 20, 0.5).name('Exag. Z').onChange(v => {
+  const params = gui.addFolder(t('covCamera'));
+  params.add(state, 'visRange', 0.5, 8, 0.1).name(t('covRange')).onChange(computeCoverage);
+  params.add(state, 'sensorRes', 640, 4096, 1).name(t('covSensorRes')).onChange(computeCoverage);
+  params.add(state, 'gsdMax', 1, 20, 0.5).name(t('covGsdMax')).onChange(computeCoverage);
+  params.add(state, 'zExag', 1, 20, 0.5).name(t('covZExag')).onChange(v => {
     if (reefGroup) {
       reefGroup.scale.y = meshScale * v;
       reefGroup.updateMatrixWorld(true);
@@ -1214,9 +1215,9 @@ function setupGUI(container) {
   });
   params.open();
 
-  const contour = gui.addFolder('Contours');
-  contour.add(state, 'contourSteps', 2, 20, 1).name('Nb lignes').onChange(buildAllContourLines);
-  contour.add(state, 'contourLevel', 0, 1, 0.01).name('Profondeur').listen();
+  const contour = gui.addFolder(t('covContours'));
+  contour.add(state, 'contourSteps', 2, 20, 1).name(t('covNbLines')).onChange(buildAllContourLines);
+  contour.add(state, 'contourLevel', 0, 1, 0.01).name(t('covDepthSlider')).listen();
   contour.add({ toggle() {
     state.contourPlay = !state.contourPlay;
     // Reset all lines
@@ -1229,20 +1230,20 @@ function setupGUI(container) {
     }
     lastActiveIdx = -1;
     state.contourLevel = 0;
-  } }, 'toggle').name('Parcours ▶/⏸');
+  } }, 'toggle').name(t('covPlayPause'));
   contour.open();
 
-  const optim = gui.addFolder('Optimisation');
-  optim.add(state, 'numCameras', 1, 100, 1).name('Nb cameras');
-  optim.add({ optimize() { stopAutoDemo(); optimizePlacement(); } }, 'optimize').name('Optimiser *');
-  optim.add({ clear() { stopAutoDemo(); clearCameras(); } }, 'clear').name('Tout effacer');
+  const optim = gui.addFolder(t('covOptim'));
+  optim.add(state, 'numCameras', 1, 100, 1).name(t('covNbCam'));
+  optim.add({ optimize() { stopAutoDemo(); optimizePlacement(); } }, 'optimize').name(t('covOptimize'));
+  optim.add({ clear() { stopAutoDemo(); clearCameras(); } }, 'clear').name(t('covClear'));
   optim.open();
 
   // Mobile toggle button for GUI panel
   const toggleBar = document.createElement('div');
   toggleBar.className = 'cov-toggle-bar';
   toggleBar.style.cssText = 'display:none;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:15';
-  toggleBar.innerHTML = '<button class="sim-toggle-btn" id="cov-toggle-ctrl">Controles</button>';
+  toggleBar.innerHTML = `<button class="sim-toggle-btn" id="cov-toggle-ctrl">${t('guiControls')}</button>`;
   container.appendChild(toggleBar);
 
   document.getElementById('cov-toggle-ctrl')?.addEventListener('click', (e) => {

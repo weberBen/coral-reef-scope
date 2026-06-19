@@ -1,4 +1,5 @@
 import { isDark, onThemeChange } from './theme.js';
+import { t } from './i18n.js';
 
 export function buildPresentation() {
   const el = document.getElementById('presentation');
@@ -11,14 +12,14 @@ export function buildPresentation() {
   <canvas class="hero-particles" id="hero-canvas"></canvas>
   <div class="hero-rays"></div>
   <div class="deck-content hero-content">
-    <div class="hero-badge">Reef Monitoring System</div>
-    <h1 class="reveal">ReefScope</h1>
-    <p class="reveal d1">Surveillance autonome des recifs coralliens</p>
-    <p class="reveal d2 hero-sub">Un systeme ou chaque capteur remonte, se recharge,<br>et replonge. Sans intervention humaine sous l'eau.</p>
+    <div class="hero-badge">${t('heroBadge')}</div>
+    <h1 class="reveal">${t('heroTitle')}</h1>
+    <p class="reveal d1">${t('heroSub1')}</p>
+    <p class="reveal d2 hero-sub">${t('heroSub2')}</p>
   </div>
   <div class="scroll-cue reveal d3">
     <div class="scroll-line"></div>
-    <span>Decouvrir</span>
+    <span>${t('heroScroll')}</span>
   </div>
 </section>
 
@@ -26,8 +27,8 @@ export function buildPresentation() {
 <section class="deck dark-ocean">
   <div class="deck-bg-anim bubbles-bg"></div>
   <div class="deck-content">
-    <h2 class="reveal kicker">Le monitoring sous-marin aujourd'hui</h2>
-    <p class="reveal big-statement">Chaque methode existante impose un compromis<br>entre <em>cout</em>, <em>risque</em> et <em>couverture</em>.</p>
+    <h2 class="reveal kicker">${t('probKicker')}</h2>
+    <p class="reveal big-statement">${t('probStatement')}</p>
   </div>
 </section>
 
@@ -40,9 +41,9 @@ export function buildPresentation() {
             <div class="biofouling-layer"></div>
           </div>
         </div>
-        <h3>Cameras fixes</h3>
-        <p>Biofouling en quelques semaines.<br>Plongeurs requis pour chaque maintenance.</p>
-        <div class="pcard-tag bad">OPEX eleve</div>
+        <h3>${t('probCard1Title')}</h3>
+        <p>${t('probCard1Text')}</p>
+        <div class="pcard-tag bad">${t('probCard1Tag')}</div>
       </div>
       <div class="pcard reveal d1">
         <div class="pcard-visual">
@@ -50,9 +51,9 @@ export function buildPresentation() {
             <div class="collision-flash"></div>
           </div>
         </div>
-        <h3>Drones sous-marins</h3>
-        <p>Controle en eau complexe.<br>Risque de collision avec le corail.</p>
-        <div class="pcard-tag bad">Risque + cout R&D</div>
+        <h3>${t('probCard2Title')}</h3>
+        <p>${t('probCard2Text')}</p>
+        <div class="pcard-tag bad">${t('probCard2Tag')}</div>
       </div>
       <div class="pcard reveal d2">
         <div class="pcard-visual">
@@ -60,9 +61,9 @@ export function buildPresentation() {
             <div class="power-pulse"></div>
           </div>
         </div>
-        <h3>Alimentation et impact</h3>
-        <p>Cables sous-marins ou bouees solaires en permanence. Infrastructure lourde qui deteriore l'aspect naturel du site et impacte sa reception aupres du public et des touristes.</p>
-        <div class="pcard-tag bad">Non scalable + impact visuel</div>
+        <h3>${t('probCard3Title')}</h3>
+        <p>${t('probCard3Text')}</p>
+        <div class="pcard-tag bad">${t('probCard3Tag')}</div>
       </div>
     </div>
   </div>
@@ -71,8 +72,8 @@ export function buildPresentation() {
 <!-- ============ TRANSITION ============ -->
 <section class="deck transition-section">
   <div class="deck-content">
-    <p class="reveal big-statement">Et si on inversait le probleme ?</p>
-    <p class="reveal d1 big-statement accent">Au lieu d'aller entretenir les capteurs...<br>les capteurs viennent a nous.</p>
+    <p class="reveal big-statement">${t('transStatement1')}</p>
+    <p class="reveal d1 big-statement accent">${t('transStatement2')}</p>
   </div>
 </section>
 
@@ -87,13 +88,13 @@ export function buildPresentation() {
     <div class="ripple-ring r5"></div>
   </div>
   <div class="deck-content">
-    <h2 class="reveal kicker">Notre approche</h2>
-    <h3 class="reveal mega-title">APAC</h3>
+    <h2 class="reveal kicker">${t('solKicker')}</h2>
+    <h3 class="reveal mega-title">${t('solTitle')}</h3>
     <div class="capa-expand reveal d1" style="margin:24px auto 0">
-      <div class="capa-item"><span class="capa-letter">A</span><span class="capa-word">synchronous</span></div>
-      <div class="capa-item"><span class="capa-letter">P</span><span class="capa-word">eriodic</span></div>
-      <div class="capa-item"><span class="capa-letter">A</span><span class="capa-word">utonomous</span></div>
-      <div class="capa-item"><span class="capa-letter">C</span><span class="capa-word">apture</span></div>
+      <div class="capa-item"><span class="capa-letter">A</span><span class="capa-word">${t('capaA')}</span></div>
+      <div class="capa-item"><span class="capa-letter">P</span><span class="capa-word">${t('capaP')}</span></div>
+      <div class="capa-item"><span class="capa-letter">A</span><span class="capa-word">${t('capaA2')}</span></div>
+      <div class="capa-item"><span class="capa-letter">C</span><span class="capa-word">${t('capaC')}</span></div>
     </div>
   </div>
 </section>
@@ -110,7 +111,7 @@ export function buildPresentation() {
       <rect x="0" y="400" width="720" height="60" class="cy-seabed"/>
       <!-- Shore -->
       <path d="M720 75 L750 75 L900 75 L900 460 L720 460Z" class="cy-shore"/>
-      <text x="810" y="60" text-anchor="middle" fill="var(--orange)" font-size="16" font-weight="800" font-family="Inter,sans-serif">RIVE</text>
+      <text x="810" y="60" text-anchor="middle" fill="var(--orange)" font-size="16" font-weight="800" font-family="Inter,sans-serif">${t('svgRive')}</text>
 
       <!-- ===== PERMANENT: Anchor only ===== -->
       <g id="cy-station">
@@ -187,7 +188,7 @@ export function buildPresentation() {
 
         <!-- Signal path -->
         <path d="M530 56 Q650 40 762 35" fill="none" stroke="var(--t1)" stroke-width="2.5" stroke-dasharray="5 4" class="signal-path"/>
-        <text x="650" y="30" text-anchor="middle" fill="var(--t1)" font-size="13" font-weight="700" font-family="Inter,sans-serif">DATA</text>
+        <text x="650" y="30" text-anchor="middle" fill="var(--t1)" font-size="13" font-weight="700" font-family="Inter,sans-serif">${t('svgData')}</text>
       </g>
 
       <!-- ===== PHASE 4: Replacement + collection ===== -->
@@ -211,7 +212,7 @@ export function buildPresentation() {
           <rect x="762" y="125" width="20" height="16" rx="3" class="cy-device-fill" opacity="0.6"/>
           <circle cx="772" cy="119" r="5" fill="var(--orange)" opacity="0.5"/>
         </g>
-        <text x="772" y="180" text-anchor="middle" fill="var(--orange)" font-size="13" font-weight="700" font-family="Inter,sans-serif">COLLECTE</text>
+        <text x="772" y="180" text-anchor="middle" fill="var(--orange)" font-size="13" font-weight="700" font-family="Inter,sans-serif">${t('svgCollecte')}</text>
       </g>
 
       <defs>
@@ -228,30 +229,30 @@ export function buildPresentation() {
     <div class="cy-text-phase" data-phase="1">
       <div class="cy-text-inner">
         <div class="cy-phase-num">01</div>
-        <h3>Capture en profondeur</h3>
-        <p>Le dispositif est ancre au fond, camera active. Il capture des images en continu pendant toute la duree de sa batterie. Aucune intervention necessaire.</p>
+        <h3>${t('cyPhase1Title')}</h3>
+        <p>${t('cyPhase1Text')}</p>
       </div>
     </div>
     <div class="cy-text-phase" data-phase="2">
       <div class="cy-text-inner">
         <div class="cy-phase-num">02</div>
-        <h3>Remontee automatique</h3>
-        <p>Apres ~24h, la batterie est epuisee. Le dispositif se detache et remonte lentement par flottabilite. La remontee lente respecte la vie biomarine, sans mouvement brusque ni perturbation reguliere. Le cable reste en place, la bouee n'est visible en surface que temporairement, pour ne pas impacter la naturalite du lieu et sa perception aupres du public.</p>
+        <h3>${t('cyPhase2Title')}</h3>
+        <p>${t('cyPhase2Text')}</p>
       </div>
     </div>
     <div class="cy-text-phase" data-phase="3">
       <div class="cy-text-inner">
         <div class="cy-phase-num">03</div>
-        <h3>Transit en surface</h3>
-        <p>Une fois en surface, le dispositif rejoint la rive par navigation autonome ou simple derive passive. La bouee reste en place, marquant la station pour le prochain capteur.</p>
-        <p>En surface, les donnees capturees sont transmises par radio vers la rive. La diffusion est asynchrone avec un delai de ~24h, ce qui reste acceptable au regard de la temporalite des ecosystemes coralliens et de l'experience utilisateur.</p>
+        <h3>${t('cyPhase3Title')}</h3>
+        <p>${t('cyPhase3Text1')}</p>
+        <p>${t('cyPhase3Text2')}</p>
       </div>
     </div>
     <div class="cy-text-phase" data-phase="4">
       <div class="cy-text-inner">
         <div class="cy-phase-num">04</div>
-        <h3>Remplacement et collecte</h3>
-        <p>Un capteur frais rejoint la bouee depuis la rive et descend s'amarrer. L'ancien capteur est recupere dans un filet de collecte passif, nettoye et recharge pour le prochain cycle.</p>
+        <h3>${t('cyPhase4Title')}</h3>
+        <p>${t('cyPhase4Text')}</p>
       </div>
     </div>
   </div>
@@ -261,8 +262,8 @@ export function buildPresentation() {
 <section class="deck phases-intro">
   <div class="deck-bg-gradient orange-glow"></div>
   <div class="deck-content">
-    <h2 class="reveal kicker">Evolution</h2>
-    <p class="reveal big-statement">Trois phases vers l'autonomie totale</p>
+    <h2 class="reveal kicker">${t('phKicker')}</h2>
+    <p class="reveal big-statement">${t('phStatement')}</p>
   </div>
 </section>
 
@@ -281,11 +282,11 @@ export function buildPresentation() {
             <circle cx="40" cy="10" r="3" fill="var(--orange)"/>
           </svg>
         </div>
-        <h3>Recuperation par bateau</h3>
-        <p>Les capteurs remontent et flottent. Un bateau les collecte lors de rondes periodiques. Infrastructure minimale, validation rapide du concept.</p>
+        <h3>${t('ph1Title')}</h3>
+        <p>${t('ph1Text')}</p>
         <div class="phase-highlights">
-          <span class="ph-tag blue">Bateau de service</span>
-          <span class="ph-tag blue">GPS sur chaque capteur</span>
+          <span class="ph-tag blue">${t('ph1Tag1')}</span>
+          <span class="ph-tag blue">${t('ph1Tag2')}</span>
         </div>
         <div class="phase-metric">
           <span class="metric-label">CAPEX</span><span class="metric-bar low"></span>
@@ -314,37 +315,37 @@ export function buildPresentation() {
             <circle cx="102" cy="35" r="4" fill="var(--green)" opacity="0.7"/>
           </svg>
         </div>
-        <h3>Collecte automatisee</h3>
-        <p class="phase-desc">Deux variantes possibles selon le site et le budget :</p>
+        <h3>${t('ph2Title')}</h3>
+        <p class="phase-desc">${t('ph2Desc')}</p>
 
         <div class="phase-variant">
-          <div class="pv-label">Option A : Active</div>
+          <div class="pv-label">${t('ph2OptALabel')}</div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span><strong>Navigation en ligne droite</strong> vers la rive,algo trivial, le capteur vise la cote sans intelligence sous-marine</span>
+            <span>${t('ph2OptA1')}</span>
           </div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span>Station cotiere de recharge + nettoyage, puis <strong>relance par catapulte</strong> vers les bouees. Amarrage au contact</span>
+            <span>${t('ph2OptA2')}</span>
           </div>
         </div>
 
         <div class="phase-variant">
-          <div class="pv-label">Option B : Passive</div>
+          <div class="pv-label">${t('ph2OptBLabel')}</div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span><strong>Derive naturelle</strong>,les capteurs flottent et le courant les ramene vers la cote</span>
+            <span>${t('ph2OptB1')}</span>
           </div>
           <div class="pd-item">
             <span class="pd-icon">→</span>
-            <span><strong>Filet de collecte cotier</strong> type anti-pollution,recupere les capteurs sans intervention, comme un barrage flottant</span>
+            <span>${t('ph2OptB2')}</span>
           </div>
         </div>
 
         <div class="phase-highlights">
-          <span class="ph-tag orange">Zero intelligence sous-marine</span>
-          <span class="ph-tag orange">Filet passif ou algo ligne droite</span>
-          <span class="ph-tag orange">Amarrage au contact</span>
+          <span class="ph-tag orange">${t('ph2Tag1')}</span>
+          <span class="ph-tag orange">${t('ph2Tag2')}</span>
+          <span class="ph-tag orange">${t('ph2Tag3')}</span>
         </div>
         <div class="phase-metric">
           <span class="metric-label">CAPEX</span><span class="metric-bar med"></span>
@@ -369,13 +370,13 @@ export function buildPresentation() {
             <ellipse cx="42" cy="65" rx="15" ry="3" fill="none" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
           </svg>
         </div>
-        <h3>Essaim de capteurs</h3>
-        <p>Changement de paradigme : produire <strong>beaucoup de capteurs basse resolution</strong> plutot que peu de capteurs haute resolution. Largues par drone, descente lente par culbutage,robuste au vent, pose precise sans parachute.</p>
-        <p>Le cout se concentre sur la <strong>production en masse</strong> de capteurs jetables, pas sur l'infrastructure. La couverture du recif scale lineairement avec le nombre de capteurs produits.</p>
+        <h3>${t('ph3Title')}</h3>
+        <p>${t('ph3Text1')}</p>
+        <p>${t('ph3Text2')}</p>
         <div class="phase-highlights">
-          <span class="ph-tag green">Cout = production uniquement</span>
-          <span class="ph-tag green">Quantite > resolution</span>
-          <span class="ph-tag green">Zero infrastructure</span>
+          <span class="ph-tag green">${t('ph3Tag1')}</span>
+          <span class="ph-tag green">${t('ph3Tag2')}</span>
+          <span class="ph-tag green">${t('ph3Tag3')}</span>
         </div>
         <div class="phase-refs">
           <span>TumblerBots (arXiv 2410.23049)</span>
@@ -393,12 +394,12 @@ export function buildPresentation() {
   <div class="deck-content">
     <div class="split reverse">
       <div class="mapping-text">
-        <h2 class="reveal kicker">Cartographie integree</h2>
-        <p class="reveal big-statement">Chaque remontee produit une<br><em>carte 3D</em> du recif</p>
-        <p class="reveal d1 sub-text">Les cameras orientees vers le bas capturent le recif a differentes altitudes pendant la remontee. Les images sont assemblees par photogrammetrie pour reconstruire un modele 3D haute resolution.</p>
-        <p class="reveal d2 sub-text highlight-text">Chaque cycle de maintenance = une mise a jour automatique de la cartographie. Pas de survol drone, pas de plongeur.</p>
-        <p class="reveal d3 sub-text">La turbidite peut compromettre la qualite des captures en altitude, mais les images haute resolution prises au fond servent de reference : par interpolation entre ces zones connues et les captures de remontee, on reconstitue les zones ou la visibilite etait insuffisante.</p>
-        <p class="reveal d3 sub-text">La remontee etant breve et limitee a une fois par jour, l'utilisation d'un sonar acoustique ou d'un LiDAR bathymetrique peut etre envisagee pour completer la capture optique. L'impact sur la vie sous-marine reste compatible avec les recommandations en vigueur compte tenu de la faible duree et frequence d'exposition.</p>
+        <h2 class="reveal kicker">${t('mapKicker')}</h2>
+        <p class="reveal big-statement">${t('mapStatement')}</p>
+        <p class="reveal d1 sub-text">${t('mapText1')}</p>
+        <p class="reveal d2 sub-text highlight-text">${t('mapText2')}</p>
+        <p class="reveal d3 sub-text">${t('mapText3')}</p>
+        <p class="reveal d3 sub-text">${t('mapText4')}</p>
       </div>
       <div class="mapping-illustration reveal d1">
         <svg viewBox="0 0 360 480" class="illustration">
@@ -474,41 +475,41 @@ export function buildPresentation() {
 <!-- ============ COMPARATIF SYSTEMES ============ -->
 <section class="deck">
   <div class="deck-content">
-    <h2 class="reveal kicker">Comparaison</h2>
-    <p class="reveal big-statement" style="margin-bottom:48px">Face aux solutions existantes</p>
+    <h2 class="reveal kicker">${t('cmpKicker')}</h2>
+    <p class="reveal big-statement" style="margin-bottom:48px">${t('cmpStatement')}</p>
 
     <div class="grid-compare reveal d1">
       <table>
         <thead>
           <tr>
             <th></th>
-            <th>Cable sous-marin</th>
-            <th>Bouees solaires</th>
-            <th>ReefOS</th>
-            <th class="gc-ours">ReefScope</th>
+            <th>${t('cmpCable')}</th>
+            <th>${t('cmpBuoy')}</th>
+            <th>${t('cmpReefOS')}</th>
+            <th class="gc-ours">${t('cmpOurs')}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="var(--green)" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="var(--green)" opacity="0.6"/></svg>Naturalite</td>
-            <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Infra en fond, câble traversant le récif</span></div></td>
-            <td data-label="Bouees solaires"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Bouées en surface en permanence</span></div></td>
-            <td data-label="ReefOS"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">Plateforme concentrée mais permanente</span></div></td>
-            <td data-label="ReefScope"><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.65</span><span class="gc-sub">Infra en fond, bouée temporaire</span></div></td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="var(--green)" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="var(--green)" opacity="0.6"/></svg>${t('cmpNat')}</td>
+            <td data-label="${t('cmpCable')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpNatCable')}</span></div></td>
+            <td data-label="${t('cmpBuoy')}"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">${t('cmpNatBuoy')}</span></div></td>
+            <td data-label="${t('cmpReefOS')}"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">${t('cmpNatReefOS')}</span></div></td>
+            <td data-label="${t('cmpOurs')}"><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.65</span><span class="gc-sub">${t('cmpNatOurs')}</span></div></td>
           </tr>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="var(--yellow)" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="var(--yellow)" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="var(--yellow)" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>OPEX</td>
-            <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Plongeurs biofouling + entretien câbles</span></div></td>
-            <td data-label="Bouees solaires"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs biofouling + entretien panneaux</span></div></td>
-            <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs + plateforme + maillage WiFi</span></div></td>
-            <td data-label="ReefScope"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">Nettoyage à terre, entretien en fond limité</span></div></td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="var(--yellow)" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="var(--yellow)" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="var(--yellow)" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>${t('cmpOpex')}</td>
+            <td data-label="${t('cmpCable')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpOpexCable')}</span></div></td>
+            <td data-label="${t('cmpBuoy')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpOpexBuoy')}</span></div></td>
+            <td data-label="${t('cmpReefOS')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpOpexReefOS')}</span></div></td>
+            <td data-label="${t('cmpOurs')}"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">${t('cmpOpexOurs')}</span></div></td>
           </tr>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/></svg>Scalabilite</td>
-            <td data-label="Cable sous-marin"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Coût linéaire, extension coûteuse</span></div></td>
-            <td data-label="Bouees solaires"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Déployable mais entretien par unité</span></div></td>
-            <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Coût / station élevé, surveillance accrue</span></div></td>
-            <td data-label="ReefScope"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">À terme, zéro installation au fond</span></div></td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/></svg>${t('cmpScale')}</td>
+            <td data-label="${t('cmpCable')}"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">${t('cmpScaleCable')}</span></div></td>
+            <td data-label="${t('cmpBuoy')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpScaleBuoy')}</span></div></td>
+            <td data-label="${t('cmpReefOS')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpScaleReefOS')}</span></div></td>
+            <td data-label="${t('cmpOurs')}"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">${t('cmpScaleOurs')}</span></div></td>
           </tr>
         </tbody>
       </table>
@@ -521,14 +522,14 @@ export function buildPresentation() {
 <section class="deck cta-section">
   <div class="cta-glow"></div>
   <div class="deck-content">
-    <p class="reveal big-statement">Testez le systeme vous-meme</p>
+    <p class="reveal big-statement">${t('ctaStatement')}</p>
     <div style="display:flex;flex-direction:column;gap:16px;align-items:stretch;width:420px;margin:0 auto">
       <button class="reveal d1 cta-big" style="justify-content:space-between;width:100%;text-align:left" onclick="document.querySelector('[data-tab=simulation]').click()">
-        <span>Lancer la simulation</span>
+        <span>${t('ctaSim')}</span>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4l6 6-6 6"/></svg>
       </button>
       <button class="reveal d2 cta-big" style="justify-content:space-between;width:100%;text-align:left;background:linear-gradient(135deg,rgba(52,211,153,0.15),rgba(52,211,153,0.05));border-color:rgba(52,211,153,0.3);color:#86efac" onclick="document.querySelector('[data-tab=coverage]').click()">
-        <span>Tester la couverture photogrammetrique</span>
+        <span>${t('ctaCov')}</span>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4l6 6-6 6"/></svg>
       </button>
     </div>

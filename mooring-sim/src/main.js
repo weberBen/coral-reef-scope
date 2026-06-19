@@ -9,6 +9,7 @@ import { initTabs, onTabChange } from './tabs.js';
 import { buildPresentation } from './presentation.js';
 import { initCoverage, updateCoverageTheme } from './coverage.js';
 import { toggleTheme, onThemeChange, isDark } from './theme.js';
+import { toggleLang, onLangChange, t, getLang } from './i18n.js';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
@@ -25,6 +26,18 @@ function syncThemeIcons() {
 }
 syncThemeIcons();
 themeBtn.addEventListener('click', () => { toggleTheme(); });
+
+// Language toggle
+const langBtn = document.getElementById('lang-toggle');
+langBtn.textContent = getLang().toUpperCase();
+langBtn.addEventListener('click', () => { toggleLang(); });
+
+function updateAllI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  langBtn.textContent = getLang().toUpperCase();
+}
 
 initTabs();
 buildPresentation();
@@ -129,4 +142,10 @@ onThemeChange(() => {
   syncThemeIcons();
   updateSceneTheme(scene, camera, renderer, objects);
   if (coverageLoaded) updateCoverageTheme();
+});
+
+// Language change handler
+onLangChange(() => {
+  updateAllI18n();
+  buildPresentation();
 });

@@ -1,6 +1,7 @@
 import GUI from 'lil-gui';
 import { P, N, mbl } from './params.js';
 import { nodes, forces, getMaxAngle } from './physics.js';
+import { t } from './i18n.js';
 
 export function setupGUI(callbacks) {
   const container = document.getElementById('tab-simulation');
@@ -179,16 +180,16 @@ export function updateReadouts(tensions) {
   setText('ro-cable', P.L.toFixed(1) + ' m');
 
   const deploying = Math.abs(P.targetL - P.L) > 0.1;
-  setText('ro-speed', deploying ? P.deploySpeed.toFixed(1) + ' m/s' : 'arret');
+  setText('ro-speed', deploying ? P.deploySpeed.toFixed(1) + ' m/s' : t('simSpeedStop'));
 
   // Status badge (cable never breaks — just warn on low safety factor)
   const status = document.getElementById('status');
   if (sf < 2) {
     status.className = 'status warn';
-    status.textContent = 'ATTENTION — securite faible';
+    status.textContent = t('simStatusWarn');
   } else {
     status.className = 'status ok';
-    status.textContent = 'OK';
+    status.textContent = t('simStatusOk');
   }
 
   // Large angle display
