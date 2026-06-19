@@ -27,16 +27,7 @@ cd mooring-sim && bun install
 ## Usage
 
 ```bash
-# Generate terrain from Allen Coral Atlas (Moorea, French Polynesia)
-uv run python -m coral_sim.terrain config.yaml
-
-# Visualize in 3D (Viser)
-uv run python -m coral_sim.viz config.yaml
-
-# Both at once
-uv run python tools/run.py config.yaml
-
-# Export GLB from GPS coordinates
+# Export GLB from GPS coordinates (at the root)
 uv run python tools/reef_export.py \
   --lat -17.52 --lon -149.83 \
   --radius 4 \
@@ -46,6 +37,19 @@ uv run python tools/reef_export.py \
 
 # Web app (dev server)
 cd mooring-sim && bun dev
+```
+
+Or to test the Python modules  [deprecated]
+
+```bash
+# Generate terrain from Allen Coral Atlas (Moorea, French Polynesia)
+uv run python -m coral_sim.terrain config.yaml
+
+# Visualize in 3D (Viser)
+uv run python -m coral_sim.viz config.yaml
+
+# Both at once
+uv run python tools/run.py config.yaml
 ```
 
 ### GLB Export Options
@@ -110,3 +114,12 @@ bunx playwright open --viewport-size=1366,768 --browser=chromium http://localhos
 
 Edit `config.yaml` to change source (`allen`/`procedural`), bbox, resolution, colony params, etc.
 See `ARCHITECTURE.md` for full reference.
+
+
+
+---
+
+## Social
+
+- See the open source code on Github and contribute — [see here](https://github.com/benjaminlrl/coral-reef-scope)
+- Follow my personal feed (Twitter/Instagram) for up to date info — [see here](https://feed.rnznr.com/@ben)
