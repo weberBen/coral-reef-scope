@@ -8,7 +8,7 @@ export function t(key) { return (T[current] && T[current][key]) || key; }
 export function toggleLang() {
   current = current === 'fr' ? 'en' : 'fr';
   localStorage.setItem('rs-lang', current);
-  listeners.forEach(cb => cb(current));
+  location.reload();
 }
 
 export function onLangChange(cb) {

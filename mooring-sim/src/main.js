@@ -3,13 +3,13 @@ import { P } from './params.js';
 import { initNodes, physicsStep, computeTensions } from './physics.js';
 import { initScene, handleResize, updateSceneTheme } from './scene.js';
 import { MooringObjects } from './objects.js';
-import { setupGUI, updateReadouts, rebuildSimGUI } from './ui.js';
+import { setupGUI, updateReadouts } from './ui.js';
 import { exportOBJ } from './export.js';
 import { initTabs, onTabChange } from './tabs.js';
 import { buildPresentation } from './presentation.js';
-import { initCoverage, updateCoverageTheme, rebuildCoverageI18n } from './coverage.js';
+import { initCoverage, updateCoverageTheme } from './coverage.js';
 import { toggleTheme, onThemeChange, isDark } from './theme.js';
-import { toggleLang, onLangChange, t, getLang } from './i18n.js';
+import { toggleLang, getLang } from './i18n.js';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
@@ -32,19 +32,18 @@ const langBtn = document.getElementById('lang-toggle');
 langBtn.textContent = getLang().toUpperCase();
 langBtn.addEventListener('click', () => { toggleLang(); });
 
-function updateAllI18n() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    el.textContent = t(el.dataset.i18n);
-  });
-  langBtn.textContent = getLang().toUpperCase();
-}
+// Apply i18n to static HTML elements
+import { t } from './i18n.js';
+document.querySelectorAll('[data-i18n]').forEach(el => {
+  el.textContent = t(el.dataset.i18n);
+});
 
 initTabs();
 buildPresentation();
 
 // Smooth scroll on concept tab
 const conceptTab = document.getElementById('tab-concept');
-const lenis = new Lenis({
+let lenis = new Lenis({
   wrapper: conceptTab,
   content: conceptTab,
   smooth: true,
@@ -55,6 +54,7 @@ function raf(time) {
   requestAnimationFrame(raf);
 }
 requestAnimationFrame(raf);
+
 
 // Lazy-init coverage when tab becomes visible
 let coverageLoaded = false;
@@ -144,10 +144,3 @@ onThemeChange(() => {
   if (coverageLoaded) updateCoverageTheme();
 });
 
-// Language change handler
-onLangChange(() => {
-  updateAllI18n();
-  buildPresentation();
-  rebuildSimGUI(callbacks);
-  if (coverageLoaded) rebuildCoverageI18n();
-});
