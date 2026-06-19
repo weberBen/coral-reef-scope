@@ -258,7 +258,7 @@ export function initCoverage() {
       const gpsText = bb ? `${((bb[1]+bb[3])/2).toFixed(4)}, ${((bb[0]+bb[2])/2).toFixed(4)}` : '';
       const labelEl = document.createElement('div');
       labelEl.id = 'reef-label';
-      labelEl.style.cssText = 'position:absolute;top:60px;left:16px;z-index:10;cursor:default';
+      labelEl.style.cssText = 'position:absolute;top:80px;left:16px;z-index:10;cursor:default';
       labelEl.innerHTML = `
         <div style="font-size:18px;font-weight:700;color:var(--t1)">${reefMeta.label}</div>
         <div style="font-size:12px;color:var(--t3);margin-top:2px">${reefMeta.location || ''}</div>
@@ -327,6 +327,8 @@ export function initCoverage() {
   // Inject styles for stat tooltips
   const style = document.createElement('style');
   style.textContent = `
+    #reef-label { text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+    .light-theme #reef-label { text-shadow: 0 1px 8px rgba(0,0,0,.15); }
     .cov-stat { text-align:center; position:relative; cursor:default; pointer-events:auto; }
     .cov-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--t3); margin-bottom:2px; }
     .cov-num { font-size:36px; font-weight:800; font-variant-numeric:tabular-nums; text-shadow:0 2px 20px rgba(0,0,0,.5); transition:color .3s; }
