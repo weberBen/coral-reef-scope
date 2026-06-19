@@ -105,7 +105,11 @@ export function updateSceneTheme(scene, camera, renderer, objects) {
   // Repaint background gradient
   if (scene._bgCanvas) {
     _paintBgGradient(scene._bgCanvas, tc.bgStops);
-    scene.background.needsUpdate = true;
+    const old = scene.background;
+    const bgTex = new THREE.CanvasTexture(scene._bgCanvas);
+    bgTex.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = bgTex;
+    if (old && old.dispose) old.dispose();
   }
 
   // Update water shader uniforms

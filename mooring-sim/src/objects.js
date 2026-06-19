@@ -175,7 +175,7 @@ export class MooringObjects {
     this.cableSegments = [];
 
     for (let i = 0; i < N; i++) {
-      const mat = new THREE.MeshStandardMaterial({ color: 0x34d399, roughness: 0.6, metalness: 0.2 });
+      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, metalness: 0.2 });
       const mesh = new THREE.Mesh(segGeo, mat);
       mesh.castShadow = true;
       this.scene.add(mesh);
@@ -408,13 +408,13 @@ export class MooringObjects {
       mesh.scale.set(radius, len, radius);
       mesh.quaternion.setFromUnitVectors(UP, _dir.normalize());
 
-      // Color by force magnitude at upper node (gradient: blue → cyan → green → yellow → red)
+      // Color by force magnitude at upper node (green → yellow → red)
       const f = forces[i + 1].total;
       const frac = Math.min(1, Math.hypot(f.x, f.y, f.z) / maxF);
       mesh.material.color.setHSL(
-        (1 - frac) * 0.6,  // hue: 0.6 (blue) → 0 (red)
-        0.85,               // saturation
-        0.45 + frac * 0.15  // lightness: slightly brighter at high force
+        (1 - frac) * 0.38,  // hue: 0.38 (green) → 0 (red)
+        0.8,                 // saturation
+        0.45 + frac * 0.1    // lightness
       );
     }
   }

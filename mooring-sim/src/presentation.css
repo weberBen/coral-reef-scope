@@ -470,9 +470,25 @@
 .cy-device-fill { fill: #e2e8f0; }
 .light-theme .cy-device-fill { fill: #94a3b8; }
 
+.cy-seabed { fill: #2a1f14; }
+.light-theme .cy-seabed { fill: #e8d5b8; }
+
+.cy-shore { fill: #3d2e1a; opacity: 0.35; }
+.light-theme .cy-shore { fill: #c4956a; opacity: 0.3; }
+
+
 .cy-svg-text { fill: var(--t3); }
 .cy-svg-label { fill: var(--t4); }
 
+
+/* Light mode: boost SVG visibility (exclude animated elements) */
+.light-theme .cycle-svg line[opacity]:not(.scan-rotate):not(.scan-rotate2),
+.light-theme .cycle-svg path[opacity]:not(.arrow-up-anim):not(.trail-to-shore):not(.signal-path):not(.path-to-buoy) {
+  opacity: 0.8 !important;
+}
+.light-theme .cycle-svg polygon[opacity] {
+  opacity: 0.9 !important;
+}
 
 .cy-phase {
   transition: opacity 0.8s ease;
@@ -480,11 +496,11 @@
 
 /* Scan line rotation */
 .scan-rotate {
-  transform-origin: 300px 332px;
+  transform-origin: 300px 319px;
   animation: scanRotate 4s linear infinite;
 }
 .scan-rotate2 {
-  transform-origin: 300px 332px;
+  transform-origin: 300px 319px;
   animation: scanRotate 4s linear infinite reverse;
 }
 @keyframes scanRotate {

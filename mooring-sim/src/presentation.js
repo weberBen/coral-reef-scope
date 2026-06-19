@@ -107,10 +107,10 @@ export function buildPresentation() {
       <rect x="0" y="75" width="900" height="385" fill="url(#cyOcean)"/>
       <path d="M0 75 Q112 60 225 75 T450 75 T675 75 T900 75" fill="none" stroke="rgba(56,189,248,0.25)" stroke-width="1.5"/>
       <!-- Seabed -->
-      <rect x="0" y="400" width="720" height="60" fill="#2a1f14"/>
+      <rect x="0" y="400" width="720" height="60" class="cy-seabed"/>
       <!-- Shore -->
-      <path d="M720 75 L750 75 L900 75 L900 460 L720 460Z" fill="#3d2e1a" opacity="0.35"/>
-      <text x="810" y="60" text-anchor="middle" fill="var(--t3)" font-size="13" font-weight="700" font-family="Inter,sans-serif">RIVE</text>
+      <path d="M720 75 L750 75 L900 75 L900 460 L720 460Z" class="cy-shore"/>
+      <text x="810" y="60" text-anchor="middle" fill="var(--orange)" font-size="16" font-weight="800" font-family="Inter,sans-serif">RIVE</text>
 
       <!-- ===== PERMANENT: Anchor only ===== -->
       <g id="cy-station">
@@ -120,8 +120,8 @@ export function buildPresentation() {
 
       <!-- ===== Cable + buoy: appear from phase 2 ===== -->
       <g id="cy-cable-group" opacity="0">
-        <line x1="300" y1="383" x2="300" y2="83" stroke="#38bdf8" stroke-width="2.5" opacity="0.6"/>
-        <circle cx="300" cy="80" r="7" fill="#f97316" opacity="0.8"/>
+        <line x1="300" y1="383" x2="300" y2="83" stroke="var(--cyan-l)" stroke-width="2.5" opacity="0.8"/>
+        <circle cx="300" cy="80" r="7" fill="var(--orange)" opacity="0.8"/>
       </g>
 
       <!-- ===== PHASE 1: Device anchored, camera scanning ===== -->
@@ -130,14 +130,14 @@ export function buildPresentation() {
         <rect x="297" y="332" width="6" height="51" rx="1" fill="#718096"/>
         <!-- Device at bottom -->
         <rect x="286" y="310" width="28" height="22" rx="4" class="cy-device-fill" id="cy-dev1"/>
-        <circle cx="300" cy="302" r="7" fill="#f97316"/>
+        <circle cx="300" cy="302" r="7" fill="var(--orange)"/>
         <!-- Camera lens -->
         <circle cx="300" cy="319" r="4" fill="#1a202c"/>
         <!-- Scan cone -->
-        <path d="M290 332 L240 400 L360 400Z" fill="rgba(56,189,248,0.06)" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.5"/>
+        <path d="M300 319 L240 400 L360 400Z" fill="rgba(134,239,172,0.15)" stroke="var(--green-l)" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.7"/>
         <!-- Rotating scan line -->
-        <line x1="300" y1="332" x2="260" y2="395" stroke="#38bdf8" stroke-width="1" opacity="0.4" class="scan-rotate"/>
-        <line x1="300" y1="332" x2="340" y2="395" stroke="#38bdf8" stroke-width="1" opacity="0.4" class="scan-rotate2"/>
+        <line x1="300" y1="319" x2="260" y2="395" stroke="var(--green-l)" stroke-width="1" opacity="0.5" class="scan-rotate"/>
+        <line x1="300" y1="319" x2="340" y2="395" stroke="var(--green-l)" stroke-width="1" opacity="0.5" class="scan-rotate2"/>
       </g>
 
       <!-- ===== PHASE 2: Device ascending ===== -->
@@ -148,15 +148,15 @@ export function buildPresentation() {
         <!-- Device rising (animated) -->
         <g class="device-rise-anim">
           <rect x="286" y="180" width="28" height="22" rx="4" class="cy-device-fill"/>
-          <circle cx="300" cy="172" r="7" fill="#f97316"/>
+          <circle cx="300" cy="172" r="7" fill="var(--orange)"/>
           <!-- Bubbles trail -->
-          <circle cx="294" cy="210" r="2" fill="#38bdf8" opacity="0.3" class="bubble-trail"/>
-          <circle cx="306" cy="220" r="1.5" fill="#38bdf8" opacity="0.2" class="bubble-trail d1"/>
-          <circle cx="298" cy="230" r="2.5" fill="#38bdf8" opacity="0.25" class="bubble-trail d2"/>
+          <circle cx="294" cy="210" r="2" fill="var(--cyan)" opacity="0.3" class="bubble-trail"/>
+          <circle cx="306" cy="220" r="1.5" fill="var(--cyan)" opacity="0.2" class="bubble-trail d1"/>
+          <circle cx="298" cy="230" r="2.5" fill="var(--cyan)" opacity="0.25" class="bubble-trail d2"/>
         </g>
         <!-- Arrow up -->
-        <path d="M300 168 L300 95" stroke="#34d399" stroke-width="2" stroke-dasharray="5 4" class="arrow-up-anim"/>
-        <polygon points="296,100 300,85 304,100" fill="#34d399" opacity="0.8"/>
+        <path d="M300 168 L300 95" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" class="arrow-up-anim"/>
+        <polygon points="296,100 300,85 304,100" fill="var(--green)" opacity="0.8"/>
       </g>
 
       <!-- ===== PHASE 3: Surface transit to shore ===== -->
@@ -164,14 +164,14 @@ export function buildPresentation() {
         <!-- Device at surface, detached, moving right -->
         <g class="device-surface-anim">
           <rect x="480" y="64" width="28" height="22" rx="4" class="cy-device-fill"/>
-          <circle cx="494" cy="56" r="7" fill="#f97316"/>
+          <circle cx="494" cy="56" r="7" fill="var(--orange)"/>
         </g>
         <!-- Trail path to shore -->
         <path d="M510 75 Q600 70 720 75" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-dasharray="6 4" class="trail-to-shore"/>
         <!-- Arrow -->
-        <polygon points="710,70 725,75 710,80" fill="#fbbf24" opacity="0.7"/>
+        <polygon points="710,70 725,75 710,80" fill="var(--yellow)" opacity="0.7"/>
         <!-- Buoy stays (highlighted) -->
-        <circle cx="300" cy="80" r="9" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="3 2" class="buoy-highlight"/>
+        <circle cx="300" cy="80" r="9" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-dasharray="3 2" class="buoy-highlight"/>
 
         <!-- Antenna on shore -->
         <line x1="770" y1="30" x2="770" y2="65" stroke="#94a3b8" stroke-width="2"/>
@@ -186,8 +186,8 @@ export function buildPresentation() {
         <circle cx="520" cy="55" r="24" fill="none" stroke="var(--t1)" stroke-width="1.5" opacity="0" class="radio-wave rw3"/>
 
         <!-- Signal path -->
-        <path d="M530 56 Q650 40 762 35" fill="none" stroke="var(--t1)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="signal-path"/>
-        <text x="650" y="30" text-anchor="middle" fill="var(--t1)" font-size="9" font-weight="600" font-family="Inter,sans-serif" opacity="0.8">DATA</text>
+        <path d="M530 56 Q650 40 762 35" fill="none" stroke="var(--t1)" stroke-width="2.5" stroke-dasharray="5 4" class="signal-path"/>
+        <text x="650" y="30" text-anchor="middle" fill="var(--t1)" font-size="13" font-weight="700" font-family="Inter,sans-serif">DATA</text>
       </g>
 
       <!-- ===== PHASE 4: Replacement + collection ===== -->
@@ -195,11 +195,11 @@ export function buildPresentation() {
         <!-- New device (green) coming from shore to buoy -->
         <g class="device-replace-anim">
           <rect x="500" y="64" width="28" height="22" rx="4" class="cy-device-fill"/>
-          <circle cx="514" cy="56" r="7" fill="#34d399"/>
+          <circle cx="514" cy="56" r="7" fill="var(--green)"/>
         </g>
         <!-- Path from shore to buoy -->
         <path d="M720 75 Q550 65 320 80" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" class="path-to-buoy"/>
-        <polygon points="325,75 310,80 325,85" fill="#34d399" opacity="0.7"/>
+        <polygon points="325,75 310,80 325,85" fill="var(--green)" opacity="0.7"/>
 
         <!-- Collection net on shore -->
         <g class="collection-net">
@@ -209,9 +209,9 @@ export function buildPresentation() {
           <line x1="785" y1="108" x2="785" y2="156" stroke="#8B7355" stroke-width="1" opacity="0.4"/>
           <!-- Old device in net -->
           <rect x="762" y="125" width="20" height="16" rx="3" class="cy-device-fill" opacity="0.6"/>
-          <circle cx="772" cy="119" r="5" fill="#f97316" opacity="0.5"/>
+          <circle cx="772" cy="119" r="5" fill="var(--orange)" opacity="0.5"/>
         </g>
-        <text x="772" y="180" text-anchor="middle" fill="var(--t4)" font-size="9" font-weight="600" font-family="Inter,sans-serif">COLLECTE</text>
+        <text x="772" y="180" text-anchor="middle" fill="var(--orange)" font-size="13" font-weight="700" font-family="Inter,sans-serif">COLLECTE</text>
       </g>
 
       <defs>
@@ -274,11 +274,11 @@ export function buildPresentation() {
         <div class="phase-num">01</div>
         <div class="phase-icon-row">
           <svg viewBox="0 0 80 60" width="80" height="60">
-            <path d="M10 30 Q40 20 70 30" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
+            <path d="M10 30 Q40 20 70 30" stroke="var(--cyan)" stroke-width="1.5" fill="none"/>
             <rect x="30" y="22" width="20" height="12" rx="3" fill="#64748b"/>
             <path d="M28 34 L22 44 M52 34 L58 44" stroke="#64748b" stroke-width="1"/>
             <rect x="36" y="12" width="8" height="6" rx="1" class="cy-device-fill"/>
-            <circle cx="40" cy="10" r="3" fill="#f97316"/>
+            <circle cx="40" cy="10" r="3" fill="var(--orange)"/>
           </svg>
         </div>
         <h3>Recuperation par bateau</h3>
@@ -298,20 +298,20 @@ export function buildPresentation() {
         <div class="phase-icon-row">
           <svg viewBox="0 0 120 70" width="120" height="70">
             <!-- Shore -->
-            <rect x="90" y="0" width="30" height="70" fill="#3d2e1a" opacity="0.3" rx="4"/>
+            <rect x="90" y="0" width="30" height="70" class="cy-shore" rx="4"/>
             <!-- Net barrier -->
             <path d="M85 15 Q80 35 85 55" stroke="#8B7355" stroke-width="2" fill="none"/>
             <line x1="85" y1="20" x2="85" y2="50" stroke="#8B7355" stroke-width="0.8" stroke-dasharray="3 2"/>
             <!-- Device drifting toward net -->
             <rect x="50" y="24" width="14" height="10" rx="2" class="cy-device-fill"/>
-            <circle cx="57" cy="21" r="4" fill="#f97316"/>
-            <path d="M64 29 L80 32" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 2"/>
+            <circle cx="57" cy="21" r="4" fill="var(--orange)"/>
+            <path d="M64 29 L80 32" fill="none" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="3 2"/>
             <!-- Catapult arc -->
-            <path d="M100 40 Q70 0 30 30" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
-            <polygon points="33,26 28,33 36,33" fill="#34d399" opacity="0.7"/>
+            <path d="M100 40 Q70 0 30 30" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+            <polygon points="33,26 28,33 36,33" fill="var(--green)" opacity="0.7"/>
             <!-- New device launched -->
             <rect x="95" y="38" width="14" height="10" rx="2" class="cy-device-fill" opacity="0.7"/>
-            <circle cx="102" cy="35" r="4" fill="#34d399" opacity="0.7"/>
+            <circle cx="102" cy="35" r="4" fill="var(--green)" opacity="0.7"/>
           </svg>
         </div>
         <h3>Collecte automatisee</h3>
@@ -362,11 +362,11 @@ export function buildPresentation() {
             <line x1="52" y1="8" x2="58" y2="8" stroke="#64748b" stroke-width="1.5"/>
             <!-- Tumbling device falling -->
             <rect x="36" y="25" width="10" height="8" rx="2" class="cy-device-fill" transform="rotate(15,41,29)"/>
-            <circle cx="41" cy="23" r="3" fill="#34d399"/>
+            <circle cx="41" cy="23" r="3" fill="var(--green)"/>
             <!-- Spiral descent -->
-            <path d="M41 33 Q50 40 38 48 Q28 55 42 62" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" fill="none"/>
+            <path d="M41 33 Q50 40 38 48 Q28 55 42 62" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 2" fill="none"/>
             <!-- Landing zone -->
-            <ellipse cx="42" cy="65" rx="15" ry="3" fill="none" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
+            <ellipse cx="42" cy="65" rx="15" ry="3" fill="none" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
           </svg>
         </div>
         <h3>Essaim de capteurs</h3>
@@ -410,40 +410,40 @@ export function buildPresentation() {
           <!-- Anchor at bottom -->
           <rect x="155" y="430" width="30" height="8" rx="3" fill="#64748b" opacity="0.5"/>
           <!-- Cable -->
-          <line x1="170" y1="430" x2="170" y2="48" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.3"/>
+          <line x1="170" y1="430" x2="170" y2="48" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.3"/>
           <!-- Buoy -->
-          <circle cx="170" cy="46" r="5" fill="#f97316" opacity="0.5"/>
+          <circle cx="170" cy="46" r="5" fill="var(--orange)" opacity="0.5"/>
 
           <!-- Device at position 1 (bottom, starting) -->
           <g opacity="0.3">
             <rect x="156" y="360" width="28" height="22" rx="4" class="cy-device-fill"/>
-            <circle cx="170" cy="352" r="7" fill="#f97316"/>
+            <circle cx="170" cy="352" r="7" fill="var(--orange)"/>
           </g>
           <!-- Capture cone 1 -->
-          <path d="M170 382 L110 440 L230 440Z" fill="rgba(56,189,248,0.05)" stroke="#38bdf8" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
+          <path d="M170 382 L110 440 L230 440Z" fill="rgba(56,189,248,0.05)" stroke="var(--cyan)" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
 
           <!-- Device at position 2 (mid) -->
           <g opacity="0.5">
             <rect x="156" y="240" width="28" height="22" rx="4" class="cy-device-fill"/>
-            <circle cx="170" cy="232" r="7" fill="#f97316"/>
+            <circle cx="170" cy="232" r="7" fill="var(--orange)"/>
           </g>
           <!-- Capture cone 2 (wider) -->
-          <path d="M170 262 L80 380 L260 380Z" fill="rgba(56,189,248,0.04)" stroke="#38bdf8" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
+          <path d="M170 262 L80 380 L260 380Z" fill="rgba(56,189,248,0.04)" stroke="var(--cyan)" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
 
           <!-- Device at position 3 (near top, current) -->
           <g opacity="1">
             <rect x="156" y="110" width="28" height="22" rx="4" class="cy-device-fill"/>
-            <circle cx="170" cy="102" r="7" fill="#f97316"/>
+            <circle cx="170" cy="102" r="7" fill="var(--orange)"/>
             <!-- Camera indicator -->
             <circle cx="170" cy="119" r="3.5" fill="#1a202c"/>
-            <circle cx="170" cy="119" r="2" fill="#38bdf8" opacity="0.6"/>
+            <circle cx="170" cy="119" r="2" fill="var(--cyan)" opacity="0.6"/>
           </g>
           <!-- Capture cone 3 (widest) -->
-          <path d="M170 132 L40 320 L300 320Z" fill="rgba(56,189,248,0.03)" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
+          <path d="M170 132 L40 320 L300 320Z" fill="rgba(56,189,248,0.03)" stroke="var(--cyan)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
 
           <!-- Arrow up showing ascent path -->
-          <path d="M200 355 L200 120" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
-          <polygon points="196,125 200,110 204,125" fill="#34d399" opacity="0.5"/>
+          <path d="M200 355 L200 120" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
+          <polygon points="196,125 200,110 204,125" fill="var(--green)" opacity="0.5"/>
 
           <!-- Altitude labels -->
           <text x="215" y="370" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 2m</text>
@@ -451,13 +451,13 @@ export function buildPresentation() {
           <text x="215" y="120" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 15m</text>
 
           <!-- Coverage width labels -->
-          <line x1="110" y1="442" x2="230" y2="442" stroke="#38bdf8" stroke-width="0.5" opacity="0.3"/>
-          <text x="170" y="455" text-anchor="middle" fill="#38bdf8" font-size="8" font-family="Inter,sans-serif" opacity="0.5">4m</text>
-          <line x1="40" y1="322" x2="300" y2="322" stroke="#38bdf8" stroke-width="0.5" opacity="0.3"/>
-          <text x="170" y="335" text-anchor="middle" fill="#38bdf8" font-size="8" font-family="Inter,sans-serif" opacity="0.5">20m</text>
+          <line x1="110" y1="442" x2="230" y2="442" stroke="var(--cyan)" stroke-width="0.5" opacity="0.3"/>
+          <text x="170" y="455" text-anchor="middle" fill="var(--cyan)" font-size="8" font-family="Inter,sans-serif" opacity="0.5">4m</text>
+          <line x1="40" y1="322" x2="300" y2="322" stroke="var(--cyan)" stroke-width="0.5" opacity="0.3"/>
+          <text x="170" y="335" text-anchor="middle" fill="var(--cyan)" font-size="8" font-family="Inter,sans-serif" opacity="0.5">20m</text>
 
           <!-- Coral on seabed -->
-          <path d="M50 440 Q70 420 90 440 Q110 415 130 440 Q150 420 170 440 Q190 415 210 440 Q230 425 250 440 Q270 418 290 440 Q310 425 330 440" stroke="#34d399" stroke-width="1.5" fill="none" opacity="0.4"/>
+          <path d="M50 440 Q70 420 90 440 Q110 415 130 440 Q150 420 170 440 Q190 415 210 440 Q230 425 250 440 Q270 418 290 440 Q310 425 330 440" stroke="var(--green)" stroke-width="1.5" fill="none" opacity="0.4"/>
 
           <defs>
             <linearGradient id="mapOcean" x1="0" y1="0" x2="0" y2="1">
@@ -490,21 +490,21 @@ export function buildPresentation() {
         </thead>
         <tbody>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="#34d399" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="#34d399" opacity="0.6"/></svg>Naturalite</td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="var(--green)" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="var(--green)" opacity="0.6"/></svg>Naturalite</td>
             <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Infra en fond, câble traversant le récif</span></div></td>
             <td data-label="Bouees solaires"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Bouées en surface en permanence</span></div></td>
             <td data-label="ReefOS"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">Plateforme concentrée mais permanente</span></div></td>
             <td data-label="ReefScope"><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.65</span><span class="gc-sub">Infra en fond, bouée temporaire</span></div></td>
           </tr>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="#fbbf24" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="#fbbf24" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="#fbbf24" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>OPEX</td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="var(--yellow)" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="var(--yellow)" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="var(--yellow)" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>OPEX</td>
             <td data-label="Cable sous-marin"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Plongeurs biofouling + entretien câbles</span></div></td>
             <td data-label="Bouees solaires"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs biofouling + entretien panneaux</span></div></td>
             <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Plongeurs + plateforme + maillage WiFi</span></div></td>
             <td data-label="ReefScope"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">Nettoyage à terre, entretien en fond limité</span></div></td>
           </tr>
           <tr>
-            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="#38bdf8" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="#38bdf8" stroke-width="1" opacity="0.4"/></svg>Scalabilite</td>
+            <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/></svg>Scalabilite</td>
             <td data-label="Cable sous-marin"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">Coût linéaire, extension coûteuse</span></div></td>
             <td data-label="Bouees solaires"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">Déployable mais entretien par unité</span></div></td>
             <td data-label="ReefOS"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">Coût / station élevé, surveillance accrue</span></div></td>
@@ -581,7 +581,7 @@ function updateCyclePhase(phase) {
     const g = document.getElementById(`cy-phase${i}`);
     if (!g) continue;
     if (i <= phase) {
-      g.style.opacity = i === phase ? '1' : '0.35';
+      g.style.opacity = i === phase ? '1' : '0.55';
       g.style.transition = 'opacity 0.8s ease';
     } else {
       g.style.opacity = '0';

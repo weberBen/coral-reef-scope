@@ -27,13 +27,13 @@ export function getSceneColors() {
     waterSurf: [0.08, 0.38, 0.58],
     waterHoriz: [0.15, 0.55, 0.72],
   } : {
-    clearColor: 0xc5dff0,
-    fogColor: 0x90c8e0,
+    clearColor: 0x9ecfe8,
+    fogColor: 0x80bdd8,
     fogDensity: 0.005,
-    bgStops: ['#87ceeb', '#a4d4e4', '#bde0ef', '#ddf0fa'],
-    waterDeep: [0.06, 0.30, 0.50],
-    waterSurf: [0.18, 0.58, 0.76],
-    waterHoriz: [0.40, 0.75, 0.88],
+    bgStops: ['#7ec8e3', '#93d1e8', '#a8dbee', '#c0e6f4'],
+    waterDeep: [0.10, 0.38, 0.56],
+    waterSurf: [0.25, 0.62, 0.80],
+    waterHoriz: [0.45, 0.78, 0.90],
   };
 }
 
