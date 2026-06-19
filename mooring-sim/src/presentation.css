@@ -1123,6 +1123,7 @@
   .cycle-sticky { padding: 5px 4px; }
   .cycle-svg { min-height: 50vh; }
   .cy-text-phase { min-height: 120vh; padding: 20px 12px; }
+  .cy-text-phase:last-child { min-height: 160vh; }
   .cy-text-inner { max-width: 240px; padding: 16px; }
   .cy-phase-num { font-size: 32px; }
   .cy-text-inner h3 { font-size: 15px; }
