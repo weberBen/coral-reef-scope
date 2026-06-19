@@ -1252,6 +1252,27 @@ function setupGUI(container) {
   });
 }
 
+export function rebuildCoverageI18n() {
+  if (!renderer || !scene) return;
+  const container = document.getElementById('tab-coverage');
+
+  // Update topbar labels
+  container.querySelectorAll('.cov-label').forEach((el, i) => {
+    const keys = ['covCameras', 'covGround', 'covSurface', 'covGsdMean'];
+    if (keys[i]) el.textContent = t(keys[i]);
+  });
+  container.querySelectorAll('.cov-stat').forEach((el, i) => {
+    const keys = ['covTipCam', 'covTipGround', 'covTipSurface', 'covTipGsd'];
+    if (keys[i]) el.dataset.tip = t(keys[i]);
+  });
+
+  // Rebuild GUI
+  if (gui) {
+    gui.destroy();
+    setupGUI(container);
+  }
+}
+
 export function updateCoverageTheme() {
   if (!renderer || !scene) return;
   const cc = getCoverageColors();

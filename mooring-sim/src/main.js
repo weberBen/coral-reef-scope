@@ -3,11 +3,11 @@ import { P } from './params.js';
 import { initNodes, physicsStep, computeTensions } from './physics.js';
 import { initScene, handleResize, updateSceneTheme } from './scene.js';
 import { MooringObjects } from './objects.js';
-import { setupGUI, updateReadouts } from './ui.js';
+import { setupGUI, updateReadouts, rebuildSimGUI } from './ui.js';
 import { exportOBJ } from './export.js';
 import { initTabs, onTabChange } from './tabs.js';
 import { buildPresentation } from './presentation.js';
-import { initCoverage, updateCoverageTheme } from './coverage.js';
+import { initCoverage, updateCoverageTheme, rebuildCoverageI18n } from './coverage.js';
 import { toggleTheme, onThemeChange, isDark } from './theme.js';
 import { toggleLang, onLangChange, t, getLang } from './i18n.js';
 import Lenis from 'lenis';
@@ -148,4 +148,6 @@ onThemeChange(() => {
 onLangChange(() => {
   updateAllI18n();
   buildPresentation();
+  rebuildSimGUI(callbacks);
+  if (coverageLoaded) rebuildCoverageI18n();
 });

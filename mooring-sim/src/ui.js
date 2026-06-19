@@ -3,88 +3,98 @@ import { P, N, mbl } from './params.js';
 import { nodes, forces, getMaxAngle } from './physics.js';
 import { t } from './i18n.js';
 
+let currentGui = null;
+
+export function rebuildSimGUI(callbacks) {
+  if (currentGui) {
+    currentGui.destroy();
+    document.querySelector('#tab-simulation .sim-toggle-bar')?.remove();
+  }
+  return setupGUI(callbacks);
+}
+
 export function setupGUI(callbacks) {
   const container = document.getElementById('tab-simulation');
-  const gui = new GUI({ title: 'Parametres', width: 310, container });
+  const gui = new GUI({ title: t('guiParams'), width: 310, container });
   gui.domElement.style.position = 'absolute';
   gui.domElement.style.bottom = '8px';
   gui.domElement.style.right = '8px';
 
   // --- Deployment ---
-  const deploy = gui.addFolder('Deroulement');
-  deploy.add(P, 'targetL', 2, 60, 0.5).name('Cable cible (m)').listen();
-  deploy.add(P, 'deploySpeed', 0.1, 3, 0.1).name('Vitesse (m/s)');
+  const deploy = gui.addFolder(t('guiDeploy'));
+  deploy.add(P, 'targetL', 2, 60, 0.5).name(t('guiTargetL')).listen();
+  deploy.add(P, 'deploySpeed', 0.1, 3, 0.1).name(t('guiDeploySpeed'));
   deploy.add({
     deployMax() { P.targetL = Math.min(P.D + 2, 60); }
-  }, 'deployMax').name('Deployer max ▲');
+  }, 'deployMax').name(t('guiDeployMax'));
   deploy.add({
     retract() { P.targetL = 2; }
-  }, 'retract').name('Rembobiner tout ▼');
+  }, 'retract').name(t('guiRetract'));
   deploy.add({
     lock() {
       P.targetL = P.L;
       console.log(`Bloque a L=${P.L.toFixed(1)}m`);
     }
-  }, 'lock').name('Bloquer ⏸');
+  }, 'lock').name(t('guiLock'));
   deploy.open();
 
   // --- Environment ---
-  const env = gui.addFolder('Environnement');
-  env.add(P, 'cur', 0, 2.5, 0.05).name('Courant surface (m/s)');
-  env.add(P, 'curDir', 0, 360, 5).name('Direction courant (°)');
+  const env = gui.addFolder(t('guiEnv'));
+  env.add(P, 'cur', 0, 2.5, 0.05).name(t('guiCurrent'));
+  env.add(P, 'curDir', 0, 360, 5).name(t('guiCurrentDir'));
   env.add(P, 'prof', {
-    'Lineaire (→0 au fond)': 'lin',
-    'Uniforme': 'uni',
-    'Concentre en surface': 'surf'
-  }).name('Profil courant');
-  env.add(P, 'wh', 0, 4, 0.1).name('Houle hauteur (m)');
-  env.add(P, 'wt', 3, 14, 0.5).name('Houle periode (s)');
-  env.add(P, 'wind', 0, 25, 1).name('Vent surface (m/s)');
-  env.add(P, 'D', 10, 60, 1).name('Profondeur site (m)').onChange(callbacks.onDepthChange);
+    [t('guiProfileLin')]: 'lin',
+    [t('guiProfileUni')]: 'uni',
+    [t('guiProfileSurf')]: 'surf'
+  }).name(t('guiCurrentProfile'));
+  env.add(P, 'wh', 0, 4, 0.1).name(t('guiWaveH'));
+  env.add(P, 'wt', 3, 14, 0.5).name(t('guiWaveT'));
+  env.add(P, 'wind', 0, 25, 1).name(t('guiWind'));
+  env.add(P, 'D', 10, 60, 1).name(t('guiDepth')).onChange(callbacks.onDepthChange);
   env.close();
 
   // --- Cable ---
-  const cable = gui.addFolder('Cable');
-  cable.add(P, 'dia', 3, 24, 0.5).name('Diametre (mm)');
+  const cable = gui.addFolder(t('guiCable'));
+  cable.add(P, 'dia', 3, 24, 0.5).name(t('guiDia'));
   cable.add(P, 'mat', {
     'Polyester (1380)': 'poly',
     'Nylon (1140)': 'nylon',
     'Dyneema (975)': 'dyn',
     'Acier (7850)': 'steel'
-  }).name('Materiau');
-  cable.add(P, 'cdN', 0.5, 2.0, 0.05).name('Cd normal');
-  cable.add(P, 'cdT', 0.01, 0.3, 0.01).name('Cd tangentiel');
+  }).name(t('guiMat'));
+  cable.add(P, 'cdN', 0.5, 2.0, 0.05).name(t('guiCdN'));
+  cable.add(P, 'cdT', 0.01, 0.3, 0.01).name(t('guiCdT'));
   cable.close();
 
   // --- Device & floats ---
-  const device = gui.addFolder('Dispositif & Flotteurs');
-  device.add(P, 'dm', 2, 60, 1).name('Masse dispositif (kg)');
-  device.add(P, 'db', 10, 400, 5).name('Flottabilite nette (N)');
-  device.add(P, 'fn', 0, 8, 1).name('Nb flotteurs intermed.');
-  device.add(P, 'fb', 10, 200, 5).name('Flottabilite/flotteur (N)');
+  const device = gui.addFolder(t('guiDevice'));
+  device.add(P, 'dm', 2, 60, 1).name(t('guiMass'));
+  device.add(P, 'db', 10, 400, 5).name(t('guiBuoyancy'));
+  device.add(P, 'fn', 0, 8, 1).name(t('guiFloatN'));
+  device.add(P, 'fb', 10, 200, 5).name(t('guiFloatB'));
   device.open();
 
   // --- Display ---
-  const display = gui.addFolder('Affichage');
-  display.add(P, 'showForces').name('Fleches de force');
-  display.add(P, 'showVertRef').name('Ligne verticale ref.');
-  display.add(P, 'showCurrentGrid').name('Fleches de courant');
-  display.add({ exportOBJ: callbacks.onExport }, 'exportOBJ').name('Exporter OBJ');
+  const display = gui.addFolder(t('guiDisplay'));
+  display.add(P, 'showForces').name(t('guiForces'));
+  display.add(P, 'showVertRef').name(t('guiVertRef'));
+  display.add(P, 'showCurrentGrid').name(t('guiCurrentGrid'));
+  display.add({ exportOBJ: callbacks.onExport }, 'exportOBJ').name(t('guiExport'));
   display.close();
 
   // --- Actions ---
-  const actions = gui.addFolder('Actions');
-  actions.add(P, 'paused').name('Pause');
-  actions.add({ reset: callbacks.onReset }, 'reset').name('Reinitialiser');
+  const actions = gui.addFolder(t('guiActions'));
+  actions.add(P, 'paused').name(t('guiPause'));
+  actions.add({ reset: callbacks.onReset }, 'reset').name(t('guiReset'));
   actions.close();
 
   // --- Mobile toggle bar ---
   const toggleBar = document.createElement('div');
   toggleBar.className = 'sim-toggle-bar';
   toggleBar.innerHTML = `
-    <button class="sim-toggle-btn" data-panel="readouts">Donnees</button>
-    <button class="sim-toggle-btn" data-panel="angle">Angle</button>
-    <button class="sim-toggle-btn" data-panel="gui">Controles</button>
+    <button class="sim-toggle-btn" data-panel="readouts">${t('guiData')}</button>
+    <button class="sim-toggle-btn" data-panel="angle">${t('guiAngle')}</button>
+    <button class="sim-toggle-btn" data-panel="gui">${t('guiControls')}</button>
   `;
   container.appendChild(toggleBar);
 
@@ -148,6 +158,7 @@ export function setupGUI(callbacks) {
   // Start with deploy
   P.targetL = Math.min(P.D + 2, 60);
 
+  currentGui = gui;
   return gui;
 }
 
