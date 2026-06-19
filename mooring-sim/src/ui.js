@@ -33,7 +33,7 @@ export function setupGUI(callbacks) {
   deploy.add({
     lock() {
       P.targetL = P.L;
-      console.log(`Bloque a L=${P.L.toFixed(1)}m`);
+      console.log(`Locked at L=${P.L.toFixed(1)}m`);
     }
   }, 'lock').name(t('guiLock'));
   deploy.open();

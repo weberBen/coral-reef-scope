@@ -1,4 +1,4 @@
-"""python -m coral_sim <config.yaml> — génère le terrain et l'affiche."""
+"""python -m coral_sim <config.yaml> — generate terrain and display it."""
 
 import sys
 
@@ -12,9 +12,9 @@ if len(sys.argv) < 2:
 
 config = load_config(sys.argv[1])
 
-# Générer le terrain
+# Generate terrain
 terrain = get_terrain(config)
 save_terrain(resolve_path(config, config["terrain"]["output"]), terrain)
 
-# Visualiser
+# Visualize
 show_terrain(terrain, config.get("viz", {}))

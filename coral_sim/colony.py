@@ -1,12 +1,12 @@
-"""Croissance corallienne par modèle KJMA anisotrope.
+"""Coral growth using an anisotropic KJMA model.
 
-Seeds placés sur le terrain → chaque seed fait pousser une bosse ellipsoïdale
-selon son environnement (profondeur, inclinaison, courant). Les frontières
-se forment naturellement par compétition (premier arrivé gagne).
+Seeds placed on the terrain -> each seed grows an ellipsoidal bump
+according to its environment (depth, slope, current). Boundaries
+form naturally through competition (first to arrive wins).
 
-Ref: Kolmogorov-Johnson-Mehl-Avrami, étendu avec anisotropie et tropismes.
+Ref: Kolmogorov-Johnson-Mehl-Avrami, extended with anisotropy and tropisms.
 
-Usage standalone :
+Standalone usage:
     python -m coral_sim.colony config.yaml
 """
 
@@ -20,7 +20,7 @@ import trimesh
 from .terrain.io import TerrainData, load_terrain
 
 
-# ── Seed placement ────────────────────────────────────────────────────────────
+# -- Seed placement -----------------------------------------------------------
 
 
 def scatter_seeds(
@@ -29,7 +29,7 @@ def scatter_seeds(
     rng: np.random.Generator,
     config: dict[str, Any] | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Distribue des graines sur le terrain. Retourne positions, depths."""
+    """Distribute seeds on the terrain. Returns positions, depths."""
     config = config or {}
     heightmap = terrain.heightmap
     ny, nx = heightmap.shape
@@ -44,11 +44,11 @@ def scatter_seeds(
         if density <= 0:
             continue
 
-        # Nombre de seeds pour cette zone (estimé depuis la surface totale × densité)
+        # Number of seeds for this zone (estimated from total area * density)
         n_candidates = int(x_max * y_max * density)
-        pts = rng.random((n_candidates, 2))  # uniform [0,1]²
+        pts = rng.random((n_candidates, 2))  # uniform [0,1]^2
 
-        # Vectorisé : convertir en coordonnées terrain et filtrer par profondeur
+        # Vectorized: convert to terrain coordinates and filter by depth
         px = pts[:, 0] * x_max
         py = pts[:, 1] * y_max
         ix = np.clip((px / x_max * (nx - 1)).astype(int), 0, nx - 1)
@@ -62,8 +62,8 @@ def scatter_seeds(
     positions = np.vstack(all_positions) if all_positions else np.zeros((0, 2))
     depths = np.concatenate(all_depths) if all_depths else np.zeros(0)
 
-    # Limiter les seeds selon la RAM disponible
-    # La matrice KJMA fait chunk_size × n_seeds × 8 bytes (float64) × ~5 arrays temporaires
+    # Limit seeds based on available RAM
+    # The KJMA matrix uses chunk_size * n_seeds * 8 bytes (float64) * ~5 temporary arrays
     ram_limit_mb = config.get("ram_limit", 500)
     chunk_size = 5000
     max_seeds = int(ram_limit_mb * 1_000_000 / (chunk_size * 8 * 5))
@@ -73,11 +73,11 @@ def scatter_seeds(
         positions = positions[idx]
         depths = depths[idx]
 
-    print(f"  Seeds : {len(positions)}")
+    print(f"  Seeds: {len(positions)}")
     return positions, depths
 
 
-# ── Attributs des seeds ───────────────────────────────────────────────────────
+# -- Seed attributes ----------------------------------------------------------
 
 
 def compute_surface_normals(
@@ -85,7 +85,7 @@ def compute_surface_normals(
     x_coords: np.ndarray,
     y_coords: np.ndarray,
 ) -> np.ndarray:
-    """Calcule les normales de surface pour toute la grille. Retourne (ny, nx, 3)."""
+    """Compute surface normals for the entire grid. Returns (ny, nx, 3)."""
     dx = x_coords[1] - x_coords[0] if len(x_coords) > 1 else 1.0
     dy = y_coords[1] - y_coords[0] if len(y_coords) > 1 else 1.0
     dzdx = np.gradient(heightmap, dx, axis=1)
@@ -101,7 +101,7 @@ def compute_seed_attributes(
     terrain: TerrainData,
     config: dict[str, Any],
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Calcule vitesse et direction pour chaque seed. Retourne (speeds, directions)."""
+    """Compute speed and direction for each seed. Returns (speeds, directions)."""
     ny, nx = terrain.heightmap.shape
     x_max, y_max = terrain.x_coords[-1], terrain.y_coords[-1]
 
@@ -128,26 +128,26 @@ def compute_seed_attributes(
         iy = int(np.clip(positions[i, 1] / y_max * (ny - 1), 0, ny - 1))
         normal = normals_grid[iy, ix]
 
-        # Inclinaison (0°=plat, 90°=vertical)
+        # Slope (0=flat, 90=vertical)
         inclination = np.degrees(np.arccos(np.clip(normal[2], -1, 1)))
 
-        # Vitesse = f(lumière, pente, courant)
+        # Speed = f(light, slope, current)
         light = np.exp(-light_decay * depths[i])
         slope = max(0, 1.0 - inclination / max_slope)
         current = 1.0 + (current_boost - 1.0) * abs(np.dot(normal[:2], current_dir[:2]))
 
         speeds[i] = base_speed * light * slope * current
 
-        # Direction de croissance
+        # Growth direction
         d = w_grav * np.array([0, 0, 1.0]) + w_light * sun_dir + w_current * current_dir
         norm_d = np.linalg.norm(d)
         directions[i] = d / norm_d if norm_d > 1e-8 else np.array([0, 0, 1.0])
 
-    print(f"  Vitesses : {speeds.min():.2f} – {speeds.max():.2f}")
+    print(f"  Speeds: {speeds.min():.2f} -- {speeds.max():.2f}")
     return speeds, directions
 
 
-# ── KJMA anisotrope ───────────────────────────────────────────────────────────
+# -- Anisotropic KJMA ----------------------------------------------------------
 
 
 def kjma_assign(
@@ -157,10 +157,10 @@ def kjma_assign(
     directions: np.ndarray,
     anisotropy: float,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Attribution KJMA : chaque vertex → seed le plus rapide à l'atteindre.
+    """KJMA assignment: each vertex -> seed that reaches it fastest.
 
-    Retourne (winner_idx, min_time, second_min_time) pour chaque vertex.
-    Traité par chunks pour limiter la mémoire.
+    Returns (winner_idx, min_time, second_min_time) for each vertex.
+    Processed in chunks to limit memory usage.
     """
     n_verts = len(mesh_vertices)
     n_seeds = len(seed_positions_3d)
@@ -177,15 +177,15 @@ def kjma_assign(
         # diff[chunk, seed, 3]
         diff = verts_chunk[:, np.newaxis, :] - seed_positions_3d[np.newaxis, :, :]
 
-        # Composante dans la direction du seed
+        # Component along the seed direction
         along = np.einsum("ijk,jk->ij", diff, directions)  # (chunk, seed)
 
-        # Composante perpendiculaire
+        # Perpendicular component
         along_vec = along[:, :, np.newaxis] * directions[np.newaxis, :, :]  # (chunk, seed, 3)
         perp_vec = diff - along_vec
         perp = np.linalg.norm(perp_vec, axis=-1)  # (chunk, seed)
 
-        # Temps d'arrivée ellipsoïdal
+        # Ellipsoidal arrival time
         speed_along = speeds[np.newaxis, :] * anisotropy
         speed_perp = speeds[np.newaxis, :]
         time = np.sqrt(
@@ -210,7 +210,7 @@ def kjma_assign(
     return winner, min_time, second_time
 
 
-# ── Déformation du mesh ──────────────────────────────────────────────────────
+# -- Mesh deformation ---------------------------------------------------------
 
 
 def deform_mesh(
@@ -221,38 +221,38 @@ def deform_mesh(
     speeds: np.ndarray,
     config: dict[str, Any],
 ) -> None:
-    """Déforme le mesh en place : bosses aux seeds, creux aux frontières. Vectorisé."""
+    """Deform the mesh in place: bumps at seeds, troughs at boundaries. Vectorized."""
     max_height = config.get("max_height", 1.5)
     boundary_sharpness = config.get("boundary_sharpness", 3.0)
 
     normals = mesh.vertex_normals
 
-    # Masque : vertices valides
+    # Mask: valid vertices
     valid = (min_time < 1e10) & (second_time > 1e-8) & (speeds[winner] > 1e-6)
 
-    # Profil parabolique
+    # Parabolic profile
     t_norm = np.where(valid, min_time / (second_time + 1e-10), 1.0)
     profile = np.clip(1.0 - t_norm * t_norm, 0, None)
 
-    # Hauteur proportionnelle à la vitesse du seed
+    # Height proportional to seed speed
     height = max_height * profile * np.clip(speeds[winner], 0, 3.0) / 3.0
 
-    # Creux aux frontières
+    # Troughs at boundaries
     dt = second_time - min_time
     competition = 1.0 - np.exp(-boundary_sharpness * dt / (second_time + 1e-8))
     height *= competition
 
-    # Appliquer seulement aux valides
+    # Apply only to valid vertices
     height[~valid] = 0.0
 
     mesh.vertices += normals * height[:, np.newaxis]
 
 
-# ── Terrain → mesh ───────────────────────────────────────────────────────────
+# -- Terrain -> mesh -----------------------------------------------------------
 
 
 def terrain_to_mesh(terrain: TerrainData) -> trimesh.Trimesh:
-    """Convertit un TerrainData en trimesh triangulé."""
+    """Convert a TerrainData to a triangulated trimesh."""
     ny, nx = terrain.heightmap.shape
     x_grid, y_grid = np.meshgrid(terrain.x_coords, terrain.y_coords)
     z_grid = -terrain.heightmap
@@ -268,14 +268,14 @@ def terrain_to_mesh(terrain: TerrainData) -> trimesh.Trimesh:
     return trimesh.Trimesh(vertices=vertices, faces=np.array(faces))
 
 
-# ── Pipeline ──────────────────────────────────────────────────────────────────
+# -- Pipeline ------------------------------------------------------------------
 
 
 def generate_reef(terrain: TerrainData, config: dict[str, Any]) -> trimesh.Trimesh:
-    """Pipeline KJMA : seeds → attributs → attribution → déformation."""
+    """KJMA pipeline: seeds -> attributes -> assignment -> deformation."""
     import os
 
-    # Limiter les cores CPU pour numpy/BLAS
+    # Limit CPU cores for numpy/BLAS
     cpu_limit = str(config.get("cpu_core_limit", ""))
     if cpu_limit:
         os.environ["OMP_NUM_THREADS"] = cpu_limit
@@ -290,25 +290,25 @@ def generate_reef(terrain: TerrainData, config: dict[str, Any]) -> trimesh.Trime
     # 1. Scatter
     positions, depths = scatter_seeds(terrain, zones, rng, config=config)
     if len(positions) == 0:
-        print("  Aucun seed placé")
+        print("  No seeds placed")
         return terrain_to_mesh(terrain)
 
-    # 2. Attributs (vitesse + direction)
+    # 2. Attributes (speed + direction)
     speeds, directions = compute_seed_attributes(positions, depths, terrain, kjma_cfg)
 
-    # Filtrer les seeds avec vitesse ~0
+    # Filter seeds with speed ~0
     alive = speeds > 0.01
     positions = positions[alive]
     depths = depths[alive]
     speeds = speeds[alive]
     directions = directions[alive]
-    print(f"  Seeds actifs : {len(positions)}")
+    print(f"  Active seeds: {len(positions)}")
 
-    # 3. Construire le mesh terrain
-    print("  Construction du mesh…")
+    # 3. Build terrain mesh
+    print("  Building mesh...")
     mesh = terrain_to_mesh(terrain)
 
-    # Positions 3D des seeds (sur la surface)
+    # 3D seed positions (on surface)
     ny, nx = terrain.heightmap.shape
     x_max, y_max = terrain.x_coords[-1], terrain.y_coords[-1]
     seed_z = np.array([
@@ -320,22 +320,22 @@ def generate_reef(terrain: TerrainData, config: dict[str, Any]) -> trimesh.Trime
     ])
     seed_positions_3d = np.column_stack([positions, seed_z])
 
-    # 4. Attribution KJMA
+    # 4. KJMA assignment
     anisotropy = kjma_cfg.get("anisotropy", 2.0)
-    print(f"  Attribution KJMA ({len(mesh.vertices):,} vertices × {len(positions)} seeds)…")
+    print(f"  KJMA assignment ({len(mesh.vertices):,} vertices x {len(positions)} seeds)...")
     winner, min_time, second_time = kjma_assign(
         mesh.vertices, seed_positions_3d, speeds, directions, anisotropy
     )
 
-    # 5. Déformation
-    print("  Déformation…")
+    # 5. Deformation
+    print("  Deforming...")
     deform_mesh(mesh, winner, min_time, second_time, speeds, kjma_cfg)
     mesh.fix_normals()
 
     return mesh
 
 
-# ── CLI ───────────────────────────────────────────────────────────────────────
+# -- CLI -----------------------------------------------------------------------
 
 
 def run_colony_pipeline(config: dict[str, Any]) -> None:
@@ -345,16 +345,16 @@ def run_colony_pipeline(config: dict[str, Any]) -> None:
     input_path = resolve_path(config, colony_cfg["input"])
     output_path = resolve_path(config, colony_cfg["output"])
 
-    print(f"Chargement terrain : {input_path}")
+    print(f"Loading terrain: {input_path}")
     terrain = load_terrain(input_path)
 
-    print("Croissance KJMA anisotrope…")
+    print("Anisotropic KJMA growth...")
     reef = generate_reef(terrain, colony_cfg)
-    print(f"  {len(reef.vertices):,} sommets · {len(reef.faces):,} faces")
+    print(f"  {len(reef.vertices):,} vertices - {len(reef.faces):,} faces")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     reef.export(str(output_path))
-    print(f"Reef sauvegardé → {output_path}")
+    print(f"Reef saved -> {output_path}")
 
 
 if __name__ == "__main__":

@@ -1,216 +1,216 @@
-# Solutions explorées — Coral Reef Scope
+# Explored Solutions -- Coral Reef Scope
 
-Récapitulatif de toutes les approches envisagées, testées ou retenues pour la simulation du récif et des coraux.
-
----
-
-## 1. Simulation de l'amarrage / mouillage
-
-### 1.1 Verlet 2D — éléments discrets (HTML)
-
-**Fichier** : `reef-mooring-sim.html`
-**Statut** : Implémenté (prototype 2D)
-
-- Intégrateur de Verlet avec contraintes de distance (relaxation itérative, 18 passes)
-- Câble = chaîne de N nœuds inextensibles, ancre fixée au fond
-- Forces : flottabilité, drag (Morison normal + tangentiel), houle Airy, vent en surface
-- Tensions calculées par accumulation descendante (quasi-statique)
-- Profils de courant : linéaire, uniforme, concentré en surface
-- Treuil (déploiement / rembobinage)
-- Limitation : 2D uniquement, pas de courants directionnels 3D
-
-**Références** :
-- Théorie des ondes d'Airy (vitesses orbitales en eau profonde)
-- Équation de Morison (drag normal Cd=1.2 + tangentiel Cf=0.1)
-
-### 1.2 MoorPy — équilibre statique
-
-**Fichier** : `coral_sim/mooring.py`
-**Statut** : Implémenté
-
-- Charge un fichier MoorDyn v2 (.dat) via MoorPy
-- Résout l'équilibre statique (catenary solver)
-- Extrait les positions pour visualisation dans Viser
-- Format MoorDyn = standard industriel (NREL / OpenFAST)
-- Utilisé pour un réseau de 4 ancres, 4 bouées, 1 point central, 12 lignes
-
-**Références** :
-- MoorPy (NREL) — solveur statique catenary
-- MoorDyn v2 — format de fichier standard pour les systèmes d'amarrage
-
-### 1.3 MuJoCo — simulation dynamique 3D
-
-**Fichier** : `coral_sim/anchor_sim.py`
-**Statut** : Implémenté (version actuelle)
-
-- Chaîne de corps rigides (capsules) connectés par des joints ball
-- Gravité MuJoCo activée, forces externes via `xfrc_applied` :
-  - Poussée d'Archimède (par segment, vectorisé NumPy)
-  - Drag hydrodynamique (Morison, composantes normale/tangentielle)
-  - Houle (vitesses orbitales Airy, profondeur variable)
-  - Vent (surface, loi 3% de la vitesse du vent)
-  - Treuil (contrôle PD de la longueur câble)
-- Matériaux de câble : polyester, nylon, Dyneema, acier
-- Flotteurs intermédiaires configurables
-- Tensions par accumulation descendante (comme le prototype HTML)
-- Visualisation temps réel dans Viser avec GUI interactive
-
-**Références** :
-- MuJoCo (DeepMind) — moteur physique multi-corps
-- Équation de Morison pour le drag sur cylindres
-
-### 1.4 Outils mentionnés mais non implémentés
-
-| Outil | Description | Raison de non-utilisation |
-|-------|-------------|--------------------------|
-| **MoorDyn** (dynamique) | Simulation dynamique de lignes d'amarrage (NREL) | Prévu pour la suite ; MoorPy suffit pour le statique |
-| **Project Chrono** | Moteur multi-physique (fluide-structure) | Trop lourd pour le prototypage |
-| **OrcaFlex** | Logiciel commercial de simulation offshore | Licence payante, hors scope |
-| **OpenFAST** | Simulation éolienne offshore (NREL) | Trop spécialisé éolien, mais format MoorDyn compatible |
+Summary of all approaches considered, tested, or adopted for the reef and coral simulation.
 
 ---
 
-## 2. Génération de coraux
+## 1. Mooring Simulation
 
-### 2.1 DLA — Diffusion-Limited Aggregation
+### 1.1 Verlet 2D -- Discrete Elements (HTML)
 
-**Commit** : `d0c0c27` (feat: add support for differential growth)
-**Statut** : Abandonné
+**File**: `reef-mooring-sim.html`
+**Status**: Implemented (2D prototype)
 
-- Librairie `dlacorals` (Bakels et al. 2024, UvA/VU Amsterdam)
-- Grille 3D, graines au fond, marche aléatoire avec drift
-- Agrégation au contact avec biais solaire (`sun_vec`)
-- Résultat : grille binaire → marching cubes → trimesh
-- Deux types de colonies :
-  - **Branchus** (Pocillopora, Acropora) : DLA classique
-  - **Massifs** (Porites) : sphère bruitée OpenSimplex
-- Placement sur le terrain via Poisson-disk sampling + filtrage par profondeur
+- Verlet integrator with distance constraints (iterative relaxation, 18 passes)
+- Cable = chain of N inextensible nodes, anchor fixed to the seabed
+- Forces: buoyancy, drag (Morison normal + tangential), Airy wave theory, surface wind
+- Tensions computed by top-down accumulation (quasi-static)
+- Current profiles: linear, uniform, surface-concentrated
+- Winch (deployment / reeling)
+- Limitation: 2D only, no 3D directional currents
 
-**Pourquoi abandonné** : trop lent, instable, difficile à contrôler à l'échelle du récif (km)
+**References**:
+- Airy wave theory (orbital velocities in deep water)
+- Morison equation (normal drag Cd=1.2 + tangential Cf=0.1)
 
-**Références** :
-- Bakels et al. (2024) — dlacorals, modèle DLA pour morphologie corallienne (Université d'Amsterdam)
-- Witten & Sander (1981) — Diffusion-Limited Aggregation, modèle original
+### 1.2 MoorPy -- Static Equilibrium
+
+**File**: `coral_sim/mooring.py`
+**Status**: Implemented
+
+- Loads a MoorDyn v2 file (.dat) via MoorPy
+- Solves static equilibrium (catenary solver)
+- Extracts positions for visualization in Viser
+- MoorDyn format = industry standard (NREL / OpenFAST)
+- Used for a network of 4 anchors, 4 buoys, 1 central point, 12 lines
+
+**References**:
+- MoorPy (NREL) -- static catenary solver
+- MoorDyn v2 -- standard file format for mooring systems
+
+### 1.3 MuJoCo -- 3D Dynamic Simulation
+
+**File**: `coral_sim/anchor_sim.py`
+**Status**: Implemented (current version)
+
+- Chain of rigid bodies (capsules) connected by ball joints
+- MuJoCo gravity enabled, external forces via `xfrc_applied`:
+  - Buoyancy (per segment, vectorized NumPy)
+  - Hydrodynamic drag (Morison, normal/tangential components)
+  - Waves (Airy orbital velocities, depth-dependent)
+  - Wind (surface, 3% of wind speed rule)
+  - Winch (PD control of cable length)
+- Cable materials: polyester, nylon, Dyneema, steel
+- Configurable intermediate floats
+- Tensions by top-down accumulation (same as HTML prototype)
+- Real-time visualization in Viser with interactive GUI
+
+**References**:
+- MuJoCo (DeepMind) -- multi-body physics engine
+- Morison equation for drag on cylinders
+
+### 1.4 Tools Mentioned but Not Implemented
+
+| Tool | Description | Reason for Not Using |
+|------|-------------|----------------------|
+| **MoorDyn** (dynamic) | Dynamic mooring line simulation (NREL) | Planned for later; MoorPy is sufficient for statics |
+| **Project Chrono** | Multi-physics engine (fluid-structure) | Too heavy for prototyping |
+| **OrcaFlex** | Commercial offshore simulation software | Paid license, out of scope |
+| **OpenFAST** | Offshore wind turbine simulation (NREL) | Too specialized for wind turbines, but compatible MoorDyn format |
+
+---
+
+## 2. Coral Generation
+
+### 2.1 DLA -- Diffusion-Limited Aggregation
+
+**Commit**: `d0c0c27` (feat: add support for differential growth)
+**Status**: Abandoned
+
+- Library `dlacorals` (Bakels et al. 2024, UvA/VU Amsterdam)
+- 3D grid, seeds at the bottom, random walk with drift
+- Contact aggregation with solar bias (`sun_vec`)
+- Result: binary grid --> marching cubes --> trimesh
+- Two colony types:
+  - **Branching** (Pocillopora, Acropora): classic DLA
+  - **Massive** (Porites): OpenSimplex-noised sphere
+- Placement on terrain via Poisson-disk sampling + depth filtering
+
+**Why abandoned**: too slow, unstable, hard to control at reef scale (km)
+
+**References**:
+- Bakels et al. (2024) -- dlacorals, DLA model for coral morphology (University of Amsterdam)
+- Witten & Sander (1981) -- Diffusion-Limited Aggregation, original model
 
 ### 2.2 Differential Growth
 
-**Commit** : `d0c0c27` (feat: add support for differential growth)
-**Statut** : Exploré, abandonné
+**Commit**: `d0c0c27` (feat: add support for differential growth)
+**Status**: Explored, abandoned
 
-- Technique de croissance de maillage où les arêtes se subdivisent et les nœuds se repoussent
-- Produit des formes organiques (ondulations, plis) similaires aux coraux foliacés
-- Combiné avec DLA dans le même commit
+- Mesh growth technique where edges subdivide and nodes repel each other
+- Produces organic shapes (undulations, folds) similar to foliose corals
+- Combined with DLA in the same commit
 
-**Pourquoi abandonné** : instabilité numérique, temps de calcul prohibitif pour des milliers de colonies
+**Why abandoned**: numerical instability, prohibitive computation time for thousands of colonies
 
-**Références** :
-- Nervous System (Jessica Rosenkrantz & Jesse Louis-Rosenberg) — differential growth pour la génération de formes biologiques
-- Blog IAAC (Institute for Advanced Architecture of Catalonia) — applications en design computationnel
-- Inconvergent (Anders Hoff) — implémentations artistiques de differential growth
+**References**:
+- Nervous System (Jessica Rosenkrantz & Jesse Louis-Rosenberg) -- differential growth for biological shape generation
+- IAAC Blog (Institute for Advanced Architecture of Catalonia) -- applications in computational design
+- Inconvergent (Anders Hoff) -- artistic implementations of differential growth
 
 ### 2.3 Infinigen
 
-**Statut** : Exploré, abandonné
+**Status**: Explored, abandoned
 
-- Générateur procédural de scènes naturelles (Princeton)
-- Inclut des assets de coraux de haute qualité
-- Problèmes : nécessite Python 3.11 + Blender, impossible d'importer des cartes de profondeur custom
-- Idée résiduelle : générer des meshes coral sur un serveur distant, les utiliser comme assets visuels localement
+- Procedural natural scene generator (Princeton)
+- Includes high-quality coral assets
+- Problems: requires Python 3.11 + Blender, cannot import custom depth maps
+- Residual idea: generate coral meshes on a remote server, use them as visual assets locally
 
-**Pourquoi abandonné** : incompatible Python 3.13, dépendance Blender trop lourde, pas d'API pour intégrer un terrain custom
+**Why abandoned**: incompatible with Python 3.13, Blender dependency too heavy, no API for integrating custom terrain
 
-**Références** :
-- Infinigen (Raistrick et al., Princeton 2023) — "Infinite Photorealistic Worlds using Procedural Generation"
+**References**:
+- Infinigen (Raistrick et al., Princeton 2023) -- "Infinite Photorealistic Worlds using Procedural Generation"
 
-### 2.4 KJMA — Kolmogorov-Johnson-Mehl-Avrami (retenu)
+### 2.4 KJMA -- Kolmogorov-Johnson-Mehl-Avrami (adopted)
 
-**Fichier** : `coral_sim/colony.py`
-**Statut** : Implémenté (version actuelle)
+**File**: `coral_sim/colony.py`
+**Status**: Implemented (current version)
 
-- Modèle analytique de cristallisation/croissance compétitive
-- Seeds distribués par zone de profondeur (densité configurable)
-- Chaque seed a une vitesse de croissance = f(lumière, pente, courant)
-- Croissance ellipsoïdale (anisotropie configurable)
-- Attribution des vertices : chaque point → seed le plus rapide à l'atteindre (distance ellipsoïdale)
-- Frontières naturelles par compétition (premier arrivé gagne)
-- Déformation du terrain : profil parabolique + creux aux frontières
-- Calcul vectorisé NumPy, par chunks pour limiter la RAM (~5s pour 54K vertices x 2000 seeds)
+- Analytical model of crystallization/competitive growth
+- Seeds distributed by depth zone (configurable density)
+- Each seed has a growth speed = f(light, slope, current)
+- Ellipsoidal growth (configurable anisotropy)
+- Vertex attribution: each point --> fastest seed to reach it (ellipsoidal distance)
+- Natural boundaries through competition (first to arrive wins)
+- Terrain deformation: parabolic profile + troughs at boundaries
+- Vectorized NumPy computation, chunked to limit RAM (~5s for 54K vertices x 2000 seeds)
 
-**Pourquoi retenu** : analytique (pas d'itération), rapide, contrôlable, adapté à l'échelle km
+**Why adopted**: analytical (no iteration), fast, controllable, suited for km scale
 
-**Références** :
-- Kolmogorov (1937) — "On the statistical theory of the crystallization of metals"
-- Johnson & Mehl (1939) — "Reaction kinetics in processes of nucleation and growth"
-- Avrami (1939-1941) — série de 3 articles sur la cinétique de transformation
+**References**:
+- Kolmogorov (1937) -- "On the statistical theory of the crystallization of metals"
+- Johnson & Mehl (1939) -- "Reaction kinetics in processes of nucleation and growth"
+- Avrami (1939-1941) -- series of 3 papers on transformation kinetics
 
-### 2.5 Autres approches discutées (non implémentées)
+### 2.5 Other Approaches Discussed (Not Implemented)
 
-| Approche | Description | Pertinence |
-|----------|-------------|------------|
-| **Reaction-Diffusion** (Turing) | Motifs par systèmes de Gray-Scott / FitzHugh-Nagumo | Génère des motifs 2D (texture), pas des formes 3D |
-| **L-systems** | Grammaires formelles pour structures branchues | Bon pour coraux branchus individuels, pas pour un récif entier |
-| **Eden Model** | Croissance aléatoire sur grille (agrégation de voisins) | Trop simple, pas de contrôle morphologique |
-| **Morphogènes** | Gradients chimiques guidant la croissance | Coûteux en calcul (PDE), plus adapté à la recherche biologique |
-| **FEM (éléments finis)** | Simulation mécanique de la croissance squelettique | Échelle trop fine pour un récif entier |
-
----
-
-## 3. Terrain / Données bathymétriques
-
-### 3.1 Allen Coral Atlas (retenu)
-
-**Fichier** : `coral_sim/terrain/allen.py`
-
-- WFS public (couches géomorphiques + benthiques)
-- Rasterisation via Shapely STRtree
-- Profondeur approximée par mapping zone → profondeur typique
-- Pas de vraie bathymétrie (seulement classification)
-- Cache local des requêtes
-
-**Références** :
-- Allen Coral Atlas (allencoralatlas.org) — cartographie mondiale des récifs par satellite
-
-### 3.2 Terrain procédural (retenu)
-
-**Fichier** : `coral_sim/terrain/procedural.py`
-
-- Zones rectangulaires avec profils spline (points de contrôle distance/profondeur)
-- Rugosité par fBm (fractional Brownian Motion) via OpenSimplex
-- Multi-zone configurable
-
-### 3.3 Photogrammétrie Sketchfab (legacy)
-
-**Fichier** : `reef_3d.py`
-
-- Téléchargement de modèles 3D scannés (Structure-from-Motion)
-- Modèles utilisés : REXCOR (Marseille), Réserve Cousteau (Guadeloupe)
-- Visualisation Plotly 3D
-- Abandonné au profit de Viser (plus interactif, Python-driven)
-
-**Références** :
-- Sketchfab — plateforme de modèles 3D (photogrammétrie sous-marine)
-- Septentrion Environnement — modèle REXCOR
-- Sea(e)scape — modèle Guadeloupe
+| Approach | Description | Relevance |
+|----------|-------------|-----------|
+| **Reaction-Diffusion** (Turing) | Patterns via Gray-Scott / FitzHugh-Nagumo systems | Generates 2D patterns (texture), not 3D shapes |
+| **L-systems** | Formal grammars for branching structures | Good for individual branching corals, not for an entire reef |
+| **Eden Model** | Random growth on a grid (neighbor aggregation) | Too simple, no morphological control |
+| **Morphogens** | Chemical gradients guiding growth | Computationally expensive (PDE), better suited for biological research |
+| **FEM (Finite Elements)** | Mechanical simulation of skeletal growth | Too fine-grained for an entire reef |
 
 ---
 
-## 4. Visualisation
+## 3. Terrain / Bathymetric Data
 
-| Solution | Statut | Notes |
+### 3.1 Allen Coral Atlas (adopted)
+
+**File**: `coral_sim/terrain/allen.py`
+
+- Public WFS (geomorphic + benthic layers)
+- Rasterization via Shapely STRtree
+- Depth approximated by mapping zone names to typical depths
+- No real bathymetry (classification only)
+- Local request cache
+
+**References**:
+- Allen Coral Atlas (allencoralatlas.org) -- worldwide satellite-based reef mapping
+
+### 3.2 Procedural Terrain (adopted)
+
+**File**: `coral_sim/terrain/procedural.py`
+
+- Rectangular zones with spline profiles (distance/depth control points)
+- Rugosity via fBm (fractional Brownian Motion) using OpenSimplex
+- Multi-zone, configurable
+
+### 3.3 Sketchfab Photogrammetry (legacy)
+
+**File**: `reef_3d.py`
+
+- Download of 3D scanned models (Structure-from-Motion)
+- Models used: REXCOR (Marseille), Cousteau Reserve (Guadeloupe)
+- Plotly 3D visualization
+- Abandoned in favor of Viser (more interactive, Python-driven)
+
+**References**:
+- Sketchfab -- 3D model platform (underwater photogrammetry)
+- Septentrion Environnement -- REXCOR model
+- Sea(e)scape -- Guadeloupe model
+
+---
+
+## 4. Visualization
+
+| Solution | Status | Notes |
 |----------|--------|-------|
-| **Viser** (retenu) | Implémenté | Python → WebSocket → Three.js, port 8080 |
-| **Plotly** | Legacy (`reef_3d.py`) | HTML statique, pas de contrôle temps réel |
-| **Three.js pur** | Exploré | Meilleurs shaders (contour lines au hover), mais trop de JS custom |
-| **MapLibre** | Exploré | Affichait l'île au lieu du récif (tuiles satellite) |
+| **Viser** (adopted) | Implemented | Python --> WebSocket --> Three.js, port 8080 |
+| **Plotly** | Legacy (`reef_3d.py`) | Static HTML, no real-time control |
+| **Pure Three.js** | Explored | Better shaders (hover contour lines), but too much custom JS |
+| **MapLibre** | Explored | Displayed the island instead of the reef (satellite tiles) |
 
 ---
 
-## 5. Récapitulatif des choix finaux
+## 5. Summary of Final Choices
 
-| Composant | Solution retenue | Alternatives testées |
+| Component | Adopted Solution | Tested Alternatives |
 |-----------|-----------------|---------------------|
-| **Simulation amarrage** | MuJoCo 3D + Viser | Verlet 2D (HTML), MoorPy (statique) |
-| **Croissance coraux** | KJMA anisotrope | DLA (dlacorals), Differential Growth, Infinigen |
-| **Terrain** | Allen Coral Atlas + procédural | — |
-| **Visualisation** | Viser | Plotly, Three.js, MapLibre, Sketchfab |
-| **Format amarrage** | MoorDyn v2 (.dat) | — |
+| **Mooring simulation** | MuJoCo 3D + Viser | Verlet 2D (HTML), MoorPy (static) |
+| **Coral growth** | Anisotropic KJMA | DLA (dlacorals), Differential Growth, Infinigen |
+| **Terrain** | Allen Coral Atlas + procedural | -- |
+| **Visualization** | Viser | Plotly, Three.js, MapLibre, Sketchfab |
+| **Mooring format** | MoorDyn v2 (.dat) | -- |

@@ -128,4 +128,4 @@ if __name__ == "__main__":
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nArret.")
+        print("\nStopped.")

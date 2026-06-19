@@ -23,7 +23,7 @@ export function buildPresentation() {
   </div>
 </section>
 
-<!-- ============ PROBLEME - immersif ============ -->
+<!-- ============ PROBLEM - immersive ============ -->
 <section class="deck dark-ocean">
   <div class="deck-bg-anim bubbles-bg"></div>
   <div class="deck-content">
@@ -472,7 +472,7 @@ export function buildPresentation() {
   </div>
 </section>
 
-<!-- ============ COMPARATIF SYSTEMES ============ -->
+<!-- ============ SYSTEMS COMPARISON ============ -->
 <section class="deck">
   <div class="deck-content">
     <h2 class="reveal kicker">${t('cmpKicker')}</h2>

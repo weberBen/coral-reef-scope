@@ -23,7 +23,7 @@ const GEOMORPHIC_DEPTH = {
  */
 async function fetchWfsLayer(typeName, bbox, onStatus) {
   const shortName = typeName.split(":")[1];
-  onStatus?.(`Telechargement ${shortName}...`);
+  onStatus?.(`Downloading ${shortName}...`);
 
   const params = new URLSearchParams({
     service: "WFS",
@@ -40,7 +40,7 @@ async function fetchWfsLayer(typeName, bbox, onStatus) {
   if (!resp.ok) throw new Error(`WFS ${resp.status}: ${resp.statusText}`);
   const data = await resp.json();
   const n = data.features?.length || 0;
-  onStatus?.(`${shortName}: ${n} polygones`);
+  onStatus?.(`${shortName}: ${n} polygons`);
   return data;
 }
 
@@ -197,7 +197,7 @@ export async function fetchAllenTerrain(bbox, resolutionDeg, onStatus) {
   const nx = Math.round((lonMax - lonMin) / resolutionDeg);
   const ny = Math.round((latMax - latMin) / resolutionDeg);
 
-  onStatus?.(`Rasterisation (${nx} x ${ny})...`);
+  onStatus?.(`Rasterizing (${nx} x ${ny})...`);
 
   // 2. Rasterize
   let grid = rasterize(geoJson, bbox, nx, ny);
@@ -219,7 +219,7 @@ export async function fetchAllenTerrain(bbox, resolutionDeg, onStatus) {
   for (let j = 0; j < ny; j++) yCoords[j] = (j / (ny - 1)) * yExtent;
 
   const nFeatures = geoJson.features?.length || 0;
-  onStatus?.(`OK: ${nFeatures} geo + ${benthicCount} benthic polygones`);
+  onStatus?.(`OK: ${nFeatures} geo + ${benthicCount} benthic polygons`);
 
   return {
     heightmap: grid,

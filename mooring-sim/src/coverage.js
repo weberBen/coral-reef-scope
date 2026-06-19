@@ -417,18 +417,18 @@ function onMouseMove(event) {
       let idx = cameraMarkers.indexOf(obj);
       let label = '';
       if (idx >= 0) {
-        label = 'Ancre : ' + state.cameras[idx].realDepth.toFixed(1) + ' m';
+        label = 'Anchor: ' + state.cameras[idx].realDepth.toFixed(1) + ' m';
       } else {
         idx = surfaceMarkers.indexOf(obj);
         if (idx >= 0) {
-          label = 'Surface : 0 m';
+          label = 'Surface: 0 m';
         } else {
           idx = visMaxMarkers.indexOf(obj);
           if (idx >= 0) {
             const markerY = visMaxMarkers[idx].position.y;
             const frac = (markerY - meshYMin) / ((meshYMax - meshYMin) || 1);
             const depth = -(1 - frac) * 19.5;
-            label = 'Visibilite max : ' + depth.toFixed(1) + ' m';
+            label = 'Max visibility: ' + depth.toFixed(1) + ' m';
           }
         }
       }
@@ -1059,7 +1059,7 @@ async function optimizePlacement() {
     candidates.push(faceData[i].center.clone());
   }
 
-  covDisplay.pct = 'Calcul...';
+  covDisplay.pct = 'Computing...';
   covDisplay.count = '';
 
   const globalCovered = new Set();

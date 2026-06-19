@@ -68,7 +68,7 @@ export class MapPicker {
       this.onChange(null);
     });
 
-    // Load default bbox from config (Moorea nord)
+    // Load default bbox from config (North Moorea)
     this._setDefaultBbox();
   }
 

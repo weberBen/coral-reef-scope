@@ -1,31 +1,31 @@
-data_dir: data              # dossier pour toutes les entrées/sorties
+data_dir: data              # directory for all inputs/outputs
 
 terrain:
   source: allen
-  output: terrain.npz         # → data_dir/terrain.npz
+  output: terrain.npz         # -> data_dir/terrain.npz
 
   allen:
-    bbox: [-149.87, -17.555, -149.80, -17.485]  # Moorea nord, Polynésie française
-    resolution: 0.0003      # degrés par pixel (~33m)
+    bbox: [-149.87, -17.555, -149.80, -17.485]  # North Moorea, French Polynesia
+    resolution: 0.0003      # degrees per pixel (~33m)
     cache_dir: cache/
 
   procedural:
-    length_x: 2000          # mètres
+    length_x: 2000          # meters
     length_y: 2000
-    resolution: 2.0         # mètres par pixel
+    resolution: 2.0         # meters per pixel
     seed: 42
     octaves: 6
-    rugosity: 1.5           # amplitude bruit haute fréquence (m)
-    flat_depth: 20.0        # profondeur du fond plat
+    rugosity: 1.5           # high-frequency noise amplitude (m)
+    flat_depth: 20.0        # flat seabed depth
 
     zones:
-      - bounds: [100, 200, 900, 1800]   # [x_min, y_min, x_max, y_max] en mètres
-        profile:                         # [distance_au_bord_m, profondeur_m]
-          - [0, 20.0]                    # bord = fond
-          - [30, 8.0]                    # pente externe
-          - [100, 1.5]                   # platier
-          - [150, 0.3]                   # crête
-          - [200, 1.5]                   # centre
+      - bounds: [100, 200, 900, 1800]   # [x_min, y_min, x_max, y_max] in meters
+        profile:                         # [distance_from_edge_m, depth_m]
+          - [0, 20.0]                    # edge = seabed
+          - [30, 8.0]                    # outer slope
+          - [100, 1.5]                   # reef flat
+          - [150, 0.3]                   # crest
+          - [200, 1.5]                   # center
 
       - bounds: [1200, 400, 1700, 1200]
         profile:
@@ -38,21 +38,21 @@ colony:
   input: terrain.npz
   output: reef.glb
   seed: 42
-  ram_limit: 500               # Mo max pour la matrice KJMA
-  cpu_core_limit: 4            # cores max pour numpy
+  ram_limit: 500               # max MB for KJMA matrix
+  cpu_core_limit: 4            # max cores for numpy
 
   kjma:
     base_speed: 1.0
-    anisotropy: 2.0              # 1=sphère, 2=ellipsoïde 2:1
-    max_height: 0.5             # hauteur max d'une colonie (m)
-    boundary_sharpness: 3.0      # netteté des frontières
+    anisotropy: 2.0              # 1=sphere, 2=2:1 ellipsoid
+    max_height: 0.5             # max colony height (m)
+    boundary_sharpness: 3.0      # boundary sharpness
     w_gravity: 1.0
     w_light: 0.5
     w_current: 0.3
     sun_direction: [0, 0, 1]
     current_direction: [1, 0, 0]
-    light_decay: 0.05            # atténuation lumière par m de profondeur
-    max_slope: 70                # degrés max pour la croissance
+    light_decay: 0.05            # light attenuation per m of depth
+    max_slope: 70                # max degrees for growth
     current_boost: 1.5
 
   placement:
@@ -65,15 +65,15 @@ colony:
         density: 0.001
 
 mooring:
-  file: mooring.dat              # fichier MoorDyn dans data_dir
+  file: mooring.dat              # MoorDyn file in data_dir
 
 viz:
   input: terrain.npz
   output_html: reef_3d.html
-  z_exaggeration: 5           # exagération verticale
-  contour_interval: 2.0      # mètres entre isolines
+  z_exaggeration: 5           # vertical exaggeration
+  contour_interval: 2.0      # meters between contour lines
   zoom: 14
-  pitch: 60                  # angle de vue initial
+  pitch: 60                  # initial viewing angle
 
 anchor_sim:
   port: 8080
@@ -85,14 +85,14 @@ anchor_sim:
     n_segments: 20
 
   device:
-    mass: 20                 # kg (caméra + batterie)
-    float_volume: 0.04       # m³ (40L → ~400N flottabilité)
+    mass: 20                 # kg (camera + battery)
+    float_volume: 0.04       # m^3 (40L -> ~400N buoyancy)
     float_mass: 8            # kg
 
   environment:
     depth: 15                # m
-    slope: 0                 # degrés
+    slope: 0                 # degrees
 
   current:
     speed: 0.3               # m/s
-    direction: 0             # degrés (0 = vers X+)
+    direction: 0             # degrees (0 = towards X+)

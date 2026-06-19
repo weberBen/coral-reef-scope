@@ -1,4 +1,4 @@
-"""Point d'entrée principal — raccourci pour python -m coral_sim."""
+"""Main entry point — shortcut for python -m coral_sim."""
 
 import sys
 

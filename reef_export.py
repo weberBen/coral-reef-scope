@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Export GLB d'un terrain recifal depuis Allen Coral Atlas.
+"""GLB export of a reef terrain from Allen Coral Atlas.
 
-Script standalone : coordonnee GPS -> fetch Allen WFS -> depth map -> GLB
-avec metadonnees geo embarquees (label, location, bbox, resolution, source).
+Standalone script: GPS coordinate -> fetch Allen WFS -> depth map -> GLB
+with embedded geo metadata (label, location, bbox, resolution, source).
 
-Usage :
-    python reef_export.py --lat -17.52 --lon -149.83 --label "Moorea Nord" --location "Polynesie francaise"
+Usage:
+    python reef_export.py --lat -17.52 --lon -149.83 --label "North Moorea" --location "French Polynesia"
     python reef_export.py --lat -17.52 --lon -149.83 --radius 6 --resolution 0.0005 -o moorea.glb
 """
 
@@ -25,7 +25,7 @@ import trimesh
 from scipy.ndimage import gaussian_filter
 from shapely.geometry import shape
 
-# ── Allen Coral Atlas WFS ────────────────────────────────────────────────────
+# -- Allen Coral Atlas WFS -----------------------------------------------------
 
 WFS_URL = "https://allencoralatlas.org/geoserver/ows"
 
@@ -45,16 +45,16 @@ GEOMORPHIC_DEPTH = {
 
 
 def fetch_wfs_layer(typename: str, bbox: list[float], cache_dir: Path) -> dict:
-    """Telecharge une couche GeoJSON depuis le WFS Allen Coral Atlas."""
+    """Download a GeoJSON layer from the Allen Coral Atlas WFS."""
     cache_dir.mkdir(parents=True, exist_ok=True)
     short = typename.split(":")[1]
     cache_file = cache_dir / f"{short}.json"
 
     if cache_file.exists():
-        print(f"  {short} : cache local")
+        print(f"  {short}: local cache")
         return json.loads(cache_file.read_text())
 
-    print(f"  {short} : telechargement...", end=" ", flush=True)
+    print(f"  {short}: downloading...", end=" ", flush=True)
     params = {
         "service": "WFS",
         "version": "1.0.0",
@@ -72,14 +72,14 @@ def fetch_wfs_layer(typename: str, bbox: list[float], cache_dir: Path) -> dict:
 
     cache_file.write_text(json.dumps(data))
     n = len(data.get("features", []))
-    print(f"{n} polygones")
+    print(f"{n} polygons")
     return data
 
 
 def rasterize(
     geojson: dict, bbox: list[float], nx: int, ny: int, resolution: float
 ) -> np.ndarray:
-    """Rasterise les polygones geomorphiques en grille de profondeur."""
+    """Rasterize geomorphic polygons to a depth grid."""
     lon_min, lat_min, lon_max, lat_max = bbox
 
     geoms, vals = [], []
@@ -97,7 +97,7 @@ def rasterize(
             continue
 
     if not geoms:
-        print("  (aucun polygone valide)")
+        print("  (no valid polygons)")
         return np.zeros((ny, nx), dtype=np.float64)
 
     lons = np.linspace(lon_min + resolution / 2, lon_max - resolution / 2, nx)
@@ -114,13 +114,13 @@ def rasterize(
     return grid.reshape(ny, nx)
 
 
-# ── Depth map -> Mesh -> GLB ─────────────────────────────────────────────────
+# -- Depth map -> Mesh -> GLB --------------------------------------------------
 
 
 def build_mesh(
     depth_grid: np.ndarray, bbox: list[float], resolution: float
 ) -> trimesh.Trimesh:
-    """Construit un mesh triangule a partir de la depth map."""
+    """Build a triangulated mesh from the depth map."""
     ny, nx = depth_grid.shape
     lon_min, lat_min, lon_max, lat_max = bbox
 
@@ -132,7 +132,7 @@ def build_mesh(
     y_coords = np.linspace(0, (lat_max - lat_min) * m_per_deg_lat, ny)
 
     x_grid, y_grid = np.meshgrid(x_coords, y_coords)
-    z_grid = -depth_grid  # profondeur positive -> Z negatif
+    z_grid = -depth_grid  # positive depth -> negative Z
 
     vertices = np.column_stack([x_grid.ravel(), y_grid.ravel(), z_grid.ravel()])
 
@@ -147,7 +147,7 @@ def build_mesh(
 
 
 def inject_glb_extras(glb_bytes: bytes, extras: dict) -> bytes:
-    """Injecte des extras dans le premier mesh du JSON chunk d'un GLB."""
+    """Inject extras into the first mesh of a GLB's JSON chunk."""
     chunk_len = struct.unpack_from("<I", glb_bytes, 12)[0]
     chunk_type = struct.unpack_from("<I", glb_bytes, 16)[0]
     json_bytes = glb_bytes[20 : 20 + chunk_len]
@@ -187,7 +187,7 @@ def export_glb(
     n_geomorphic: int = 0,
     n_benthic: int = 0,
 ) -> None:
-    """Exporte le mesh en GLB avec les extras geo."""
+    """Export the mesh as GLB with geo extras."""
     path.parent.mkdir(parents=True, exist_ok=True)
 
     extras = {
@@ -209,10 +209,10 @@ def export_glb(
     glb_bytes = inject_glb_extras(glb_bytes, extras)
 
     path.write_bytes(glb_bytes)
-    print(f"GLB exporte -> {path}  ({len(mesh.vertices):,} sommets)")
+    print(f"GLB exported -> {path}  ({len(mesh.vertices):,} vertices)")
 
 
-# ── Pipeline complet ─────────────────────────────────────────────────────────
+# -- Full pipeline -------------------------------------------------------------
 
 
 def pipeline(
@@ -225,8 +225,8 @@ def pipeline(
     cache_dir: str,
     output: str,
 ) -> None:
-    """Coordonnee GPS -> Allen Coral Atlas -> depth map -> GLB."""
-    # Bbox depuis lat/lon + rayon
+    """GPS coordinate -> Allen Coral Atlas -> depth map -> GLB."""
+    # Bbox from lat/lon + radius
     km_per_deg_lat = 111.32
     km_per_deg_lon = 111.32 * math.cos(math.radians(lat))
     dlat = radius_km / km_per_deg_lat
@@ -234,26 +234,26 @@ def pipeline(
 
     bbox = [lon - dlon, lat - dlat, lon + dlon, lat + dlat]
 
-    print(f"Centre : {lat:.4f}, {lon:.4f}")
-    print(f"Rayon  : {radius_km} km")
-    print(f"Bbox   : [{bbox[0]:.5f}, {bbox[1]:.5f}, {bbox[2]:.5f}, {bbox[3]:.5f}]")
+    print(f"Center: {lat:.4f}, {lon:.4f}")
+    print(f"Radius: {radius_km} km")
+    print(f"Bbox  : [{bbox[0]:.5f}, {bbox[1]:.5f}, {bbox[2]:.5f}, {bbox[3]:.5f}]")
 
     # 1. Fetch Allen WFS
     cache = Path(cache_dir)
     geo_geojson = fetch_wfs_layer("coral-atlas:geomorphic_data_verbose", bbox, cache)
     ben_geojson = fetch_wfs_layer("coral-atlas:benthic_data_verbose", bbox, cache)
 
-    # 2. Rasterisation
+    # 2. Rasterization
     lon_min, lat_min, lon_max, lat_max = bbox
     nx = int(round((lon_max - lon_min) / resolution))
     ny = int(round((lat_max - lat_min) / resolution))
 
-    print(f"Rasterisation ({nx} x {ny})...", end=" ", flush=True)
+    print(f"Rasterizing ({nx} x {ny})...", end=" ", flush=True)
     depth_grid = rasterize(geo_geojson, bbox, nx, ny, resolution)
     depth_grid = gaussian_filter(depth_grid.astype(np.float64), sigma=2.0)
     print("OK")
 
-    print(f"Profondeur : {depth_grid.min():.1f} - {depth_grid.max():.1f} m")
+    print(f"Depth: {depth_grid.min():.1f} - {depth_grid.max():.1f} m")
 
     # 3. Mesh + GLB
     mesh = build_mesh(depth_grid, bbox, resolution)
@@ -270,38 +270,38 @@ def pipeline(
     )
 
 
-# ── CLI ──────────────────────────────────────────────────────────────────────
+# -- CLI -----------------------------------------------------------------------
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Export GLB d'un terrain recifal depuis Allen Coral Atlas.",
+        description="GLB export of a reef terrain from Allen Coral Atlas.",
     )
-    parser.add_argument("--lat", type=float, required=True, help="Latitude du centre")
-    parser.add_argument("--lon", type=float, required=True, help="Longitude du centre")
+    parser.add_argument("--lat", type=float, required=True, help="Center latitude")
+    parser.add_argument("--lon", type=float, required=True, help="Center longitude")
     parser.add_argument(
-        "--radius", type=float, default=4.0, help="Rayon en km (defaut: 4)"
+        "--radius", type=float, default=4.0, help="Radius in km (default: 4)"
     )
     parser.add_argument(
         "--resolution",
         type=float,
         default=0.0003,
-        help="Resolution en degres/pixel (defaut: 0.0003 ~ 33m)",
+        help="Resolution in degrees/pixel (default: 0.0003 ~ 33m)",
     )
     parser.add_argument(
-        "--label", type=str, default="", help="Nom du site (ex: 'Moorea Nord')"
+        "--label", type=str, default="", help="Site name (e.g., 'North Moorea')"
     )
     parser.add_argument(
         "--location",
         type=str,
         default="",
-        help="Localisation (ex: 'Polynesie francaise')",
+        help="Location (e.g., 'French Polynesia')",
     )
     parser.add_argument(
-        "--cache-dir", type=str, default="cache", help="Dossier de cache WFS"
+        "--cache-dir", type=str, default="cache", help="WFS cache directory"
     )
     parser.add_argument(
-        "-o", "--output", type=str, default="data/reef.glb", help="Fichier de sortie"
+        "-o", "--output", type=str, default="data/reef.glb", help="Output file"
     )
 
     args = parser.parse_args()

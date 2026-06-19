@@ -72,7 +72,7 @@ const mapPicker = new MapPicker("map", (bbox) => {
       `${bbox[0].toFixed(4)}, ${bbox[1].toFixed(4)} → ${bbox[2].toFixed(4)}, ${bbox[3].toFixed(4)}`;
     btnGenerate.disabled = false;
   } else {
-    bboxDisplay.textContent = "Dessinez un rectangle sur la carte";
+    bboxDisplay.textContent = "Draw a rectangle on the map";
     btnGenerate.disabled = true;
   }
 });
@@ -121,12 +121,12 @@ btnGenerate.addEventListener("click", async () => {
     setProgress(10);
 
     // 1. Fetch Allen data
-    setStatus("Recuperation des donnees Allen Coral Atlas...");
+    setStatus("Fetching Allen Coral Atlas data...");
     const terrain = await fetchAllenTerrain(currentBbox, resDeg, (msg) => setStatus(msg));
     setProgress(40);
 
     if (terrain.nFeatures === 0) {
-      setStatus("Aucune donnee Allen pour cette zone. Terrain vide genere.", "error");
+      setStatus("No Allen data for this area. Empty terrain generated.", "error");
       const mesh = heightmapToMesh(
         terrain.heightmap, terrain.xCoords, terrain.yCoords, terrain.nx, terrain.ny
       );
@@ -139,7 +139,7 @@ btnGenerate.addEventListener("click", async () => {
     }
 
     // 2. KJMA nucleation
-    setStatus("Nucleation KJMA...");
+    setStatus("KJMA nucleation...");
     setProgress(50);
 
     // Use setTimeout to let the UI update
@@ -156,15 +156,15 @@ btnGenerate.addEventListener("click", async () => {
     setProgress(90);
 
     // 3. Display
-    setStatus("Affichage...");
+    setStatus("Displaying...");
     viewer.setGeneratedMesh(mesh);
     updateInfo(viewer.getInfo(), "Allen + KJMA");
 
-    setStatus(`Recif genere: ${mesh.nVerts.toLocaleString()} vertices`, "success");
+    setStatus(`Reef generated: ${mesh.nVerts.toLocaleString()} vertices`, "success");
     setProgress(-1);
   } catch (err) {
     console.error(err);
-    setStatus(`Erreur: ${err.message}`, "error");
+    setStatus(`Error: ${err.message}`, "error");
     setProgress(-1);
   }
 
@@ -183,18 +183,18 @@ fileInput.addEventListener("change", async (e) => {
 });
 
 async function loadGlbFile(file) {
-  setStatus(`Chargement ${file.name}...`);
+  setStatus(`Loading ${file.name}...`);
   setProgress(30);
   try {
     const buffer = await file.arrayBuffer();
     setProgress(60);
     const info = await viewer.loadGlb(buffer);
     updateInfo(info, file.name);
-    setStatus(`${file.name} charge`, "success");
+    setStatus(`${file.name} loaded`, "success");
     setProgress(-1);
   } catch (err) {
     console.error(err);
-    setStatus(`Erreur: ${err.message}`, "error");
+    setStatus(`Error: ${err.message}`, "error");
     setProgress(-1);
   }
 }
@@ -223,10 +223,10 @@ async function tryLoadExisting() {
   try {
     const resp = await fetch("/data/reef.glb", { method: "HEAD" });
     if (resp.ok) {
-      setStatus("Chargement de reef.glb existant...");
+      setStatus("Loading existing reef.glb...");
       const info = await viewer.loadGlb("/data/reef.glb");
       updateInfo(info, "data/reef.glb");
-      setStatus("reef.glb charge", "success");
+      setStatus("reef.glb loaded", "success");
     }
   } catch {
     // no existing file, that's fine

@@ -1,17 +1,17 @@
-"""Simulation 3D d'un ancrage à câble enrouleur.
+"""3D simulation of a reel-cable mooring system.
 
-Inspiré de reef-mooring-sim.html, adapté en 3D avec MuJoCo + Viser.
+Inspired by reef-mooring-sim.html, adapted to 3D with MuJoCo + Viser.
 
-Features :
-    - Courants marins avec profil de profondeur (linéaire, uniforme, surface)
-    - Houle (vitesses orbitales Airy)
-    - Vent en surface
-    - Flotteurs intermédiaires configurables
-    - Affichage des tensions, forces d'ancrage, coefficient de sécurité
-    - Matériaux de câble sélectionnables
-    - Mécanisme d'enroulement (treuil)
+Features:
+    - Marine currents with depth profile (linear, uniform, surface)
+    - Waves (Airy orbital velocities)
+    - Surface wind
+    - Configurable intermediate floats
+    - Display of tensions, anchor forces, safety factor
+    - Selectable cable materials
+    - Winch mechanism (reel)
 
-Usage :
+Usage:
     python -m coral_sim.anchor_sim config.yaml
 """
 
@@ -29,34 +29,34 @@ import viser
 from .terrain import load_config
 
 
-# ── Constantes ────────────────────────────────────────────────────────────────
+# -- Constants -----------------------------------------------------------------
 
-RHO_W = 1025.0   # densité eau de mer (kg/m³)
-RHO_AIR = 1.225   # densité air (kg/m³)
+RHO_W = 1025.0   # seawater density (kg/m^3)
+RHO_AIR = 1.225   # air density (kg/m^3)
 G = 9.81
 
 MATERIALS: dict[str, dict] = {
-    "poly":  {"rho": 1380, "sigma": 250e6,  "label": "Polyester (1380 kg/m³)"},
-    "nylon": {"rho": 1140, "sigma": 280e6,  "label": "Nylon (1140 kg/m³)"},
-    "dyn":   {"rho": 975,  "sigma": 1500e6, "label": "Dyneema (975 — flotte)"},
-    "steel": {"rho": 7850, "sigma": 1400e6, "label": "Acier (7850 kg/m³)"},
+    "poly":  {"rho": 1380, "sigma": 250e6,  "label": "Polyester (1380 kg/m^3)"},
+    "nylon": {"rho": 1140, "sigma": 280e6,  "label": "Nylon (1140 kg/m^3)"},
+    "dyn":   {"rho": 975,  "sigma": 1500e6, "label": "Dyneema (975 -- floats)"},
+    "steel": {"rho": 7850, "sigma": 1400e6, "label": "Steel (7850 kg/m^3)"},
 }
 
 PROFILES: dict[str, str] = {
-    "lin":  "Linéaire (→0 au fond)",
-    "uni":  "Uniforme",
-    "surf": "Concentré en surface",
+    "lin":  "Linear (->0 at bottom)",
+    "uni":  "Uniform",
+    "surf": "Surface-concentrated",
 }
 
 
-# ── Hydrodynamique ───────────────────────────────────────────────────────────
+# -- Hydrodynamics ------------------------------------------------------------
 
 
 def current_at_depth(z: np.ndarray, depth: float, surface_speed: float,
                      profile: str, wind_speed: float) -> np.ndarray:
-    """Vitesse du courant selon la profondeur (vectorisé).
+    """Current speed as a function of depth (vectorized).
 
-    *z* ≤ 0, fond à *z* = −depth.  Retourne un tableau de même forme que *z*.
+    *z* <= 0, bottom at *z* = -depth.  Returns an array of the same shape as *z*.
     """
     f = np.clip((z + depth) / depth, 0.0, 1.0)
     if profile == "lin":
@@ -66,7 +66,7 @@ def current_at_depth(z: np.ndarray, depth: float, surface_speed: float,
     else:  # uni
         p = np.ones_like(f)
     u = surface_speed * p
-    # Courant induit par le vent dans les 2 m de surface
+    # Wind-induced current in the top 2 m
     near_surface = z > -2
     u = np.where(near_surface,
                  u + wind_speed * 0.03 * np.clip(z + 2, 0, 2) / 2, u)
@@ -75,12 +75,12 @@ def current_at_depth(z: np.ndarray, depth: float, surface_speed: float,
 
 def wave_orbital(pos: np.ndarray, t: float, H: float, T: float,
                  direction: float) -> np.ndarray:
-    """Vitesses orbitales Airy aux positions (N, 3).  Retourne (N, 3)."""
+    """Airy orbital velocities at positions (N, 3).  Returns (N, 3)."""
     n = len(pos)
     if H < 0.01 or T < 1:
         return np.zeros((n, 3))
     omega = 2.0 * math.pi / T
-    k = omega * omega / G           # approximation eau profonde
+    k = omega * omega / G           # deep water approximation
     a = H / 2.0
     cd, sd = math.cos(direction), math.sin(direction)
     x_proj = pos[:, 0] * cd + pos[:, 1] * sd
@@ -105,17 +105,17 @@ def _cable_mbl(mat_key: str, diam: float) -> float:
     return MATERIALS[mat_key]["sigma"] * _cable_area(diam)
 
 
-# ── Génération du modèle MuJoCo ──────────────────────────────────────────────
+# -- MuJoCo model generation --------------------------------------------------
 
 
 def _generate_xml(depth: float, n_seg: int, cable_diam: float,
                   cable_rho: float, device_mass: float) -> str:
-    """Chaîne de segments capsule + dispositif.
+    """Chain of capsule segments + device.
 
-    Gravité MuJoCo activée (matrice masse bien conditionnée).
-    Le câble occupe ``depth - 2 m`` pour que le dispositif reste immergé.
+    MuJoCo gravity enabled (well-conditioned mass matrix).
+    The cable occupies ``depth - 2 m`` so the device stays submerged.
     """
-    cable_length = depth - 2.0          # marge sous la surface
+    cable_length = depth - 2.0          # margin below surface
     seg_len = cable_length / n_seg
     half = seg_len / 2.0
     seg_mass = max(0.2, cable_rho * _cable_area(cable_diam) * seg_len)
@@ -160,11 +160,11 @@ def _generate_xml(depth: float, n_seg: int, cable_diam: float,
     return xml
 
 
-# ── App Viser ─────────────────────────────────────────────────────────────────
+# -- Viser App -----------------------------------------------------------------
 
 
 def run_anchor_sim(config: dict[str, Any]):
-    """Lance la simulation 3D interactive."""
+    """Launch the interactive 3D simulation."""
     sim_cfg = config.get("anchor_sim", {})
     port = sim_cfg.get("port", 8080)
 
@@ -172,7 +172,7 @@ def run_anchor_sim(config: dict[str, Any]):
     dev_cfg = sim_cfg.get("device", {})
     env_cfg = sim_cfg.get("environment", {})
 
-    # ── État mutable ──────────────────────────────────────────────────────────
+    # -- Mutable state ---------------------------------------------------------
 
     S: dict[str, Any] = {
         "depth":       env_cfg.get("depth", 30),
@@ -199,7 +199,7 @@ def run_anchor_sim(config: dict[str, Any]):
         "seg_ids": [], "device_id": 0, "seg_len": 0.0,
     }
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
+    # -- Helpers ---------------------------------------------------------------
 
     def _float_nodes() -> set[int]:
         n = int(S["n_floats"])
@@ -208,7 +208,7 @@ def run_anchor_sim(config: dict[str, Any]):
         ns = S["n_seg"]
         return {round(j * ns / (n + 1)) for j in range(1, n + 1)}
 
-    # ── Construire / reconstruire le modèle ───────────────────────────────────
+    # -- Build / rebuild the model ---------------------------------------------
 
     def build():
         mat = MATERIALS[S["mat"]]
@@ -226,20 +226,20 @@ def run_anchor_sim(config: dict[str, Any]):
         ]
         S["broken"] = False
         S["target_L"] = cable_length
-        # Stabilisation (uniquement flottabilité, MuJoCo gère la gravité)
+        # Stabilization (buoyancy only, MuJoCo handles gravity)
         for _ in range(2000):
             _apply_forces(S, 0.0, stabilizing=True)
             mujoco.mj_step(S["model"], S["data"])
 
-    # ── Forces ────────────────────────────────────────────────────────────────
+    # -- Forces ----------------------------------------------------------------
 
     def _apply_forces(s: dict, t_sim: float, *, stabilizing: bool = False):
-        """Calcule et applique flottabilité, drag, houle, vent, treuil.
+        """Compute and apply buoyancy, drag, waves, wind, winch.
 
-        MuJoCo gère la gravité ; on ajoute la poussée d'Archimède et le drag.
-        Pour le dispositif, ``device_buoy`` est la flottabilité *nette*
-        (positif = flotte), donc on compense d'abord le poids MuJoCo
-        puis on ajoute la valeur nette.
+        MuJoCo handles gravity; we add Archimedes' buoyancy and drag.
+        For the device, ``device_buoy`` is the *net* buoyancy
+        (positive = floats), so we first compensate the MuJoCo weight
+        then add the net value.
         """
         model, data = s["model"], s["data"]
         data.xfrc_applied[:] = 0
@@ -252,31 +252,31 @@ def run_anchor_sim(config: dict[str, Any]):
         depth = s["depth"]
 
         V_seg = _cable_area(diam) * seg_len
-        buoy_seg = RHO_W * G * V_seg         # poussée Archimède par segment
+        buoy_seg = RHO_W * G * V_seg         # Archimedes buoyancy per segment
 
         float_nodes = _float_nodes()
 
-        # ── Positions / vitesses câble ────────────────────────────────────────
+        # -- Cable positions / velocities --------------------------------------
         pos = data.xpos[seg_ids].copy()                    # (n_seg, 3)
         z = pos[:, 2]
         submerged = z < 0
 
-        # 1) Poussée d'Archimède câble (MuJoCo gère déjà le poids)
+        # 1) Cable Archimedes buoyancy (MuJoCo already handles weight)
         data.xfrc_applied[seg_ids, 5] += np.where(submerged, buoy_seg, 0.0)
 
-        # 2) Flotteurs intermédiaires
+        # 2) Intermediate floats
         for idx in float_nodes:
             if 0 <= idx < n_seg:
                 data.xfrc_applied[seg_ids[idx], 5] += s["float_buoy"]
 
-        # 3) Dispositif : compense le poids MuJoCo + flottabilité nette
+        # 3) Device: compensate MuJoCo weight + net buoyancy
         dev_mass_mj = float(model.body_mass[device_id])
         data.xfrc_applied[device_id, 5] += s["device_buoy"] + dev_mass_mj * G
 
         if stabilizing:
             return
 
-        # 4) Courant + houle → drag câble ─────────────────────────────────────
+        # 4) Current + waves -> cable drag -------------------------------------
         vel = data.cvel[np.array(seg_ids), 3:].copy()      # (n_seg, 3)
         cur_dir = math.radians(s["current_dir"])
         cd_c, sd_c = math.cos(cur_dir), math.sin(cur_dir)
@@ -290,7 +290,7 @@ def run_anchor_sim(config: dict[str, Any]):
 
         rel_v = fluid - vel
 
-        # Vecteurs tangents (voisins)
+        # Tangent vectors (neighbors)
         anchor_pos = np.array([[0.0, 0.0, -depth]])
         dev_pos_arr = data.xpos[device_id : device_id + 1].copy()
         prev = np.vstack([anchor_pos, pos[:-1]])
@@ -299,7 +299,7 @@ def run_anchor_sim(config: dict[str, Any]):
         tl = np.linalg.norm(tang, axis=1, keepdims=True).clip(min=1e-6)
         tu = tang / tl
 
-        # Composantes normale / tangentielle
+        # Normal / tangential components
         v_t = np.sum(rel_v * tu, axis=1, keepdims=True)
         v_n = rel_v - v_t * tu
         v_n_mag = np.linalg.norm(v_n, axis=1, keepdims=True)
@@ -311,7 +311,7 @@ def run_anchor_sim(config: dict[str, Any]):
         F_drag = (F_n + F_t) * submerged[:, np.newaxis]
         data.xfrc_applied[seg_ids, 3:6] += F_drag
 
-        # ── Dispositif — drag ────────────────────────────────────────────────
+        # -- Device drag -------------------------------------------------------
         dev_pos = data.xpos[device_id].copy()
         dev_vel = data.cvel[device_id, 3:].copy()
         dev_z = dev_pos[2]
@@ -328,7 +328,7 @@ def run_anchor_sim(config: dict[str, Any]):
             data.xfrc_applied[device_id, 3:6] += (
                 0.5 * RHO_W * 1.5 * A_dev * vm * d_rel)
 
-        # Vent (surface)
+        # Wind (surface)
         if dev_z > -1:
             w_vec = np.array([s["wind"] * cd_c, s["wind"] * sd_c, 0.0])
             w_rel = w_vec - dev_vel
@@ -336,7 +336,7 @@ def run_anchor_sim(config: dict[str, Any]):
             data.xfrc_applied[device_id, 3:6] += (
                 0.5 * RHO_AIR * 0.9 * 0.15 * wm * w_rel)
 
-        # ── Treuil (contrôle de longueur câble) ──────────────────────────────
+        # -- Winch (cable length control) --------------------------------------
         cable_pts = [np.array([0.0, 0.0, -depth])]
         for sid in seg_ids:
             cable_pts.append(data.xpos[sid].copy())
@@ -350,13 +350,13 @@ def run_anchor_sim(config: dict[str, Any]):
         data.xfrc_applied[device_id, 5] += wf
         s["winch_F"] = wf
 
-    # ── Tensions ──────────────────────────────────────────────────────────────
+    # -- Tensions --------------------------------------------------------------
 
     def _compute_tensions(s: dict):
-        """Tensions quasi-statiques par accumulation descendante.
+        """Quasi-static tensions by top-down accumulation.
 
-        Force nette par corps = xfrc_applied + gravité MuJoCo.
-        Retourne (joint_tensions, anchor_v, anchor_h, anchor_t, max_t).
+        Net force per body = xfrc_applied + MuJoCo gravity.
+        Returns (joint_tensions, anchor_v, anchor_h, anchor_t, max_t).
         """
         model, data = s["model"], s["data"]
         seg_ids = s["seg_ids"]
@@ -365,7 +365,7 @@ def run_anchor_sim(config: dict[str, Any]):
 
         def _net_force(bid: int) -> np.ndarray:
             f = data.xfrc_applied[bid, 3:6].copy()
-            f[2] -= model.body_mass[bid] * G          # gravité
+            f[2] -= model.body_mass[bid] * G          # gravity
             return f
 
         cum = _net_force(device_id)
@@ -379,109 +379,109 @@ def run_anchor_sim(config: dict[str, Any]):
         return (jt, float(cum[2]), float(np.linalg.norm(cum[:2])),
                 float(np.linalg.norm(cum)), float(jt.max()))
 
-    # ── Première construction ─────────────────────────────────────────────────
+    # -- Initial build ---------------------------------------------------------
 
     build()
 
-    # ── Serveur Viser ─────────────────────────────────────────────────────────
+    # -- Viser server ----------------------------------------------------------
 
     server = viser.ViserServer(host="0.0.0.0", port=port)
     server.scene.set_background_image(
         np.full((1, 1, 3), [10, 20, 40], dtype=np.uint8))
 
-    # ── GUI — Déroulement ─────────────────────────────────────────────────────
+    # -- GUI -- Deployment -----------------------------------------------------
 
-    with server.gui.add_folder("Déroulement"):
+    with server.gui.add_folder("Deployment"):
         gui_cable_L = server.gui.add_slider(
-            "Câble déployé (m)", min=2.0, max=65.0,
+            "Cable deployed (m)", min=2.0, max=65.0,
             step=0.5, initial_value=S["depth"])
-        gui_deploy = server.gui.add_button("Déployer +5 m")
-        gui_retract = server.gui.add_button("Rembobiner −5 m")
-        gui_lock = server.gui.add_button("Bloquer")
+        gui_deploy = server.gui.add_button("Deploy +5 m")
+        gui_retract = server.gui.add_button("Retract -5 m")
+        gui_lock = server.gui.add_button("Lock")
 
-    # ── GUI — Environnement ───────────────────────────────────────────────────
+    # -- GUI -- Environment ----------------------------------------------------
 
-    with server.gui.add_folder("Environnement"):
+    with server.gui.add_folder("Environment"):
         gui_cur = server.gui.add_slider(
-            "Courant surface (m/s)", min=0.0, max=2.5,
+            "Surface current (m/s)", min=0.0, max=2.5,
             step=0.05, initial_value=0.6)
         gui_cur_dir = server.gui.add_slider(
-            "Direction courant (°)", min=0, max=360, step=5, initial_value=0)
+            "Current direction (deg)", min=0, max=360, step=5, initial_value=0)
         _prof_labels = list(PROFILES.values())
         gui_prof = server.gui.add_dropdown(
-            "Profil courant", options=_prof_labels,
+            "Current profile", options=_prof_labels,
             initial_value=_prof_labels[0])
         gui_wh = server.gui.add_slider(
-            "Houle — hauteur (m)", min=0.0, max=4.0,
+            "Wave height (m)", min=0.0, max=4.0,
             step=0.1, initial_value=1.2)
         gui_wt = server.gui.add_slider(
-            "Houle — période (s)", min=3.0, max=14.0,
+            "Wave period (s)", min=3.0, max=14.0,
             step=0.5, initial_value=7.0)
         gui_wind = server.gui.add_slider(
-            "Vent surface (m/s)", min=0, max=25, step=1, initial_value=5)
+            "Surface wind (m/s)", min=0, max=25, step=1, initial_value=5)
         gui_depth = server.gui.add_slider(
-            "Profondeur site (m)", min=10, max=60, step=1,
+            "Site depth (m)", min=10, max=60, step=1,
             initial_value=int(S["depth"]))
 
-    # ── GUI — Câble ───────────────────────────────────────────────────────────
+    # -- GUI -- Cable ----------------------------------------------------------
 
-    with server.gui.add_folder("Câble"):
+    with server.gui.add_folder("Cable"):
         gui_diam = server.gui.add_slider(
-            "Diamètre (mm)", min=3.0, max=24.0, step=0.5, initial_value=10.0)
+            "Diameter (mm)", min=3.0, max=24.0, step=0.5, initial_value=10.0)
         _mat_labels = [v["label"] for v in MATERIALS.values()]
         gui_mat = server.gui.add_dropdown(
-            "Matériau", options=_mat_labels, initial_value=_mat_labels[0])
+            "Material", options=_mat_labels, initial_value=_mat_labels[0])
 
-    # ── GUI — Dispositif & flotteurs ──────────────────────────────────────────
+    # -- GUI -- Device & floats ------------------------------------------------
 
-    with server.gui.add_folder("Dispositif & Flotteurs"):
+    with server.gui.add_folder("Device & Floats"):
         gui_mass = server.gui.add_slider(
-            "Masse dispositif (kg)", min=2, max=60, step=1, initial_value=18)
+            "Device mass (kg)", min=2, max=60, step=1, initial_value=18)
         gui_buoy = server.gui.add_slider(
-            "Flottabilité nette (N)", min=10, max=400, step=5, initial_value=80)
+            "Net buoyancy (N)", min=10, max=400, step=5, initial_value=80)
         gui_nfloat = server.gui.add_slider(
-            "Flotteurs intermédiaires", min=0, max=5, step=1, initial_value=0)
+            "Intermediate floats", min=0, max=5, step=1, initial_value=0)
         gui_fbuoy = server.gui.add_slider(
-            "Flottabilité / flotteur (N)", min=10, max=200, step=5, initial_value=40)
+            "Buoyancy per float (N)", min=10, max=200, step=5, initial_value=40)
 
-    # ── GUI — Simulation ──────────────────────────────────────────────────────
+    # -- GUI -- Simulation -----------------------------------------------------
 
     with server.gui.add_folder("Simulation"):
         gui_stiff = server.gui.add_slider(
-            "Raideur joints", min=1, max=200, step=1, initial_value=40)
+            "Joint stiffness", min=1, max=200, step=1, initial_value=40)
         gui_damp = server.gui.add_slider(
-            "Amortissement", min=0.1, max=50, step=0.5, initial_value=15)
+            "Damping", min=0.1, max=50, step=0.5, initial_value=15)
         gui_speed = server.gui.add_slider(
-            "Vitesse", min=0.1, max=5.0, step=0.1, initial_value=1.0)
+            "Speed", min=0.1, max=5.0, step=0.1, initial_value=1.0)
         gui_show_cur = server.gui.add_checkbox(
-            "Champ de courant", initial_value=True)
+            "Current field", initial_value=True)
         gui_show_F = server.gui.add_checkbox(
-            "Vecteurs de force", initial_value=False)
-        gui_pause = server.gui.add_button("Pause / Lecture")
-        gui_reset = server.gui.add_button("Réinitialiser")
-        gui_rebuild = server.gui.add_button("Reconstruire modèle")
+            "Force vectors", initial_value=False)
+        gui_pause = server.gui.add_button("Pause / Play")
+        gui_reset = server.gui.add_button("Reset")
+        gui_rebuild = server.gui.add_button("Rebuild model")
 
-    # ── GUI — Mesures ─────────────────────────────────────────────────────────
+    # -- GUI -- Readouts -------------------------------------------------------
 
-    with server.gui.add_folder("Mesures"):
+    with server.gui.add_folder("Readouts"):
         ro = {}
         for key, label in [
-            ("depth",    "Profondeur dispositif"),
-            ("height",   "Hauteur / fond"),
-            ("exc",      "Excursion horizontale"),
-            ("angle",    "Angle max / verticale"),
-            ("tmax",     "Tension max câble"),
-            ("av",       "Ancrage — vertical (soulèvt)"),
-            ("ah",       "Ancrage — horizontal"),
-            ("at",       "Ancrage — total"),
-            ("mbl",      "Résistance câble (MBL)"),
-            ("sf",       "Coeff. de sécurité"),
-            ("winch",    "Force treuil"),
-            ("cable_L",  "Câble déployé"),
+            ("depth",    "Device depth"),
+            ("height",   "Height above bottom"),
+            ("exc",      "Horizontal excursion"),
+            ("angle",    "Max angle from vertical"),
+            ("tmax",     "Max cable tension"),
+            ("av",       "Anchor -- vertical (uplift)"),
+            ("ah",       "Anchor -- horizontal"),
+            ("at",       "Anchor -- total"),
+            ("mbl",      "Cable strength (MBL)"),
+            ("sf",       "Safety factor"),
+            ("winch",    "Winch force"),
+            ("cable_L",  "Cable deployed"),
         ]:
-            ro[key] = server.gui.add_text(label, initial_value="—")
+            ro[key] = server.gui.add_text(label, initial_value="--")
 
-    # ── Boutons ───────────────────────────────────────────────────────────────
+    # -- Buttons ---------------------------------------------------------------
 
     @gui_deploy.on_click
     def _(_ev: Any):
@@ -514,12 +514,12 @@ def run_anchor_sim(config: dict[str, Any]):
         build()
         gui_cable_L.value = S["depth"]
 
-    # ── Lookups ───────────────────────────────────────────────────────────────
+    # -- Lookups ---------------------------------------------------------------
 
     _mat_label2key = {v["label"]: k for k, v in MATERIALS.items()}
     _prof_label2key = {v: k for k, v in PROFILES.items()}
 
-    # ── Scène statique ────────────────────────────────────────────────────────
+    # -- Static scene ----------------------------------------------------------
 
     def _build_scene():
         d = S["depth"]
@@ -542,10 +542,10 @@ def run_anchor_sim(config: dict[str, Any]):
 
     _build_scene()
 
-    print(f"\nServeur Viser → http://localhost:{port}")
-    print("Ctrl+C pour arrêter\n")
+    print(f"\nViser server -> http://localhost:{port}")
+    print("Ctrl+C to stop\n")
 
-    # ── Handles dynamiques ────────────────────────────────────────────────────
+    # -- Dynamic handles -------------------------------------------------------
 
     cable_handles: list = []
     float_handles: list = []
@@ -554,11 +554,11 @@ def run_anchor_sim(config: dict[str, Any]):
     force_handles: list = []
     frame = 0
 
-    # ── Boucle principale ─────────────────────────────────────────────────────
+    # -- Main loop -------------------------------------------------------------
 
     try:
         while True:
-            # ── Lecture GUI → état ────────────────────────────────────────────
+            # -- Read GUI -> state ---------------------------------------------
             S["current_speed"] = gui_cur.value
             S["current_dir"] = gui_cur_dir.value
             S["current_profile"] = _prof_label2key.get(gui_prof.value, "lin")
@@ -575,7 +575,7 @@ def run_anchor_sim(config: dict[str, Any]):
             S["model"].jnt_stiffness[:] = gui_stiff.value
             S["model"].dof_damping[:] = gui_damp.value
 
-            # ── Pas de physique ───────────────────────────────────────────────
+            # -- Physics steps -------------------------------------------------
             if not S["paused"]:
                 n_steps = max(1, int(gui_speed.value * 10))
                 t_sim = S["data"].time
@@ -583,10 +583,10 @@ def run_anchor_sim(config: dict[str, Any]):
                     _apply_forces(S, t_sim)
                     mujoco.mj_step(S["model"], S["data"])
                     t_sim = S["data"].time
-                # Recalcul pour cohérence affichage
+                # Recompute for display consistency
                 _apply_forces(S, S["data"].time)
 
-            # ── Extraire l'état ───────────────────────────────────────────────
+            # -- Extract state -------------------------------------------------
             data = S["data"]
             seg_ids = S["seg_ids"]
             device_id = S["device_id"]
@@ -604,7 +604,7 @@ def run_anchor_sim(config: dict[str, Any]):
             jt, anc_v, anc_h, anc_t, max_t = _compute_tensions(S)
             M = _cable_mbl(S["mat"], S["diam"])
 
-            # Angle max / verticale
+            # Max angle from vertical
             max_angle = 0.0
             for i in range(len(cable_arr) - 1):
                 d_vec = cable_arr[i + 1] - cable_arr[i]
@@ -618,7 +618,7 @@ def run_anchor_sim(config: dict[str, Any]):
             dev_exc = math.sqrt(float(dev_pos[0]) ** 2 + float(dev_pos[1]) ** 2)
             sf = M / max_t if max_t > 1 else 99.0
 
-            # ── Câble (couleur par tension) ───────────────────────────────────
+            # -- Cable (color by tension) --------------------------------------
             for h in cable_handles:
                 h.remove()
             cable_handles.clear()
@@ -645,7 +645,7 @@ def run_anchor_sim(config: dict[str, Any]):
                 )
                 cable_handles.append(h)
 
-            # ── Flotteurs ─────────────────────────────────────────────────────
+            # -- Floats --------------------------------------------------------
             for h in float_handles:
                 h.remove()
             float_handles.clear()
@@ -660,7 +660,7 @@ def run_anchor_sim(config: dict[str, Any]):
                     fh = server.scene.add_mesh_trimesh(f"float_{idx}", fm)
                     float_handles.append(fh)
 
-            # ── Dispositif ────────────────────────────────────────────────────
+            # -- Device --------------------------------------------------------
             if device_handle is not None:
                 device_handle.remove()
             dm = trimesh.creation.box([0.3, 0.3, 0.24])
@@ -669,7 +669,7 @@ def run_anchor_sim(config: dict[str, Any]):
                 (len(dm.vertices), 4), [226, 232, 240, 255], np.uint8)
             device_handle = server.scene.add_mesh_trimesh("device", dm)
 
-            # ── Champ de courant ──────────────────────────────────────────────
+            # -- Current field -------------------------------------------------
             if gui_show_cur.value and (frame % 10 == 0 or frame == 0):
                 if arrows_handle is not None:
                     arrows_handle.remove()
@@ -707,7 +707,7 @@ def run_anchor_sim(config: dict[str, Any]):
                 arrows_handle.remove()
                 arrows_handle = None
 
-            # ── Vecteurs de force ─────────────────────────────────────────────
+            # -- Force vectors -------------------------------------------------
             if gui_show_F.value and frame % 5 == 0:
                 for h in force_handles:
                     h.remove()
@@ -736,12 +736,12 @@ def run_anchor_sim(config: dict[str, Any]):
                     h.remove()
                 force_handles.clear()
 
-            # ── Affichage mesures ─────────────────────────────────────────────
+            # -- Display readouts ----------------------------------------------
             warn = ""
             if S["broken"]:
-                warn = " [CÂBLE ROMPU]"
+                warn = " [CABLE BROKEN]"
             elif sf < 2:
-                warn = " [ATTENTION]"
+                warn = " [WARNING]"
 
             ro["depth"].value = f"{dev_depth:.1f} m{warn}"
             ro["height"].value = f"{dev_height:.1f} m"
@@ -752,11 +752,11 @@ def run_anchor_sim(config: dict[str, Any]):
             ro["ah"].value = f"{anc_h:.0f} N"
             ro["at"].value = f"{anc_t:.0f} N"
             ro["mbl"].value = f"{M:.0f} N"
-            ro["sf"].value = f"{sf:.2f} ×" if sf < 99 else "—"
+            ro["sf"].value = f"{sf:.2f} x" if sf < 99 else "--"
             ro["winch"].value = f"{S['winch_F']:.0f} N"
             ro["cable_L"].value = f"{S['cable_L']:.1f} m"
 
-            # Rupture câble
+            # Cable break
             if max_t > M and not S["broken"]:
                 S["broken"] = True
 
@@ -764,10 +764,10 @@ def run_anchor_sim(config: dict[str, Any]):
             time.sleep(1 / 30)
 
     except KeyboardInterrupt:
-        print("\nArrêt du serveur.")
+        print("\nServer stopped.")
 
 
-# ── CLI ───────────────────────────────────────────────────────────────────────
+# -- CLI -----------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys

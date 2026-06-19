@@ -1,4 +1,4 @@
-"""python -m coral_sim.terrain <config.yaml> — génère un terrain selon la source configurée."""
+"""python -m coral_sim.terrain <config.yaml> — generate terrain according to the configured source."""
 
 import sys
 

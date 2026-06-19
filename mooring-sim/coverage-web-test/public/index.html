@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -221,7 +221,7 @@
 <div id="app">
   <header>
     <h1>Coral Reef Scope</h1>
-    <span class="coords" id="bbox-display">Dessinez un rectangle sur la carte</span>
+    <span class="coords" id="bbox-display">Draw a rectangle on the map</span>
   </header>
 
   <div id="sidebar">
@@ -230,25 +230,25 @@
     <div class="panel">
       <h3>Actions</h3>
       <div id="progress-bar"><div class="fill"></div></div>
-      <div id="status">Pret</div>
+      <div id="status">Ready</div>
       <button class="action btn-primary" id="btn-generate" disabled>
-        Generer le recif (Allen + KJMA)
+        Generate reef (Allen + KJMA)
       </button>
       <button class="action btn-secondary" id="btn-load-glb">
-        Charger un fichier .glb
+        Load a .glb file
       </button>
       <input type="file" id="file-input" accept=".glb,.gltf" style="display:none">
     </div>
 
     <div class="panel">
-      <h3>Vue 3D</h3>
+      <h3>3D View</h3>
       <div class="slider-row">
         <label>Z exag.</label>
         <input type="range" id="z-exag" min="1" max="30" step="0.5" value="5">
         <span class="val" id="z-exag-val">5.0</span>
       </div>
       <div class="slider-row">
-        <label>Opacite</label>
+        <label>Opacity</label>
         <input type="range" id="opacity" min="0.1" max="1" step="0.05" value="1">
         <span class="val" id="opacity-val">1.0</span>
       </div>
@@ -281,19 +281,19 @@
     </div>
 
     <div class="panel">
-      <h3>Infos</h3>
+      <h3>Info</h3>
       <dl class="info-grid" id="info">
         <dt>Vertices</dt><dd id="info-verts">-</dd>
         <dt>Faces</dt><dd id="info-faces">-</dd>
-        <dt>Profondeur</dt><dd id="info-depth">-</dd>
-        <dt>Taille</dt><dd id="info-size">-</dd>
+        <dt>Depth</dt><dd id="info-depth">-</dd>
+        <dt>Size</dt><dd id="info-size">-</dd>
         <dt>Source</dt><dd id="info-source">-</dd>
       </dl>
     </div>
   </div>
 
   <div id="viewer">
-    <div id="drop-overlay">Deposer un fichier .glb ici</div>
+    <div id="drop-overlay">Drop a .glb file here</div>
   </div>
 </div>
 

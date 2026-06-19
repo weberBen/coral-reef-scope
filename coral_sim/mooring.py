@@ -1,9 +1,9 @@
-"""Chargement et affichage d'un système d'amarrage (format MoorDyn).
+"""Loading and displaying a mooring system (MoorDyn format).
 
-Lit un fichier .dat MoorDyn, résout l'équilibre statique via MoorPy,
-et affiche le résultat dans Viser sur le terrain.
+Reads a .dat MoorDyn file, solves static equilibrium via MoorPy,
+and displays the result in Viser on the terrain.
 
-Usage standalone :
+Standalone usage:
     python -m coral_sim.mooring config.yaml
 """
 
@@ -17,26 +17,26 @@ import moorpy as mp
 
 
 def load_mooring(filepath: str | Path) -> mp.System:
-    """Charge un système d'amarrage depuis un fichier MoorDyn."""
+    """Load a mooring system from a MoorDyn file."""
     filepath = Path(filepath)
-    print(f"Chargement mooring : {filepath}")
+    print(f"Loading mooring: {filepath}")
     system = mp.System(file=str(filepath))
-    print(f"  {len(system.pointList)} points, {len(system.lineList)} lignes")
+    print(f"  {len(system.pointList)} points, {len(system.lineList)} lines")
     return system
 
 
 def solve_equilibrium(system: mp.System) -> None:
-    """Résout l'équilibre statique du système."""
-    print("  Résolution équilibre statique…", end=" ", flush=True)
+    """Solve the static equilibrium of the system."""
+    print("  Solving static equilibrium...", end=" ", flush=True)
     system.initialize()
     system.solveEquilibrium()
     print("OK")
 
 
 def get_viz_data(system: mp.System) -> dict:
-    """Extrait les données de visualisation depuis MoorPy.
+    """Extract visualization data from MoorPy.
 
-    Retourne un dict avec :
+    Returns a dict with:
       - points: list of {id, type, position, mass, volume}
       - lines: list of {id, type, positions_3d}
     """
@@ -66,23 +66,23 @@ def get_viz_data(system: mp.System) -> dict:
 
 
 def add_mooring_to_viser(server, viz_data: dict, norm_scale: float, center: np.ndarray) -> list:
-    """Ajoute le système d'amarrage à une scène Viser.
+    """Add the mooring system to a Viser scene.
 
-    Les coordonnées sont transformées pour matcher le mesh terrain
-    (même normalisation et centrage).
+    Coordinates are transformed to match the terrain mesh
+    (same normalization and centering).
 
-    Retourne la liste des handles Viser pour le toggle.
+    Returns the list of Viser handles for toggling.
     """
     handles = []
 
     def transform(pos: np.ndarray) -> np.ndarray:
-        """Convertit les coordonnées réelles → coordonnées Viser normalisées."""
+        """Convert real coordinates -> normalized Viser coordinates."""
         p = pos.copy().astype(float)
         p[:2] -= center[:2]
         p *= norm_scale
         return p
 
-    # Dessiner les lignes (câbles/chaînes)
+    # Draw lines (cables/chains)
     for line in viz_data["lines"]:
         pts = np.array([transform(p) for p in line["positions"]], dtype=np.float32)
         if len(pts) < 2:
@@ -90,19 +90,19 @@ def add_mooring_to_viser(server, viz_data: dict, norm_scale: float, center: np.n
         h = server.scene.add_spline_catmull_rom(
             f"mooring/line_{line['id']}",
             positions=pts,
-            color=(255, 200, 50),  # jaune pour les câbles
+            color=(255, 200, 50),  # yellow for cables
             line_width=3.0,
         )
         handles.append(h)
 
-    # Dessiner les points (ancrages = rouge, bouées = vert, autres = blanc)
+    # Draw points (anchors = red, buoys = green, others = white)
     for point in viz_data["points"]:
         pos = transform(point["position"])
         if point["type"] == "fixed":
-            color = (255, 50, 50)      # rouge = ancrage
+            color = (255, 50, 50)      # red = anchor
             label = f"Anchor {point['id']}"
         else:
-            color = (50, 255, 50)      # vert = bouée/free
+            color = (50, 255, 50)      # green = buoy/free
             label = f"Buoy {point['id']}"
 
         h = server.scene.add_label(
@@ -116,8 +116,7 @@ def add_mooring_to_viser(server, viz_data: dict, norm_scale: float, center: np.n
     return handles
 
 
-# ── CLI ───────────────────────────────────────────────────────────────────────
-
+# -- CLI -----------------------------------------------------------------------
 if __name__ == "__main__":
     import sys
     import time
@@ -137,7 +136,7 @@ if __name__ == "__main__":
     viz_cfg = config.get("viz", {})
     mooring_cfg = config.get("mooring", {})
 
-    # Charger le terrain
+    # Load terrain
     terrain_path = resolve_path(config, viz_cfg.get("input", "terrain.npz"))
     if terrain_path.suffix == ".npz":
         terrain = load_terrain(terrain_path)
@@ -149,13 +148,13 @@ if __name__ == "__main__":
         else:
             mesh = loaded
 
-    # Charger le mooring
+    # Load mooring
     mooring_file = resolve_path(config, mooring_cfg.get("file", "mooring.dat"))
     system = load_mooring(mooring_file)
     solve_equilibrium(system)
     viz_data = get_viz_data(system)
 
-    # Préparer la normalisation (même que viz.py)
+    # Prepare normalization (same as viz.py)
     original_verts = mesh.vertices.copy()
     center = original_verts.mean(axis=0)
     original_verts -= center
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     display_mesh.visual.vertex_colors = all_colors
     display_mesh.fix_normals()
 
-    # Serveur Viser
+    # Viser server
     port = viz_cfg.get("port", 8080)
     server = viser.ViserServer(host="0.0.0.0", port=port)
 
@@ -190,8 +189,8 @@ if __name__ == "__main__":
     server.scene.add_mesh_trimesh("reef", display_mesh)
     server.scene.add_grid("grid", width=float(display_mesh.extents[0]), height=float(display_mesh.extents[1]))
 
-    # Ajouter le mooring (avec la même normalisation que le terrain)
-    # Le center pour le mooring doit être le center XY du terrain original
+    # Add mooring (with the same normalization as the terrain)
+    # The center for mooring must be the XY center of the original terrain
     terrain_center = mesh.vertices.mean(axis=0)
     mooring_handles = add_mooring_to_viser(server, viz_data, norm_scale, terrain_center)
 
@@ -201,8 +200,8 @@ if __name__ == "__main__":
         server.gui.add_text("Points", initial_value=str(len(viz_data["points"])))
         server.gui.add_text("Lines", initial_value=str(len(viz_data["lines"])))
 
-    print(f"\nServeur Viser → http://localhost:{port}")
-    print("Ctrl+C pour arrêter\n")
+    print(f"\nViser server -> http://localhost:{port}")
+    print("Ctrl+C to stop\n")
 
     last_mooring = True
     try:
@@ -213,4 +212,4 @@ if __name__ == "__main__":
                     h.visible = last_mooring
             time.sleep(0.1)
     except KeyboardInterrupt:
-        print("\nArrêt du serveur.")
+        print("\nServer stopped.")

@@ -1,4 +1,4 @@
-"""Interface terrain — dispatche vers allen ou procedural selon la config."""
+"""Terrain interface — dispatches to allen or procedural based on config."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from .io import TerrainData
 
 
 def get_terrain(config: dict[str, Any]) -> TerrainData:
-    """Charge ou génère un terrain selon config['terrain']['source']."""
+    """Load or generate terrain based on config['terrain']['source']."""
     terrain_cfg = config["terrain"]
     source = terrain_cfg["source"]
 
@@ -24,16 +24,16 @@ def get_terrain(config: dict[str, Any]) -> TerrainData:
 
         return generate_procedural_terrain(terrain_cfg["procedural"])
     else:
-        raise ValueError(f"Source terrain inconnue : {source!r}")
+        raise ValueError(f"Unknown terrain source: {source!r}")
 
 
 def load_config(path: str | Path) -> dict[str, Any]:
-    """Charge un fichier YAML de configuration."""
+    """Load a YAML configuration file."""
     with open(path) as f:
         return yaml.safe_load(f)
 
 
 def resolve_path(config: dict[str, Any], relative_path: str) -> Path:
-    """Résout un chemin relatif par rapport à data_dir."""
+    """Resolve a relative path against data_dir."""
     data_dir = Path(config.get("data_dir", "data"))
     return data_dir / relative_path

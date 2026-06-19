@@ -1,10 +1,10 @@
-"""Terrain procédural — depth map multi-zones d'un récif corallien.
+"""Procedural terrain — multi-zone depth map of a coral reef.
 
-Chaque zone est un rectangle avec son propre profil de courbe (spline).
-Le profil s'applique du bord vers le centre (distance au bord le plus proche).
-Le reste de la grille est un fond plat.
+Each zone is a rectangle with its own curve profile (spline).
+The profile is applied from edge to center (distance to nearest edge).
+The rest of the grid is a flat seabed.
 
-Usage standalone :
+Standalone usage:
     python -m coral_sim.terrain.procedural config.yaml
 """
 
@@ -21,7 +21,7 @@ from .io import TerrainData
 
 
 def generate_procedural_terrain(config: dict[str, Any]) -> TerrainData:
-    """Génère un terrain récifal procédural multi-zones."""
+    """Generate a procedural multi-zone reef terrain."""
     length_x = config["length_x"]
     length_y = config["length_y"]
     resolution = config["resolution"]
@@ -36,27 +36,27 @@ def generate_procedural_terrain(config: dict[str, Any]) -> TerrainData:
     x_coords = np.linspace(0, length_x, nx)
     y_coords = np.linspace(0, length_y, ny)
 
-    print(f"Génération procédurale ({nx}×{ny}, {len(zones)} zone(s))…")
+    print(f"Procedural generation ({nx}x{ny}, {len(zones)} zone(s))...")
 
-    # 1. Fond plat
+    # 1. Flat seabed
     heightmap = np.full((ny, nx), flat_depth, dtype=np.float64)
 
-    # 2. Masque des zones (pour la rugosité)
+    # 2. Zone mask (for rugosity)
     reef_mask = np.zeros((ny, nx), dtype=bool)
 
-    # 3. Appliquer chaque zone
+    # 3. Apply each zone
     x_grid, y_grid = np.meshgrid(x_coords, y_coords)
 
     for i, zone in enumerate(zones):
         x_min, y_min, x_max, y_max = zone["bounds"]
         profile_pts = zone["profile"]
 
-        # Masque du rectangle
+        # Rectangle mask
         mask = (x_grid >= x_min) & (x_grid <= x_max) & (y_grid >= y_min) & (y_grid <= y_max)
         if not mask.any():
             continue
 
-        # Distance au bord le plus proche (0 au bord, max au centre)
+        # Distance to nearest edge (0 at edge, max at center)
         dist = np.full((ny, nx), 0.0)
         dist[mask] = np.minimum.reduce([
             x_grid[mask] - x_min,
@@ -65,33 +65,33 @@ def generate_procedural_terrain(config: dict[str, Any]) -> TerrainData:
             y_max - y_grid[mask],
         ])
 
-        # Spline du profil
+        # Profile spline
         ctrl_d, ctrl_z = zip(*profile_pts)
         spline = CubicSpline(ctrl_d, ctrl_z, bc_type="clamped")
         max_dist = float(ctrl_d[-1])
 
-        # Évaluer le profil (clamp la distance au max du profil)
+        # Evaluate profile (clamp distance to profile max)
         zone_depth = np.full((ny, nx), flat_depth)
         dist_clamped = np.clip(dist[mask], 0, max_dist)
         zone_depth[mask] = spline(dist_clamped)
 
-        # Profondeur minimale gagne (relief le plus haut)
+        # Minimum depth wins (highest relief)
         heightmap = np.where(mask, np.minimum(heightmap, zone_depth), heightmap)
         reef_mask |= mask
 
         print(f"  Zone {i + 1}: [{x_min},{y_min}]→[{x_max},{y_max}]")
 
-    # 4. Lisser la transition zone/fond plat
+    # 4. Smooth zone/flat seabed transition
     heightmap = gaussian_filter(heightmap, sigma=1.5)
 
-    # 5. Rugosité (fBm) uniquement sur les zones de récif
+    # 5. Rugosity (fBm) only on reef zones
     noise_fbm = OpenSimplex(seed=seed)
     fbm = _fbm_2d(noise_fbm, x_coords, y_coords, octaves)
     heightmap[reef_mask] += fbm[reef_mask] * rugosity
 
     heightmap = np.clip(heightmap, 0, None)
 
-    print(f"  Profondeur : {heightmap.min():.1f} – {heightmap.max():.1f} m")
+    print(f"  Depth: {heightmap.min():.1f} - {heightmap.max():.1f} m")
 
     return TerrainData(
         heightmap=heightmap,
@@ -135,7 +135,7 @@ def _fbm_2d(
     return result / total_amp
 
 
-# ── Exécution standalone ──────────────────────────────────────────────────────
+# ── Standalone execution ──────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import sys

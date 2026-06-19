@@ -1,4 +1,4 @@
-"""TerrainData — format commun entre modules terrain, colony et viz."""
+"""TerrainData — common format shared between terrain, colony and viz modules."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ import numpy as np
 
 @dataclass
 class TerrainData:
-    """Contrat d'interface pour les données de terrain récifal.
+    """Interface contract for reef terrain data.
 
-    Produit par allen.py ou procedural.py, consommé par colony.py et viz.py.
+    Produced by allen.py or procedural.py, consumed by colony.py and viz.py.
     """
 
     heightmap: np.ndarray
@@ -27,7 +27,7 @@ class TerrainData:
 
 
 def save_terrain(path: str | Path, terrain: TerrainData) -> None:
-    """Sérialise un TerrainData en .npz."""
+    """Serialize a TerrainData to .npz."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     kwargs = dict(
         heightmap=terrain.heightmap,
@@ -43,11 +43,11 @@ def save_terrain(path: str | Path, terrain: TerrainData) -> None:
         kwargs["benthic_json"] = np.array(json.dumps(terrain.benthic_geojson))
 
     np.savez_compressed(path, **kwargs)
-    print(f"Terrain sauvegardé → {path}")
+    print(f"Terrain saved -> {path}")
 
 
 def load_terrain(path: str | Path) -> TerrainData:
-    """Charge un TerrainData depuis un .npz."""
+    """Load a TerrainData from a .npz file."""
     data = np.load(path, allow_pickle=False)
 
     geo_json = None

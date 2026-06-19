@@ -20,39 +20,38 @@ uv run python -m coral_sim.viz config.yaml
 # Both at once
 uv run python run.py config.yaml
 
-# Export GLB depuis une coordonnee GPS (standalone)
-uv run python reef_export.py --lat -17.52 --lon -149.83 --label "Moorea Nord" --location "Polynesie francaise" -o data/reef.glb
+# Export GLB from a GPS coordinate (standalone)
+uv run python reef_export.py --lat -17.52 --lon -149.83 --label "Moorea Nord" --location "French Polynesia" -o data/reef.glb
 ```
 
-### Export GLB depuis une localisation
+### GLB Export from a Location
 
-Script standalone (`reef_export.py`) : a partir d'une coordonnee GPS, telecharge les donnees
-Allen Coral Atlas (geomorphic + benthic), genere la depth map et exporte un `.glb` avec les
-metadonnees geo embarquees.
+Standalone script (`reef_export.py`): from a GPS coordinate, downloads Allen Coral Atlas data
+(geomorphic + benthic), generates the depth map, and exports a `.glb` with embedded geo metadata.
 
 ```bash
 uv run python reef_export.py \
   --lat -17.52 --lon -149.83 \
   --radius 4 \
   --label "Moorea Nord" \
-  --location "Polynesie francaise" \
+  --location "French Polynesia" \
   -o data/reef.glb
 ```
 
-Options :
+Options:
 
-| Option         | Defaut           | Description                                |
+| Option         | Default          | Description                                |
 |----------------|------------------|--------------------------------------------|
-| `--lat`        | *(requis)*       | Latitude du centre                         |
-| `--lon`        | *(requis)*       | Longitude du centre                        |
-| `--radius`     | `4`              | Rayon en km autour du point                |
-| `--resolution` | `0.0003`         | Resolution en degres/pixel (~33 m)         |
-| `--label`      | `""`             | Nom du site inscrit dans le GLB            |
-| `--location`   | `""`             | Localisation inscrite dans le GLB          |
-| `--cache-dir`  | `cache/`         | Dossier de cache des requetes WFS          |
-| `-o`           | `data/reef.glb`  | Fichier de sortie GLB                      |
+| `--lat`        | *(required)*     | Center latitude                            |
+| `--lon`        | *(required)*     | Center longitude                           |
+| `--radius`     | `4`              | Radius in km around the point              |
+| `--resolution` | `0.0003`         | Resolution in degrees/pixel (~33 m)        |
+| `--label`      | `""`             | Site name embedded in the GLB              |
+| `--location`   | `""`             | Location embedded in the GLB               |
+| `--cache-dir`  | `cache/`         | Cache directory for WFS requests           |
+| `-o`           | `data/reef.glb`  | Output GLB file                            |
 
-Le fichier GLB produit contient les extras glTF suivants dans le mesh :
+The produced GLB file contains the following glTF extras in the mesh:
 
 ```json
 {
@@ -61,7 +60,7 @@ Le fichier GLB produit contient les extras glTF suivants dans le mesh :
   "bbox": [-149.87, -17.555, -149.80, -17.485],
   "resolution": 0.0003,
   "label": "Moorea Nord",
-  "location": "Polynesie francaise"
+  "location": "French Polynesia"
 }
 ```
 
@@ -69,22 +68,22 @@ Le fichier GLB produit contient les extras glTF suivants dans le mesh :
 
 ```
 config.yaml
-    │
-    ├─ terrain/allen.py        ─► data/terrain.npz
-    ├─ terrain/procedural.py   ─► data/terrain.npz
-    │
-    ├─ colony.py               ─► data/reef.glb      (TODO)
-    │
-    └─ viz.py                  ─► 3D interactive window
+    |
+    +-- terrain/allen.py        --> data/terrain.npz
+    +-- terrain/procedural.py   --> data/terrain.npz
+    |
+    +-- colony.py               --> data/reef.glb      (TODO)
+    |
+    +-- viz.py                  --> 3D interactive window
 
-reef_export.py                 ─► data/reef.glb  (standalone, Allen → GLB)
+reef_export.py                  --> data/reef.glb  (standalone, Allen --> GLB)
 ```
 
 All paths are relative to `data_dir` (default `./data/`).
 
 ## Test devices (Playwright)
 
-First :
+First:
 
 ```bash
 cd mooring-sim

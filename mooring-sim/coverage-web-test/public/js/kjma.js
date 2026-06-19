@@ -375,17 +375,17 @@ export function generateReef(terrain, config, onStatus) {
     { depth: [15, 25], density: density * 0.25 },
   ];
 
-  onStatus?.("Placement des seeds...");
+  onStatus?.("Placing seeds...");
   const seeds = scatterSeeds(heightmap, nx, ny, xMax, yMax, zones, rng, 3000);
-  onStatus?.(`${seeds.n} seeds places`);
+  onStatus?.(`${seeds.n} seeds placed`);
 
   if (seeds.n === 0) {
-    onStatus?.("Aucun seed (pas de recif dans la zone?)");
+    onStatus?.("No seeds (no reef in the area?)");
     return heightmapToMesh(heightmap, xCoords, yCoords, nx, ny);
   }
 
   // Seed attributes
-  onStatus?.("Calcul des attributs...");
+  onStatus?.("Computing attributes...");
   const kjmaConfig = {
     baseSpeed: 1.0,
     lightDecay: 0.05,
@@ -404,7 +404,7 @@ export function generateReef(terrain, config, onStatus) {
   for (let i = 0; i < seeds.n; i++) {
     if (speeds[i] > 0.01) alive.push(i);
   }
-  onStatus?.(`${alive.length} seeds actifs`);
+  onStatus?.(`${alive.length} active seeds`);
 
   const nAlive = alive.length;
   const alivePx = new Float64Array(nAlive);
@@ -425,7 +425,7 @@ export function generateReef(terrain, config, onStatus) {
   }
 
   // Build mesh
-  onStatus?.("Construction du mesh...");
+  onStatus?.("Building mesh...");
   const mesh = heightmapToMesh(heightmap, xCoords, yCoords, nx, ny);
 
   // 3D seed positions
@@ -447,13 +447,13 @@ export function generateReef(terrain, config, onStatus) {
   );
 
   // Deform
-  onStatus?.("Deformation...");
+  onStatus?.("Deforming...");
   const vertexNormals = computeVertexNormals(mesh.vertices, mesh.faces, mesh.nVerts, mesh.nFaces);
   deformMesh(mesh.vertices, vertexNormals, mesh.nVerts, winner, minTime, secondTime, aliveSpeeds, {
     maxHeight,
     boundarySharpness,
   });
 
-  onStatus?.(`Termine: ${mesh.nVerts} vertices, ${mesh.nFaces} faces`);
+  onStatus?.(`Done: ${mesh.nVerts} vertices, ${mesh.nFaces} faces`);
   return mesh;
 }

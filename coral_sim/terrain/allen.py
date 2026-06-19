@@ -1,9 +1,9 @@
-"""Terrain depuis l'Allen Coral Atlas (WFS public).
+"""Terrain from the Allen Coral Atlas (public WFS).
 
-Récupère les polygones géomorphiques, les rastérise en depth map,
-et produit un TerrainData.
+Fetches geomorphic polygons, rasterizes them into a depth map,
+and produces a TerrainData.
 
-Usage standalone :
+Standalone usage:
     python -m coral_sim.terrain.allen config.yaml
 """
 
@@ -23,7 +23,7 @@ from .io import TerrainData
 
 WFS_URL = "https://allencoralatlas.org/geoserver/ows"
 
-# Zone géomorphique → profondeur approximative (m, positif = sous l'eau)
+# Geomorphic zone -> approximate depth (m, positive = underwater)
 GEOMORPHIC_DEPTH = {
     "Reef Slope": 25.0,
     "Sheltered Reef Slope": 12.0,
@@ -40,12 +40,12 @@ GEOMORPHIC_DEPTH = {
 
 
 def fetch_allen_terrain(config: dict[str, Any]) -> TerrainData:
-    """Récupère et rastérise les données Allen Coral Atlas."""
+    """Fetch and rasterize Allen Coral Atlas data."""
     bbox = config["bbox"]
     resolution = config["resolution"]
     cache_dir = Path(config.get("cache_dir", "cache"))
 
-    # 1. Télécharger les deux couches
+    # 1. Download both layers
     geo_geojson = _fetch_wfs_layer(
         "coral-atlas:geomorphic_data_verbose", bbox, cache_dir
     )
@@ -53,27 +53,27 @@ def fetch_allen_terrain(config: dict[str, Any]) -> TerrainData:
         "coral-atlas:benthic_data_verbose", bbox, cache_dir
     )
 
-    # 2. Rastériser sur une grille
+    # 2. Rasterize onto a grid
     lon_min, lat_min, lon_max, lat_max = bbox
     nx = int(round((lon_max - lon_min) / resolution))
     ny = int(round((lat_max - lat_min) / resolution))
 
-    print(f"Rastérisation ({nx}×{ny})…", end=" ", flush=True)
+    print(f"Rasterizing ({nx}x{ny})...", end=" ", flush=True)
     depth_grid = _rasterize(geo_geojson, bbox, nx, ny, resolution)
     print("OK")
 
-    # 3. Lissage pour transitions douces entre zones
+    # 3. Smoothing for soft transitions between zones
     depth_grid = gaussian_filter(depth_grid.astype(np.float64), sigma=2.0)
 
-    # 4. Construire les coordonnées en mètres (projection locale approximative)
-    # 1° lat ≈ 111 320 m, 1° lon ≈ 111 320 * cos(lat) m
+    # 4. Build coordinates in meters (approximate local projection)
+    # 1 deg lat ~ 111,320 m, 1 deg lon ~ 111,320 * cos(lat) m
     lat_center = (lat_min + lat_max) / 2
     m_per_deg_lon = 111_320 * np.cos(np.radians(lat_center))
     m_per_deg_lat = 111_320
 
     x_coords = np.linspace(0, (lon_max - lon_min) * m_per_deg_lon, nx)
     y_coords = np.linspace(0, (lat_max - lat_min) * m_per_deg_lat, ny)
-    res_m = resolution * m_per_deg_lon  # résolution en mètres
+    res_m = resolution * m_per_deg_lon  # resolution in meters
 
     return TerrainData(
         heightmap=depth_grid,
@@ -95,16 +95,16 @@ def fetch_allen_terrain(config: dict[str, Any]) -> TerrainData:
 def _fetch_wfs_layer(
     typename: str, bbox: list[float], cache_dir: Path
 ) -> dict:
-    """Télécharge une couche depuis le WFS Allen Coral Atlas."""
+    """Download a layer from the Allen Coral Atlas WFS."""
     cache_dir.mkdir(parents=True, exist_ok=True)
     short = typename.split(":")[1]
     cache_file = cache_dir / f"{short}.json"
 
     if cache_file.exists():
-        print(f"  {short} : cache local")
+        print(f"  {short}: local cache")
         return json.loads(cache_file.read_text())
 
-    print(f"  {short} : téléchargement…", end=" ", flush=True)
+    print(f"  {short}: downloading...", end=" ", flush=True)
     params = {
         "service": "WFS",
         "version": "1.0.0",
@@ -122,7 +122,7 @@ def _fetch_wfs_layer(
 
     cache_file.write_text(json.dumps(data))
     n = len(data.get("features", []))
-    print(f"{n} polygones")
+    print(f"{n} polygons")
     return data
 
 
@@ -133,10 +133,10 @@ def _rasterize(
     ny: int,
     resolution: float,
 ) -> np.ndarray:
-    """Rastérise les polygones géomorphiques en grille de profondeur."""
+    """Rasterize geomorphic polygons into a depth grid."""
     lon_min, lat_min, lon_max, lat_max = bbox
 
-    # Construire géométries et valeurs de profondeur
+    # Build geometries and depth values
     geoms, vals = [], []
     for f in geojson.get("features", []):
         name = f["properties"].get("class_name", "")
@@ -152,16 +152,16 @@ def _rasterize(
             continue
 
     if not geoms:
-        print("  (aucun polygone valide)")
+        print("  (no valid polygon)")
         return np.zeros((ny, nx), dtype=np.float64)
 
-    # Grille de points
+    # Point grid
     lons = np.linspace(lon_min + resolution / 2, lon_max - resolution / 2, nx)
     lats = np.linspace(lat_max - resolution / 2, lat_min + resolution / 2, ny)
     lon_grid, lat_grid = np.meshgrid(lons, lats)
     pts = shapely.points(lon_grid.ravel(), lat_grid.ravel())
 
-    # Requête spatiale vectorisée
+    # Vectorized spatial query
     tree = shapely.STRtree(geoms)
     pt_idx, geom_idx = tree.query(pts, predicate="intersects")
 
@@ -171,7 +171,7 @@ def _rasterize(
     return grid.reshape(ny, nx)
 
 
-# ── Exécution standalone ──────────────────────────────────────────────────────
+# ── Standalone execution ──────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import sys
