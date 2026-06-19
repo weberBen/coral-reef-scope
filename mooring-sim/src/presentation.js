@@ -167,7 +167,7 @@ export function buildPresentation() {
           <circle cx="494" cy="56" r="7" fill="#f97316"/>
         </g>
         <!-- Trail path to shore -->
-        <path d="M510 75 Q600 70 720 75" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 4" class="trail-to-shore"/>
+        <path d="M510 75 Q600 70 720 75" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-dasharray="6 4" class="trail-to-shore"/>
         <!-- Arrow -->
         <polygon points="710,70 725,75 710,80" fill="#fbbf24" opacity="0.7"/>
         <!-- Buoy stays (highlighted) -->
@@ -186,7 +186,7 @@ export function buildPresentation() {
         <circle cx="520" cy="55" r="24" fill="none" stroke="var(--t1)" stroke-width="1.5" opacity="0" class="radio-wave rw3"/>
 
         <!-- Signal path -->
-        <path d="M530 56 Q650 40 762 35" stroke="var(--t1)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="signal-path"/>
+        <path d="M530 56 Q650 40 762 35" fill="none" stroke="var(--t1)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="signal-path"/>
         <text x="650" y="30" text-anchor="middle" fill="var(--t1)" font-size="9" font-weight="600" font-family="Inter,sans-serif" opacity="0.8">DATA</text>
       </g>
 
@@ -198,7 +198,7 @@ export function buildPresentation() {
           <circle cx="514" cy="56" r="7" fill="#34d399"/>
         </g>
         <!-- Path from shore to buoy -->
-        <path d="M720 75 Q550 65 320 80" stroke="#34d399" stroke-width="2" stroke-dasharray="5 4" class="path-to-buoy"/>
+        <path d="M720 75 Q550 65 320 80" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" class="path-to-buoy"/>
         <polygon points="325,75 310,80 325,85" fill="#34d399" opacity="0.7"/>
 
         <!-- Collection net on shore -->
