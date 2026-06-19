@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { P, N, mbl } from './params.js';
 import { nodes, forces, currentAt, simTime } from './physics.js';
 import { waterVertexShader, waterFragmentShader } from './shaders.js';
+import { getSceneColors } from './theme.js';
 
 const MAX_FLOATS = 8;
 const UP = new THREE.Vector3(0, 1, 0);
@@ -33,11 +34,15 @@ export class MooringObjects {
     const geo = new THREE.PlaneGeometry(200, 200, 128, 128);
     geo.rotateX(-Math.PI / 2);
 
+    const tc = getSceneColors();
     this.waterUniforms = {
       uTime: { value: 0 },
       uWaveHeight: { value: P.wh },
       uWavePeriod: { value: P.wt },
-      uWaveDir: { value: P.curDir * Math.PI / 180 }
+      uWaveDir: { value: P.curDir * Math.PI / 180 },
+      uDeepColor: { value: new THREE.Vector3(...tc.waterDeep) },
+      uSurfColor: { value: new THREE.Vector3(...tc.waterSurf) },
+      uHorizColor: { value: new THREE.Vector3(...tc.waterHoriz) },
     };
 
     const mat = new THREE.ShaderMaterial({

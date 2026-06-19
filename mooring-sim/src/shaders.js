@@ -44,6 +44,10 @@ void main() {
 `;
 
 export const waterFragmentShader = /* glsl */ `
+uniform vec3 uDeepColor;
+uniform vec3 uSurfColor;
+uniform vec3 uHorizColor;
+
 varying vec3 vWorldPos;
 varying vec3 vNormal;
 varying float vWaveY;
@@ -52,11 +56,8 @@ void main() {
   vec3 viewDir = normalize(cameraPosition - vWorldPos);
   float fresnel = pow(1.0 - max(dot(viewDir, vNormal), 0.0), 3.5);
 
-  // Deep ocean colors
-  vec3 deepColor = vec3(0.01, 0.05, 0.14);
-  vec3 surfColor = vec3(0.08, 0.38, 0.58);
-  vec3 horizColor = vec3(0.15, 0.55, 0.72);
-  vec3 color = mix(deepColor, mix(surfColor, horizColor, fresnel * 0.5), fresnel);
+  // Ocean colors from uniforms
+  vec3 color = mix(uDeepColor, mix(uSurfColor, uHorizColor, fresnel * 0.5), fresnel);
 
   // Sun specular highlight
   vec3 sunDir = normalize(vec3(0.4, 0.8, 0.25));

@@ -11,6 +11,7 @@ export function initTabs() {
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
+      if (!target) return;
 
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');

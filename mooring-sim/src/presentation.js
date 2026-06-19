@@ -1,3 +1,5 @@
+import { isDark, onThemeChange } from './theme.js';
+
 export function buildPresentation() {
   const el = document.getElementById('presentation');
   if (!el) return;
@@ -108,7 +110,7 @@ export function buildPresentation() {
       <rect x="0" y="400" width="720" height="60" fill="#2a1f14"/>
       <!-- Shore -->
       <path d="M720 75 L750 75 L900 75 L900 460 L720 460Z" fill="#3d2e1a" opacity="0.35"/>
-      <text x="810" y="60" text-anchor="middle" fill="#c8b99a" font-size="13" font-weight="700" font-family="Inter,sans-serif">RIVE</text>
+      <text x="810" y="60" text-anchor="middle" fill="var(--t3)" font-size="13" font-weight="700" font-family="Inter,sans-serif">RIVE</text>
 
       <!-- ===== PERMANENT: Anchor only ===== -->
       <g id="cy-station">
@@ -127,7 +129,7 @@ export function buildPresentation() {
         <!-- Rigid support mast from anchor to device -->
         <rect x="297" y="332" width="6" height="51" rx="1" fill="#718096"/>
         <!-- Device at bottom -->
-        <rect x="286" y="310" width="28" height="22" rx="4" fill="#e2e8f0" id="cy-dev1"/>
+        <rect x="286" y="310" width="28" height="22" rx="4" class="cy-device-fill" id="cy-dev1"/>
         <circle cx="300" cy="302" r="7" fill="#f97316"/>
         <!-- Camera lens -->
         <circle cx="300" cy="319" r="4" fill="#1a202c"/>
@@ -141,11 +143,11 @@ export function buildPresentation() {
       <!-- ===== PHASE 2: Device ascending ===== -->
       <g id="cy-phase2" class="cy-phase" opacity="0">
         <!-- 24h indicator -->
-        <rect x="340" y="220" width="52" height="24" rx="12" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1"/>
-        <text x="366" y="237" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="700" font-family="Inter,sans-serif">24h</text>
+        <rect x="340" y="220" width="52" height="24" rx="12" fill="rgba(251,191,36,0.15)" stroke="var(--yellow)" stroke-width="1"/>
+        <text x="366" y="237" text-anchor="middle" fill="var(--yellow)" font-size="12" font-weight="700" font-family="Inter,sans-serif">24h</text>
         <!-- Device rising (animated) -->
         <g class="device-rise-anim">
-          <rect x="286" y="180" width="28" height="22" rx="4" fill="#e2e8f0"/>
+          <rect x="286" y="180" width="28" height="22" rx="4" class="cy-device-fill"/>
           <circle cx="300" cy="172" r="7" fill="#f97316"/>
           <!-- Bubbles trail -->
           <circle cx="294" cy="210" r="2" fill="#38bdf8" opacity="0.3" class="bubble-trail"/>
@@ -161,7 +163,7 @@ export function buildPresentation() {
       <g id="cy-phase3" class="cy-phase" opacity="0">
         <!-- Device at surface, detached, moving right -->
         <g class="device-surface-anim">
-          <rect x="480" y="64" width="28" height="22" rx="4" fill="#e2e8f0"/>
+          <rect x="480" y="64" width="28" height="22" rx="4" class="cy-device-fill"/>
           <circle cx="494" cy="56" r="7" fill="#f97316"/>
         </g>
         <!-- Trail path to shore -->
@@ -179,20 +181,20 @@ export function buildPresentation() {
         <line x1="770" y1="36" x2="778" y2="44" stroke="#94a3b8" stroke-width="1"/>
 
         <!-- Radio signals from device to antenna -->
-        <circle cx="520" cy="55" r="8" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0" class="radio-wave rw1"/>
-        <circle cx="520" cy="55" r="16" fill="none" stroke="#ffffff" stroke-width="2" opacity="0" class="radio-wave rw2"/>
-        <circle cx="520" cy="55" r="24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0" class="radio-wave rw3"/>
+        <circle cx="520" cy="55" r="8" fill="none" stroke="var(--t1)" stroke-width="2.5" opacity="0" class="radio-wave rw1"/>
+        <circle cx="520" cy="55" r="16" fill="none" stroke="var(--t1)" stroke-width="2" opacity="0" class="radio-wave rw2"/>
+        <circle cx="520" cy="55" r="24" fill="none" stroke="var(--t1)" stroke-width="1.5" opacity="0" class="radio-wave rw3"/>
 
         <!-- Signal path -->
-        <path d="M530 56 Q650 40 762 35" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="signal-path"/>
-        <text x="650" y="30" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="600" font-family="Inter,sans-serif" opacity="0.8">DATA</text>
+        <path d="M530 56 Q650 40 762 35" stroke="var(--t1)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="signal-path"/>
+        <text x="650" y="30" text-anchor="middle" fill="var(--t1)" font-size="9" font-weight="600" font-family="Inter,sans-serif" opacity="0.8">DATA</text>
       </g>
 
       <!-- ===== PHASE 4: Replacement + collection ===== -->
       <g id="cy-phase4" class="cy-phase" opacity="0">
         <!-- New device (green) coming from shore to buoy -->
         <g class="device-replace-anim">
-          <rect x="500" y="64" width="28" height="22" rx="4" fill="#e2e8f0"/>
+          <rect x="500" y="64" width="28" height="22" rx="4" class="cy-device-fill"/>
           <circle cx="514" cy="56" r="7" fill="#34d399"/>
         </g>
         <!-- Path from shore to buoy -->
@@ -206,16 +208,16 @@ export function buildPresentation() {
           <line x1="770" y1="105" x2="770" y2="158" stroke="#8B7355" stroke-width="1" opacity="0.4"/>
           <line x1="785" y1="108" x2="785" y2="156" stroke="#8B7355" stroke-width="1" opacity="0.4"/>
           <!-- Old device in net -->
-          <rect x="762" y="125" width="20" height="16" rx="3" fill="#e2e8f0" opacity="0.6"/>
+          <rect x="762" y="125" width="20" height="16" rx="3" class="cy-device-fill" opacity="0.6"/>
           <circle cx="772" cy="119" r="5" fill="#f97316" opacity="0.5"/>
         </g>
-        <text x="772" y="180" text-anchor="middle" fill="#8B7355" font-size="9" font-weight="600" font-family="Inter,sans-serif">COLLECTE</text>
+        <text x="772" y="180" text-anchor="middle" fill="var(--t4)" font-size="9" font-weight="600" font-family="Inter,sans-serif">COLLECTE</text>
       </g>
 
       <defs>
         <linearGradient id="cyOcean" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#0e3654" stop-opacity="0.5"/>
-          <stop offset="1" stop-color="#061220" stop-opacity="0.8"/>
+          <stop offset="0" class="cy-ocean-top"/>
+          <stop offset="1" class="cy-ocean-bot"/>
         </linearGradient>
       </defs>
     </svg>
@@ -275,7 +277,7 @@ export function buildPresentation() {
             <path d="M10 30 Q40 20 70 30" stroke="#38bdf8" stroke-width="1.5" fill="none"/>
             <rect x="30" y="22" width="20" height="12" rx="3" fill="#64748b"/>
             <path d="M28 34 L22 44 M52 34 L58 44" stroke="#64748b" stroke-width="1"/>
-            <rect x="36" y="12" width="8" height="6" rx="1" fill="#e2e8f0"/>
+            <rect x="36" y="12" width="8" height="6" rx="1" class="cy-device-fill"/>
             <circle cx="40" cy="10" r="3" fill="#f97316"/>
           </svg>
         </div>
@@ -301,14 +303,14 @@ export function buildPresentation() {
             <path d="M85 15 Q80 35 85 55" stroke="#8B7355" stroke-width="2" fill="none"/>
             <line x1="85" y1="20" x2="85" y2="50" stroke="#8B7355" stroke-width="0.8" stroke-dasharray="3 2"/>
             <!-- Device drifting toward net -->
-            <rect x="50" y="24" width="14" height="10" rx="2" fill="#e2e8f0"/>
+            <rect x="50" y="24" width="14" height="10" rx="2" class="cy-device-fill"/>
             <circle cx="57" cy="21" r="4" fill="#f97316"/>
             <path d="M64 29 L80 32" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 2"/>
             <!-- Catapult arc -->
             <path d="M100 40 Q70 0 30 30" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
             <polygon points="33,26 28,33 36,33" fill="#34d399" opacity="0.7"/>
             <!-- New device launched -->
-            <rect x="95" y="38" width="14" height="10" rx="2" fill="#e2e8f0" opacity="0.7"/>
+            <rect x="95" y="38" width="14" height="10" rx="2" class="cy-device-fill" opacity="0.7"/>
             <circle cx="102" cy="35" r="4" fill="#34d399" opacity="0.7"/>
           </svg>
         </div>
@@ -359,7 +361,7 @@ export function buildPresentation() {
             <line x1="28" y1="8" x2="22" y2="8" stroke="#64748b" stroke-width="1.5"/>
             <line x1="52" y1="8" x2="58" y2="8" stroke="#64748b" stroke-width="1.5"/>
             <!-- Tumbling device falling -->
-            <rect x="36" y="25" width="10" height="8" rx="2" fill="#e2e8f0" transform="rotate(15,41,29)"/>
+            <rect x="36" y="25" width="10" height="8" rx="2" class="cy-device-fill" transform="rotate(15,41,29)"/>
             <circle cx="41" cy="23" r="3" fill="#34d399"/>
             <!-- Spiral descent -->
             <path d="M41 33 Q50 40 38 48 Q28 55 42 62" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" fill="none"/>
@@ -403,7 +405,7 @@ export function buildPresentation() {
           <!-- Ocean -->
           <rect x="0" y="40" width="360" height="440" fill="url(#mapOcean)" rx="12"/>
           <!-- Surface wave -->
-          <path d="M0 40 Q45 30 90 40 T180 40 T270 40 T360 40 V0 H0Z" fill="#0a1628"/>
+          <path d="M0 40 Q45 30 90 40 T180 40 T270 40 T360 40 V0 H0Z" fill="var(--bg-2)"/>
 
           <!-- Anchor at bottom -->
           <rect x="155" y="430" width="30" height="8" rx="3" fill="#64748b" opacity="0.5"/>
@@ -414,7 +416,7 @@ export function buildPresentation() {
 
           <!-- Device at position 1 (bottom, starting) -->
           <g opacity="0.3">
-            <rect x="156" y="360" width="28" height="22" rx="4" fill="#e2e8f0"/>
+            <rect x="156" y="360" width="28" height="22" rx="4" class="cy-device-fill"/>
             <circle cx="170" cy="352" r="7" fill="#f97316"/>
           </g>
           <!-- Capture cone 1 -->
@@ -422,7 +424,7 @@ export function buildPresentation() {
 
           <!-- Device at position 2 (mid) -->
           <g opacity="0.5">
-            <rect x="156" y="240" width="28" height="22" rx="4" fill="#e2e8f0"/>
+            <rect x="156" y="240" width="28" height="22" rx="4" class="cy-device-fill"/>
             <circle cx="170" cy="232" r="7" fill="#f97316"/>
           </g>
           <!-- Capture cone 2 (wider) -->
@@ -430,7 +432,7 @@ export function buildPresentation() {
 
           <!-- Device at position 3 (near top, current) -->
           <g opacity="1">
-            <rect x="156" y="110" width="28" height="22" rx="4" fill="#e2e8f0"/>
+            <rect x="156" y="110" width="28" height="22" rx="4" class="cy-device-fill"/>
             <circle cx="170" cy="102" r="7" fill="#f97316"/>
             <!-- Camera indicator -->
             <circle cx="170" cy="119" r="3.5" fill="#1a202c"/>
@@ -444,9 +446,9 @@ export function buildPresentation() {
           <polygon points="196,125 200,110 204,125" fill="#34d399" opacity="0.5"/>
 
           <!-- Altitude labels -->
-          <text x="215" y="370" fill="#5a7a92" font-size="9" font-family="Inter,sans-serif">alt. 2m</text>
-          <text x="215" y="250" fill="#5a7a92" font-size="9" font-family="Inter,sans-serif">alt. 8m</text>
-          <text x="215" y="120" fill="#5a7a92" font-size="9" font-family="Inter,sans-serif">alt. 15m</text>
+          <text x="215" y="370" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 2m</text>
+          <text x="215" y="250" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 8m</text>
+          <text x="215" y="120" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 15m</text>
 
           <!-- Coverage width labels -->
           <line x1="110" y1="442" x2="230" y2="442" stroke="#38bdf8" stroke-width="0.5" opacity="0.3"/>
@@ -459,8 +461,8 @@ export function buildPresentation() {
 
           <defs>
             <linearGradient id="mapOcean" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#0c3a5e" stop-opacity="0.4"/>
-              <stop offset="1" stop-color="#051525" stop-opacity="0.7"/>
+              <stop offset="0" class="cy-ocean-top"/>
+              <stop offset="1" class="cy-ocean-bot"/>
             </linearGradient>
           </defs>
         </svg>
@@ -645,7 +647,7 @@ function initHeroParticles() {
       if (p.x > ww + 10) p.x = -10;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(56,189,248,${p.a})`;
+      ctx.fillStyle = isDark() ? `rgba(56,189,248,${p.a})` : `rgba(2,132,199,${p.a * 0.7})`;
       ctx.fill();
     }
     requestAnimationFrame(draw);

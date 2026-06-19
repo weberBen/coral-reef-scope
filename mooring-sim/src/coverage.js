@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import GUI from 'lil-gui';
+import { getCoverageColors } from './theme.js';
 
 // =============================================
 //  STATE
@@ -65,18 +66,19 @@ export function initCoverage() {
   initialized = true;
 
   const container = document.getElementById('tab-coverage');
-  container.innerHTML = '<div id="coverage-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#7a97b0;font-size:16px;z-index:5">Chargement du recif...</div>';
+  container.innerHTML = '<div id="coverage-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--t3);font-size:16px;z-index:5">Chargement du recif...</div>';
 
+  const cc = getCoverageColors();
   renderer = new THREE.WebGLRenderer({ antialias: true });
   const w = container.clientWidth || window.innerWidth;
   const h = container.clientHeight || window.innerHeight;
   renderer.setSize(w, h);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.setClearColor(0x060a12);
+  renderer.setClearColor(cc.clearColor);
   container.prepend(renderer.domElement);
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x060a12);
+  scene.background = new THREE.Color(cc.bg);
 
   camera = new THREE.PerspectiveCamera(50, w / h, 0.01, 1000);
   camera.position.set(8, 12, 8);
@@ -96,7 +98,8 @@ export function initCoverage() {
   d3.position.set(0, -8, 0);
   scene.add(d3);
 
-  scene.add(new THREE.GridHelper(20, 40, 0x445566, 0x2a3a4a));
+  scene._grid = new THREE.GridHelper(20, 40, cc.grid1, cc.grid2);
+  scene.add(scene._grid);
 
   const loader = new GLTFLoader();
   loader.load('/data/reef.glb', (gltf) => {
@@ -235,9 +238,9 @@ export function initCoverage() {
       labelEl.id = 'reef-label';
       labelEl.style.cssText = 'position:absolute;top:60px;left:16px;z-index:10;cursor:default';
       labelEl.innerHTML = `
-        <div style="font-size:18px;font-weight:700;color:#e4eef6">${reefMeta.label}</div>
-        <div style="font-size:12px;color:#7a97b0;margin-top:2px">${reefMeta.location || ''}</div>
-        <div class="reef-label-gps" style="font-size:11px;color:#38bdf8;margin-top:4px;opacity:0;transition:opacity .2s">${gpsText}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--t1)">${reefMeta.label}</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px">${reefMeta.location || ''}</div>
+        <div class="reef-label-gps" style="font-size:11px;color:var(--cyan);margin-top:4px;opacity:0;transition:opacity .2s">${gpsText}</div>
       `;
       labelEl.addEventListener('mouseenter', () => {
         labelEl.querySelector('.reef-label-gps').style.opacity = '1';
@@ -266,7 +269,7 @@ export function initCoverage() {
   renderer.domElement.addEventListener('mousemove', onMouseMove);
 
   tooltip = document.createElement('div');
-  tooltip.style.cssText = 'position:absolute;padding:6px 12px;background:rgba(5,15,30,0.9);border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:#7dd3fc;font-size:12px;pointer-events:none;display:none;z-index:20;font-family:Inter,sans-serif;white-space:nowrap';
+  tooltip.style.cssText = 'position:absolute;padding:6px 12px;background:var(--panel-bg);border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:var(--cyan-l);font-size:12px;pointer-events:none;display:none;z-index:20;font-family:Inter,sans-serif;white-space:nowrap';
   container.appendChild(tooltip);
 
   // Top bar: cameras count + coverage stats + legend
@@ -276,19 +279,19 @@ export function initCoverage() {
   topBar.innerHTML = `
     <div class="cov-stat" data-tip="Nombre de stations ancrees">
       <div class="cov-label">Cameras</div>
-      <div id="camera-count" class="cov-num" style="color:#e4eef6">0</div>
+      <div id="camera-count" class="cov-num" style="color:var(--t1)">0</div>
     </div>
     <div class="cov-stat" data-tip="Surface du recif visible depuis les cameras au fond (viewshed avec occlusion terrain)">
       <div class="cov-label">Couv. fond</div>
-      <div id="coverage-value" class="cov-num" style="color:#34d399">0%</div>
+      <div id="coverage-value" class="cov-num" style="color:var(--green)">0%</div>
     </div>
     <div class="cov-stat" data-tip="Surface totale vue pendant la remontee (camera vers le bas, toutes altitudes)">
       <div class="cov-label">Couv. surface</div>
-      <div id="ascent-coverage-value" class="cov-num" style="color:#34d399">0%</div>
+      <div id="ascent-coverage-value" class="cov-num" style="color:var(--green)">0%</div>
     </div>
     <div class="cov-stat" data-tip="Resolution moyenne au sol (Ground Sample Distance). Augmente avec l'altitude, depend du capteur">
       <div class="cov-label">GSD moyen</div>
-      <div id="gsd-value" class="cov-num" style="color:#e4eef6">--</div>
+      <div id="gsd-value" class="cov-num" style="color:var(--t1)">--</div>
     </div>
   `;
   container.appendChild(topBar);
@@ -297,8 +300,9 @@ export function initCoverage() {
   const style = document.createElement('style');
   style.textContent = `
     .cov-stat { text-align:center; position:relative; cursor:default; pointer-events:auto; }
-    .cov-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:#7aa4c0; margin-bottom:2px; }
+    .cov-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--t3); margin-bottom:2px; }
     .cov-num { font-size:36px; font-weight:800; font-variant-numeric:tabular-nums; text-shadow:0 2px 20px rgba(0,0,0,.5); transition:color .3s; }
+    .light-theme .cov-num { text-shadow: 0 2px 10px rgba(0,0,0,.08); }
     @media (max-width: 900px) {
       .cov-num { font-size: 22px; }
       .cov-label { font-size: 8px; letter-spacing: 1px; }
@@ -312,8 +316,8 @@ export function initCoverage() {
       content: attr(data-tip);
       position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
       margin-top: 8px; padding: 8px 14px; max-width: 240px; width: max-content;
-      background: rgba(5,15,30,0.95); border: 1px solid rgba(56,189,248,0.25);
-      border-radius: 8px; color: #8aa4bd; font-size: 11px; line-height: 1.5;
+      background: var(--panel-bg-strong); border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 8px; color: var(--t3); font-size: 11px; line-height: 1.5;
       white-space: normal; text-align: left; pointer-events: none;
       opacity: 0; transition: opacity 0.2s; z-index: 30;
     }
@@ -817,22 +821,22 @@ function updateAscentDisplay(pct) {
   const el = document.getElementById('ascent-coverage-value');
   if (!el) return;
   el.textContent = pct.toFixed(1) + '%';
-  el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
+  el.style.color = pct < 20 ? 'var(--red-s)' : pct < 60 ? 'var(--yellow)' : 'var(--green)';
 }
 
 function updateUsefulDisplay(pct) {
   const el = document.getElementById('useful-coverage-value');
   if (!el) return;
   el.textContent = pct.toFixed(1) + '%';
-  el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
+  el.style.color = pct < 20 ? 'var(--red-s)' : pct < 60 ? 'var(--yellow)' : 'var(--green)';
 }
 
 function updateGsdDisplay(gsd) {
   const el = document.getElementById('gsd-value');
   if (!el) return;
-  if (gsd === null || gsd === 0) { el.textContent = '--'; el.style.color = '#e4eef6'; return; }
+  if (gsd === null || gsd === 0) { el.textContent = '--'; el.style.color = 'var(--t1)'; return; }
   el.textContent = gsd < 10 ? gsd.toFixed(1) + 'mm' : (gsd / 10).toFixed(1) + 'cm';
-  el.style.color = gsd <= state.gsdMax ? '#34d399' : gsd <= state.gsdMax * 2 ? '#fbbf24' : '#f87171';
+  el.style.color = gsd <= state.gsdMax ? 'var(--green)' : gsd <= state.gsdMax * 2 ? 'var(--yellow)' : 'var(--red-s)';
 }
 
 function paintCoverage(visibleFaces) {
@@ -960,7 +964,7 @@ function updateCoverageDisplay(pct) {
   const el = document.getElementById('coverage-value');
   if (!el) return;
   el.textContent = pct.toFixed(1) + '%';
-  el.style.color = pct < 20 ? '#f87171' : pct < 60 ? '#fbbf24' : '#34d399';
+  el.style.color = pct < 20 ? 'var(--red-s)' : pct < 60 ? 'var(--yellow)' : 'var(--green)';
 }
 
 function clearCameras() {
@@ -1090,4 +1094,22 @@ function setupGUI(container) {
     e.target.classList.toggle('active');
     gui.domElement.classList.toggle('show');
   });
+}
+
+export function updateCoverageTheme() {
+  if (!renderer || !scene) return;
+  const cc = getCoverageColors();
+  renderer.setClearColor(cc.clearColor);
+  scene.background.set(cc.bg);
+
+  // Rebuild grid
+  if (scene._grid) {
+    scene.remove(scene._grid);
+    scene._grid.geometry.dispose();
+    const m = scene._grid.material;
+    if (Array.isArray(m)) m.forEach(mat => mat.dispose());
+    else m.dispose();
+  }
+  scene._grid = new THREE.GridHelper(20, 40, cc.grid1, cc.grid2);
+  scene.add(scene._grid);
 }

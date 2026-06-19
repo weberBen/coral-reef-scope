@@ -1,17 +1,30 @@
 import './style.css';
 import { P } from './params.js';
 import { initNodes, physicsStep, computeTensions } from './physics.js';
-import { initScene, handleResize } from './scene.js';
+import { initScene, handleResize, updateSceneTheme } from './scene.js';
 import { MooringObjects } from './objects.js';
 import { setupGUI, updateReadouts } from './ui.js';
 import { exportOBJ } from './export.js';
 import { initTabs, onTabChange } from './tabs.js';
 import { buildPresentation } from './presentation.js';
-import { initCoverage } from './coverage.js';
+import { initCoverage, updateCoverageTheme } from './coverage.js';
+import { toggleTheme, onThemeChange, isDark } from './theme.js';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
 // ---------- Initialize ----------
+
+// Theme toggle
+const themeBtn = document.getElementById('theme-toggle');
+const moonIcon = document.getElementById('theme-icon-moon');
+const sunIcon = document.getElementById('theme-icon-sun');
+function syncThemeIcons() {
+  const dark = isDark();
+  moonIcon.style.display = dark ? 'block' : 'none';
+  sunIcon.style.display = dark ? 'none' : 'block';
+}
+syncThemeIcons();
+themeBtn.addEventListener('click', () => { toggleTheme(); });
 
 initTabs();
 buildPresentation();
@@ -107,3 +120,10 @@ function animate(now) {
 requestAnimationFrame(animate);
 
 window.addEventListener('resize', () => handleResize(camera, renderer));
+
+// Theme change handler
+onThemeChange(() => {
+  syncThemeIcons();
+  updateSceneTheme(scene, camera, renderer, objects);
+  if (coverageLoaded) updateCoverageTheme();
+});

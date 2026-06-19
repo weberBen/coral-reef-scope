@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { P } from './params.js';
+import { getSceneColors } from './theme.js';
 
 export function initScene() {
+  const tc = getSceneColors();
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x030d1a);
+  renderer.setClearColor(tc.clearColor);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -15,20 +17,14 @@ export function initScene() {
 
   const scene = new THREE.Scene();
 
-  // Underwater fog — denser for depth feel
-  scene.fog = new THREE.FogExp2(0x04182d, 0.012);
+  // Underwater fog
+  scene.fog = new THREE.FogExp2(tc.fogColor, tc.fogDensity);
 
   // Gradient background (sky above water → deep blue below)
   const bgCanvas = document.createElement('canvas');
   bgCanvas.width = 2; bgCanvas.height = 512;
-  const bgCtx = bgCanvas.getContext('2d');
-  const grad = bgCtx.createLinearGradient(0, 0, 0, 512);
-  grad.addColorStop(0, '#1a3a5c');
-  grad.addColorStop(0.3, '#0a2240');
-  grad.addColorStop(0.7, '#051525');
-  grad.addColorStop(1, '#020a12');
-  bgCtx.fillStyle = grad;
-  bgCtx.fillRect(0, 0, 2, 512);
+  scene._bgCanvas = bgCanvas;
+  _paintBgGradient(bgCanvas, tc.bgStops);
   const bgTex = new THREE.CanvasTexture(bgCanvas);
   bgTex.mapping = THREE.EquirectangularReflectionMapping;
   scene.background = bgTex;
@@ -87,4 +83,36 @@ export function handleResize(camera, renderer) {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function _paintBgGradient(canvas, stops) {
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0, stops[0]);
+  grad.addColorStop(0.3, stops[1]);
+  grad.addColorStop(0.7, stops[2]);
+  grad.addColorStop(1, stops[3]);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 2, 512);
+}
+
+export function updateSceneTheme(scene, camera, renderer, objects) {
+  const tc = getSceneColors();
+  renderer.setClearColor(tc.clearColor);
+  scene.fog.color.set(tc.fogColor);
+  scene.fog.density = tc.fogDensity;
+
+  // Repaint background gradient
+  if (scene._bgCanvas) {
+    _paintBgGradient(scene._bgCanvas, tc.bgStops);
+    scene.background.needsUpdate = true;
+  }
+
+  // Update water shader uniforms
+  if (objects && objects.waterUniforms) {
+    const u = objects.waterUniforms;
+    u.uDeepColor.value.set(...tc.waterDeep);
+    u.uSurfColor.value.set(...tc.waterSurf);
+    u.uHorizColor.value.set(...tc.waterHoriz);
+  }
 }
