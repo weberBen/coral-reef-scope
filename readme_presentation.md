@@ -8,7 +8,7 @@ Every existing approach to coral reef monitoring forces a trade-off between cost
 
 **Fixed cameras** suffer from biofouling within weeks. Cleaning and maintaining them requires sending divers down repeatedly, indefinitely. Operational expenditure scales with time, not with insight.
 
-**Underwater drones** introduce collision risk with the very ecosystem they're meant to observe. Controlling a vehicle in turbulent water near fragile coral structures remains an unsolved engineering problem at scale. R&D costs are high. Failure modes are destructive.
+**Underwater drones** require full 3D navigation in water, which is fundamentally hard for the same reasons 3D navigation in air is hard: six degrees of freedom, turbulent flow, no fixed reference frame. Doing this near fragile coral structures adds collision risk on top. R&D costs are high. Failure modes are destructive.
 
 **Permanent infrastructure** (subsea cables, solar buoy arrays, shore-linked platforms) delivers reliable power and data. But it imposes a physical footprint on the reef: cables crossing the seabed, buoys cluttering the surface, anchor blocks on the substrate. The visual and ecological impact is non-trivial. These systems are expensive to install, expensive to expand, and expensive to decommission. They do not scale.
 
@@ -34,7 +34,7 @@ The operational cycle has four phases:
 
 **Phase 3: Surface transit and data transmission.** Once at the surface, the device drifts toward shore or navigates in a straight line (trivial algorithm: aim for the coast, no underwater intelligence required). Captured data is transmitted by radio to a shore station. The transmission delay is approximately 24 hours from capture to reception.
 
-**Phase 4: Replacement and collection.** A fresh, charged sensor is dispatched from shore to the buoy and descends to dock at the mooring cable. The spent sensor is recovered: either by boat during periodic rounds (Phase 1 of deployment), by a passive coastal collection net (like a floating anti-pollution barrier), or by catapult relaunch from a shore station (Phase 2). The old sensor is cleaned, recharged, and returned to the pool.
+**Phase 4: Replacement and collection.** A fresh sensor navigates from shore toward the buoy at constant speed in a straight line. No fine underwater control is needed: the buoy is designed to absorb a low-speed surface impact, and the collision itself is the docking mechanism. Once attached, the sensor descends autonomously by winching down the existing cable. The spent sensor is recovered: either by boat during periodic rounds (Phase 1 of deployment), by a passive coastal collection net (like a floating anti-pollution barrier), or by catapult relaunch from a shore station (Phase 2). The old sensor is cleaned, recharged, and returned to the pool. The entire docking sequence happens at the surface, away from the reef.
 
 ### Three phases toward full autonomy
 
@@ -44,7 +44,7 @@ The system is designed to be deployed incrementally:
 
 **Phase 2: Automated collection.** Two variants depending on site and budget. *Active*: straight-line navigation to shore, coastal recharging station, catapult relaunch toward buoys. *Passive*: natural drift, sensors float, current brings them to shore, a coastal collection net recovers them without intervention.
 
-**Phase 3: Sensor swarm.** Paradigm shift. Produce many low-resolution sensors rather than few high-resolution ones. Drop them by drone with a slow tumbling descent (robust to wind, precise placement, no parachute). Cost concentrates entirely on mass production. Reef coverage scales linearly with the number of sensors produced. Zero permanent infrastructure.
+**Phase 3: Sensor swarm.** Paradigm shift. Produce many low-resolution sensors rather than few high-resolution ones. Drop them by drone with a slow tumbling descent (robust to wind, precise placement, no parachute). No cable, no anchor, no buoy. The sensors sit on the reef under their own weight, capture for the duration of their battery, then float up and drift. An offshore collection net (similar to anti-pollution floating barriers) is installed around the reef perimeter to intercept drifting sensors. The net installation requires subsea anchoring, but it is located away from the reef itself, with no cable or structure crossing the coral. Cost concentrates entirely on mass production. Reef coverage scales linearly with the number of sensors produced.
 
 *References for tumbling descent: TumblerBots (arXiv 2410.23049). For drone-deployed coral restoration: Ramsby 2026, Restoration Ecology.*
 
@@ -173,6 +173,58 @@ This is also why photogrammetry matters for reef monitoring: the fine-scale 3D s
 The reef mesh loaded in the Coverage tab is deliberately simplified: reduced polygon count to keep loading times under a few seconds and rendering smooth at 60 fps on typical hardware. The Z-axis is exaggerated (default: 12x) to make depth features visible in the 3D view. Contour lines are computed by plane-mesh intersection at configurable depth intervals, with one animated "active" contour sweeping through the depth range. Depth is color-coded using a perceptually optimized colormap with 14 stops, different for light and dark themes.
 
 These are trade-offs. A production coverage analysis tool would use the full-resolution mesh, run the viewshed on a GPU, and integrate real turbidity and light attenuation models. What we have is a working prototype that gives correct qualitative results and lets you interact with the problem (place cameras, see what they cover, optimize placement, understand the relationship between station count and coverage) in a browser, on any device.
+
+---
+
+## Open Questions
+
+The sections above describe what we've built and the reasoning behind it. This section is about what we haven't solved, what we've deliberately deferred, and where the real risks are. Some of these are next steps. Some are hard problems. None of them are hidden.
+
+### Energy budget
+
+There is an unresolved tension between the "swarm" objective (smaller, cheaper sensors, shorter battery) and 24-hour continuous capture. Filming and storing imagery continuously for 24 hours is a non-trivial power draw. No energy budget figures are provided in this document because the budget depends on choices that haven't been locked yet: device weight, enclosure materials, thermal dissipation, capture resolution, compression strategy, and duty cycle. These are all conditioned on the simulation work described above. The mooring simulation determines what the device can weigh and how it behaves; the coverage analysis determines what resolution and angle are needed. The energy budget is the next step once those constraints converge. It is the single variable that dimensions everything else.
+
+### Docking mechanics
+
+The operational cycle requires a fresh sensor to reach the buoy, attach, and descend. This sounds like it reintroduces the precise underwater maneuvering problem criticized in the drone section, but the mechanics are different. The sensor navigates at the surface, in a straight line at constant speed, toward a visible buoy. This is closer to a radio-controlled boat than to a submarine. No 3D underwater navigation, no obstacle avoidance, no proximity control near coral. The docking itself is impact-based: the buoy is designed so that a low-speed surface collision locks the sensor in place. The cable and buoy absorb the impact. Once docked, the sensor descends by winching down the cable, a controlled 1D motion.
+
+The impact force matters: it transmits down the cable and could affect the anchor or the cable angle. This needs to be simulated. Higher approach speed means faster turnaround but more force and more noise, which affects marine life around the mooring. This is a simulation target, not a fundamental blocker.
+
+### Biofouling
+
+The 24-hour cycle eliminates biofouling on the optical system, which is the component most sensitive to it. But the cable and anchor stay permanently submerged and will foul over time. The "onshore cleaning" mentioned in the comparison table applies to the sensor only, not to the submerged infrastructure.
+
+Two points here. First, surface biofouling cleaning is drastically simpler than underwater cleaning. Once sensors are collected (eventually automatically) at a single location, they can pass through an autonomous washing station. Even a simple offshore platform with a single power cable driving a high-pressure water pump solves this. Second, the cable and anchor fouling is a real maintenance cost, acknowledged as part of the infrastructure we ultimately want to eliminate (see Phase 3, where there is no cable or anchor at all). In Phases 1 and 2, it's an accepted cost, lower than the alternatives because the frequency and complexity of intervention is reduced.
+
+### Loss rate and failure modes
+
+A sensor that drifts off course can be lost: current, storm, boat traffic, marine life, theft. Each loss is 24 hours of data and one unit of hardware. The passive collection net assumes favorable currents or at least predictable drift patterns. What percentage of sensors is lost per cycle? We don't have a number yet. This is a field measurement, not something we can simulate. It conditions OPEX directly and needs to be quantified during Phase 1 trials with real hardware in real water. If the loss rate is 5%, the economics work. If it's 30%, they don't. We expect the answer depends heavily on site selection (sheltered lagoon vs. exposed outer reef) and on net placement.
+
+### Spatial recalibration between cycles
+
+If a sensor is removed and another takes its place, the new sensor is not in exactly the same position and orientation. The cable constrains location loosely, but there is variance at each redeployment. This matters because the claimed value is temporal comparison: seeing how the same patch of reef changes over weeks and months.
+
+This is a known problem in multi-sensor, multi-pass capture. It is the same problem faced by any repeat photogrammetry survey, any satellite revisit, any drone mapping campaign. Registration and alignment between passes is a solved (though non-trivial) discipline. The photogrammetric reconstruction workflow already handles this: overlapping images from different viewpoints are aligned by feature matching, not by assuming identical camera positions. The passive tumbling descent approach referenced at the end of the presentation (Ramsby 2026) relies on this same principle for coral restoration monitoring.
+
+### Data transfer bandwidth
+
+24 hours of continuous imagery plus photogrammetric capture during ascent represents a significant data volume. Transmitting all of it by radio from a small floating device is not realistic at full resolution. The approach is two-tier: a compressed, degraded version is transmitted by radio while the sensor is still at sea, sufficient for a first assessment and integration into the monitoring pipeline. The full-resolution dataset is recovered physically once the sensor reaches shore, either by collection net or by boat. Post-processing on the full data happens onshore. This means the radio link is not a bottleneck; it's a preview channel.
+
+### Turbidity as a hard ceiling
+
+The coverage analysis penalizes turbidity, but in practice turbidity is closer to a hard cutoff than a gradual penalty. Even in clear tropical water, useful optical imagery is limited to a few meters to a few tens of meters. The coverage percentages reported by the tool should be understood with this ceiling in mind.
+
+This is not a problem the system solves. It is a constraint of optical sensing in water. The mitigation is multi-modal: during the brief ascent phase (once per day, a few minutes), the sensor could run a LiDAR or acoustic sonar pulse. The light or sound only needs to travel a few meters down and back, not the full water column, so effective range is better than surface-based bathymetric surveys. Where turbidity degrades optical capture, the reconstruction relies on interpolation between high-confidence zones (bottom captures in clear conditions, external survey data from drones or dive teams) and partial ascent captures. The coverage tool is designed to help quantify exactly this gap: how much can we see, from where, and what remains unknown.
+
+### Phase 3 reconciliation
+
+Phase 3 (sensor swarm) abandons the cable, anchor, and buoy that Phases 1 and 2 rely on. The sensors sit on the reef under their own weight, float up when done, and drift. This raises the question: how do they stay in place in current, and how are they recovered without a mooring?
+
+Staying in place: the sensors are small and heavy enough relative to their cross-section that moderate current does not displace them during a capture cycle. This is a design constraint on the form factor, not a fundamental problem.
+
+Recovery: an offshore collection net is deployed around the reef perimeter, anchored to the seabed at a distance from the reef itself. Drifting sensors accumulate in the net. The net infrastructure is separate from the reef: no cables cross the coral, no buoys sit over the colonies. Installation cost is real, but it is a one-time perimeter setup, not per-sensor infrastructure.
+
+Phase 3 is the least validated part of the system. It is the long-term vision, not the near-term plan. Phases 1 and 2 are where the engineering is focused now. Phase 3 becomes viable when sensor unit cost drops low enough that loss rates and simplified logistics outweigh the complexity of per-unit recovery.
 
 ---
 
