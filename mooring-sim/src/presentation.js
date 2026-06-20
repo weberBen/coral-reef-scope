@@ -1,5 +1,5 @@
 import { isDark, onThemeChange } from './theme.js';
-import { t } from './i18n.js';
+import { t, getLang } from './i18n.js';
 import { createSocialPanel } from 'social-links-panel';
 import socialConfig from './social.config.js';
 
@@ -560,6 +560,7 @@ export function buildPresentation() {
   // Social links panel (appended after CTA)
   const panel = createSocialPanel({
     ...socialConfig,
+    locale: getLang(),
     modal: isDark() ? 'dark' : 'light',
   });
   panel.appendTo(el);
