@@ -1,13 +1,13 @@
 # ReefScope
 
-Autonomous coral reef monitoring — simulation, presentation deck, and photogrammetric coverage analysis.
+Autonomous coral reef monitoring system. Sensors anchored at the seabed capture imagery continuously, surface by buoyancy when their battery is depleted, transit to shore, get cleaned and recharged, and a fresh sensor takes their place. No permanent power or data infrastructure underwater. The full concept, simulation approach, coverage analysis, open engineering questions, and long-term vision are described in [readme_presentation.md](readme_presentation.md).
 
 ## Project Structure
 
 ```
 coral-reef-scope/
     coral_sim/          # Python library: terrain generation, coral growth, mooring analysis
-    mooring-sim/        # Final web application (Vite + Three.js): deck, simulation, coverage
+    mooring-sim/        # Web application (Vite + Three.js): deck, simulation, coverage
     tools/              # Standalone CLI scripts for data generation
     experiments/        # Prototypes & tests (2D Verlet, Infinigen, etc.)
     data/               # Generated files (gitignored)
@@ -39,7 +39,7 @@ uv run python tools/reef_export.py \
 cd mooring-sim && bun dev
 ```
 
-Or to test the Python modules  [deprecated]
+Or to test the Python modules [deprecated]
 
 ```bash
 # Generate terrain from Allen Coral Atlas (Moorea, French Polynesia)
@@ -87,7 +87,7 @@ config.yaml
     +-- coral_sim/colony.py     --> data/reef.glb (KJMA coral growth)
     +-- coral_sim/viz.py        --> Viser 3D viewer (localhost:8080)
     |
-    +-- tools/reef_export.py    --> data/reef.glb (standalone GPS → GLB)
+    +-- tools/reef_export.py    --> data/reef.glb (standalone GPS to GLB)
     |
     +-- mooring-sim/            --> Web app (localhost:5173)
         +-- Concept tab         --> Presentation deck
@@ -115,11 +115,9 @@ bunx playwright open --viewport-size=1366,768 --browser=chromium http://localhos
 Edit `config.yaml` to change source (`allen`/`procedural`), bbox, resolution, colony params, etc.
 See `ARCHITECTURE.md` for full reference.
 
-
-
 ---
 
 ## Social
 
-- See the open source code on Github and contribute — [see here](https://github.com/benjaminlrl/coral-reef-scope)
-- Follow my personal feed (Twitter/Instagram) for up to date info — [see here](https://feed.rnznr.com/@ben)
+- See the open source code on Github and contribute: [github.com/weberBen/coral-reef-scope](https://github.com/weberBen/coral-reef-scope)
+- Follow my personal feed for up to date info: [feed.rnznr.com/@ben](https://feed.rnznr.com/@ben)

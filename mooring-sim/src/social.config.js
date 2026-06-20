@@ -1,7 +1,7 @@
 const GITHUB_USER = 'weberBen';
 const GITHUB_REPO = 'coral-reef-scope';
 
-import readmeMd from '../../README.md?raw';
+import readmeMd from '../../readme_presentation.md?raw';
 
 export default {
   links: [
