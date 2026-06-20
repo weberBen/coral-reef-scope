@@ -20,7 +20,7 @@ The table below is a thinking framework, not a benchmark. The scores are qualita
 | **OPEX** | 0.4, divers for biofouling + cable upkeep | 0.3, divers for biofouling + panel upkeep | 0.3, divers + platform + WiFi mesh | **0.6**, onshore cleaning, limited seabed maintenance |
 | **Scalability** | 0.1, linear cost, expensive to expand | 0.4, deployable but per-unit maintenance | 0.3, high cost per station, heavy monitoring | **0.6**, eventually zero seabed installation |
 
-*These scores are subjective estimates intended to structure the comparison, not to conclude it. The ReefScope column in particular blends the current state (Phases 1-2, which still use permanent cable and anchor) with the target state (Phase 3, zero seabed installation). Rigorous benchmarking against field data is needed before these numbers carry weight.*
+*These scores are subjective estimates intended to structure the comparison, not to conclude it. The ReefScope column in particular blends the current state (Phases 1-2, which still use permanent cable and anchor) with the target state (Phase 3, zero seabed installation). Rigorous benchmarking against field data (rewind+transit energy, loss rate per cycle, wet-mate connector reliability under biofouling) is needed before these numbers carry weight and meaning.*
 
 ### What if the sensors came to us?
 
@@ -69,6 +69,8 @@ For sites where real-time monitoring is scientifically or operationally critical
 ---
 
 ## Part II: Under the Hood
+
+**A note on what was built and what was not.** The simulation and coverage tools described below address the passive, well-understood parts of the system: cable forces, drag, wave response, viewshed geometry. They do not address the spool, the wet-mate connector, the energy budget, or the loss rate, which are the components that will actually decide whether the project works (see Open Questions). This is not an oversight. It reflects the constraints under which this work was done: a few days, no access to marine hardware or a deployment site, and a need to start with the parts that could be modeled with existing tools and known physics. Even the cable simulation was not trivial to set up with available tools. The spool, the connector, and the energy budget depend on too many unknown parameters to simulate meaningfully before field measurements exist. The right sequence is: build the scaffold (what we have), validate physically (what comes next), then simulate the hard parts against real data.
 
 ### Mooring Simulation
 
@@ -297,3 +299,9 @@ This is the shape of the system we think about. Not a single device doing everyt
 Discreet sensors that attach to nothing, disturb nothing, and cycle through on their own, that tells a different story. It says: this reef is so vast, so complex, that we can only sample it. We are not controlling it. We are not instrumenting it. We are watching, as quietly as we can, and trying to keep up.
 
 That is the signal we want to send.
+
+---
+
+## What comes next
+
+The first call to action is not more simulation. It is to test in real conditions, by fast iterative cycles, one small piece at a time. Build one spool. Test it in a tank. Foul it deliberately and test it again. Wire a wet-mate connector to a buoy and throw a weighted float at it until it locks or it doesn't. Measure the rewind energy. Measure the transit energy at a realistic distance. Put one station in the water for one cycle and see what comes back. Adjust. Repeat. Every answer from the field is worth more than a month of modeling at this stage. The simulation exists to assemble the pieces and check that the envelope holds. The field is where the pieces get real.
