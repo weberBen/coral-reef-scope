@@ -246,6 +246,26 @@ What we are not comfortable compromising on is infrastructure.
 
 The long-term goal is to eliminate *all* permanent underwater infrastructure: the anchor, the spool, the cable. Every piece of hardware bolted to the seabed sends a signal: this ecosystem cannot exist without our scaffolding. It encloses the reef rather than letting it grow. It frames the natural world as something that needs to be wired up, plugged in, kept on life support.
 
+### What comes after cables
+
+Some directions we think about, without pretending to know which will work.
+
+**Floating fiber optics.** Instead of a rigid cable anchored to the seabed, imagine fiber optic filaments trailing from a sensor like the tentacles of a jellyfish: floating, drifting with the current, providing a data link without rigid attachment. The friction of these filaments with coral structures is an open question. Whether they tangle, abrade, or simply drift clear depends on material, length, current, and reef density. This is speculative. But the principle (soft, passive connectivity instead of rigid infrastructure) is worth exploring.
+
+**Autonomous underwater photography.** Photographing a reef at high resolution can be done by an autonomous underwater vehicle. But the collision avoidance algorithm required to navigate near coral is extremely critical: any contact is destructive, and the failure mode is the thing you're trying to protect. Beyond collision, the noise and physical disturbance of a motorized vehicle moving through the water column affects the ecosystem you're trying to observe. Fish flee. Behavior changes. The observation contaminates the subject.
+
+The closest viable concept is something closer to a jellyfish than a submarine: a system that does not fight the current but follows it, maintaining its position by adjusting its buoyancy and very slightly influencing its trajectory to avoid collision with structures. It does not decide where to go. It drifts, observes, and nudges itself away from obstacles. This is extremely complex to engineer and extremely critical to get right. It is not a near-term project.
+
+**The hybrid fleet.** The final monitoring system will not be one type of sensor. It will be a combination:
+
+- A small number of high-resolution sensors at fixed strategic positions, cable-based, high quality, covering critical zones with precision. These are the anchors of the monitoring network.
+- Periodic autonomous mobile sweeps for broad photographic coverage. Underwater vehicles or drift systems that pass through periodically, mapping wide areas at lower frequency.
+- Many low-cost, low-resolution sensors that are relatively stationary. They do not navigate. They do not decide where to go. They sit, capture, rise, drift, and get repatriated when they leave the zone.
+
+Repatriation is a design problem, not a physics problem. A passive buoy could carry a sensor across the reef and release it to drift again from the other side. An autonomous surface collector (a simple boat dragging a net) could gather floating sensors periodically and redistribute them to new positions. The fleet recirculates. No individual sensor needs to be smart. The intelligence is in the logistics, not in the unit.
+
+This is the shape of the system we think about. Not a single device doing everything, but a population of devices doing different things at different scales, with the infrastructure cost pushed as close to zero as possible per unit of coverage.
+
 Discreet sensors that attach to nothing, disturb nothing, and cycle through on their own, that tells a different story. It says: this reef is so vast, so complex, that we can only sample it. We are not controlling it. We are not instrumenting it. We are watching, as quietly as we can, and trying to keep up.
 
 That is the signal we want to send.
