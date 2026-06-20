@@ -180,31 +180,43 @@ These are trade-offs. A production coverage analysis tool would use the full-res
 
 ## Open Questions
 
-The sections above describe what we've built and the reasoning behind it. This section is about what we haven't solved, what we've deliberately deferred, and where the real risks are. Some of these are next steps. Some are hard problems. None of them are hidden.
+The sections above describe what we've built and the reasoning behind it. This section is about what we haven't solved, what we've deliberately deferred, and where the real risks are. They are ordered by severity: show-stoppers first, then field-measurable unknowns, then known physical constraints, then manageable problems, then distant research.
 
-### Energy budget
+### Spool reliability
 
-No energy budget figures are provided in this document. This is the number one risk and we know it.
+The spool is the single most critical component in the system and the one most likely to fail. It is a motorized mechanism with moving parts, permanently submerged in seawater, subject to biofouling, corrosion, and mechanical wear. It must operate reliably at two precise moments: unwind when the battery is depleted (releasing the sensor to the surface), and rewind when a new sensor docks (pulling the assembly back to the seabed). If it fails at either moment, the station is dead. No remote fix, no software update. Someone has to dive down and service or replace it.
 
-That said, the problem is less dramatic than it sounds. Storing 24 hours of video is not a storage challenge unless you film in 4K. At 1080p with reasonable compression, a full day fits on a modest SD card. The power draw depends on capture strategy: continuous filming is one option, but periodic capture triggered on a timer or by motion detection is another. A sensor that records 10 seconds every 5 minutes produces a fraction of the data and power consumption of continuous capture, while still delivering useful temporal coverage of a largely static scene.
+No simulation exists for the spool. The mooring simulation described in Part II models forces on the cable, which is the static, passive part of the system. The spool is the dynamic, failure-prone part: mechanical wear on bearings and gears, torque required to rewind under load with fouled surfaces, corrosion of electrical contacts, biological growth on moving parts. Each of these needs its own analysis.
 
-No budget figures are given because the budget depends on choices that haven't been locked yet: device weight, enclosure materials, thermal dissipation, capture resolution, and duty cycle. These are conditioned on the simulation work described above. The mooring simulation determines what the device can weigh and how it behaves; the coverage analysis determines what resolution and angle are needed. The energy budget is the next step once those constraints converge.
+To put this in perspective: building the cable simulation (forces, drag, tension) was already non-trivial with existing tools (Verlet integrators, MoorPy, MuJoCo). The spool is a harder problem with fewer existing tools. This says something about the engineering depth remaining. The current simulation assembles the pieces and checks whether the overall system holds. But each piece, and the spool above all, needs its own detailed engineering work. The simulation is a scaffold, not the building.
 
-### Docking mechanics
+### Docking reliability
 
-The operational cycle requires a fresh sensor to reach the buoy, attach, and descend. This sounds like it reintroduces the precise underwater maneuvering problem criticized earlier, but the mechanics are different. The sensor is a simple motorized float that moves at the surface, in a straight line at constant speed, toward a visible buoy. Not a drone, not a submarine: closer to a radio-controlled boat. No 3D underwater navigation, no obstacle avoidance, no proximity control near coral. The docking itself is impact-based: the buoy is designed so that a low-speed surface collision locks the sensor in place. The cable and buoy absorb the impact. Once docked, the spool rewinds and pulls the assembly back to the seabed.
+The docking mechanism must engage on a low-speed surface impact, hold the sensor in place under current and wave forces, and release on command when the sensor departs. It must do this reliably after months of immersion, with the same biofouling and corrosion exposure as the spool.
 
-The impact force matters: it transmits down the cable and could affect the anchor or the cable angle. This needs to be simulated. Higher approach speed means faster turnaround but more force and more noise, which affects marine life around the mooring. This is a simulation target, not a fundamental blocker.
+The navigation part is not the concern: the sensor is a simple motorized float that moves at the surface in a straight line toward a visible buoy. Not a drone, not a submarine, closer to a radio-controlled boat. No 3D underwater navigation, no obstacle avoidance, no proximity control near coral. The mechanical coupling is the concern. Impact force transmits down the cable and could affect the anchor or the cable angle. Higher approach speed means faster turnaround but more force and more noise, which affects marine life around the mooring.
 
-### Biofouling
-
-The 24-hour cycle eliminates biofouling on the optical system, which is the component most sensitive to it. But the cable and anchor stay permanently submerged and will foul over time. The "onshore cleaning" mentioned in the comparison table applies to the sensor only, not to the submerged infrastructure.
-
-Two points here. First, surface biofouling cleaning is drastically simpler than underwater cleaning. Once sensors are collected (eventually automatically) at a single location, they can pass through an autonomous washing station. Even a simple offshore platform with a single power cable driving a high-pressure water pump solves this. Second, the cable and anchor fouling is a real maintenance cost, acknowledged as part of the infrastructure we ultimately want to eliminate (see Phase 3, where there is no cable or anchor at all). In Phases 1 and 2, it's an accepted cost, lower than the alternatives because the frequency and complexity of intervention is reduced.
+Both the latch mechanism and the impact envelope need to be simulated and tested. Neither has been.
 
 ### Loss rate and failure modes
 
 A sensor that drifts off course can be lost: current, storm, boat traffic, marine life, theft. Each loss is 24 hours of data and one unit of hardware. The passive collection net assumes favorable currents or at least predictable drift patterns. What percentage of sensors is lost per cycle? We don't have a number yet. This is a field measurement, not something we can simulate. It conditions OPEX directly and needs to be quantified during Phase 1 trials with real hardware in real water. If the loss rate is 5%, the economics work. If it's 30%, they don't. We expect the answer depends heavily on site selection (sheltered lagoon vs. exposed outer reef) and on net placement.
+
+### Energy budget
+
+No energy budget figures are provided in this document. This is important but, unlike the spool, it is a tractable problem. A winch that refuses to rewind after six months of fouling has no budgetary solution. An energy shortfall is solved by adjusting weight, duty cycle, or capture strategy.
+
+Storing 24 hours of video is not a storage challenge unless you film in 4K. At 1080p with reasonable compression, a full day fits on a modest SD card. The power draw depends on capture strategy: continuous filming is one option, but periodic capture triggered on a timer or by motion detection is another. A sensor that records 10 seconds every 5 minutes produces a fraction of the data and power consumption of continuous capture, while still delivering useful temporal coverage of a largely static scene.
+
+No budget figures are given because the budget depends on choices that haven't been locked yet: device weight, enclosure materials, thermal dissipation, capture resolution, and duty cycle. These are conditioned on the simulation work described above. The mooring simulation determines what the device can weigh and how it behaves; the coverage analysis determines what resolution and angle are needed. The energy budget is the next step once those constraints converge.
+
+### Turbidity as a hard ceiling
+
+The coverage analysis penalizes turbidity, but in practice turbidity is closer to a hard cutoff than a gradual penalty. Even in clear tropical water, useful optical imagery is limited to a few meters to a few tens of meters. The coverage percentages reported by the tool are geometric: they compute what is visible assuming ideal water clarity. Real coverage will be lower, potentially much lower.
+
+This means the coverage numbers produced by the tool are not solid enough to draw operational conclusions from directly. They indicate relative differences (this placement is better than that one) more reliably than absolute values (42% of the reef is covered). Grounding these numbers in reality requires a dedicated turbidity simulation layer, and ultimately field validation to confirm or invalidate the model quickly.
+
+The system does not solve the turbidity problem. It is a constraint of optical sensing in water. The mitigation is multi-modal: during the brief ascent phase (once per day, a few minutes), the sensor could run a LiDAR or acoustic sonar pulse. The light or sound only needs to travel a few meters down and back, not the full water column, so effective range is better than surface-based bathymetric surveys. Where turbidity degrades optical capture, the reconstruction can interpolate between high-confidence zones (bottom captures in clear conditions, external survey data from drones or dive teams, or known cartography from previous passes) and partial ascent captures. The coverage tool is designed to help frame this question: given what we know precisely from some zones and what we captured during ascent, how much can we reconstruct, and what remains unknown.
 
 ### Spatial recalibration between cycles
 
@@ -216,13 +228,11 @@ This is a known problem in multi-sensor, multi-pass capture. It is the same prob
 
 24 hours of continuous imagery plus photogrammetric capture during ascent represents a significant data volume. Transmitting all of it by radio from a small floating device is not realistic at full resolution. The approach is two-tier: a compressed, degraded version is transmitted by radio while the sensor is still at sea, sufficient for a first assessment and integration into the monitoring pipeline. The full-resolution dataset is recovered physically once the sensor reaches shore, either by collection net or by boat. Post-processing on the full data happens onshore. This means the radio link is not a bottleneck; it's a preview channel.
 
-### Turbidity as a hard ceiling
+### Biofouling
 
-The coverage analysis penalizes turbidity, but in practice turbidity is closer to a hard cutoff than a gradual penalty. Even in clear tropical water, useful optical imagery is limited to a few meters to a few tens of meters. The coverage percentages reported by the tool are geometric: they compute what is visible assuming ideal water clarity. Real coverage will be lower, potentially much lower.
+The 24-hour cycle eliminates biofouling on the optical system, which is the component most sensitive to it. But the cable, anchor, and spool stay permanently submerged and will foul over time. The "onshore cleaning" mentioned in the comparison table applies to the sensor only, not to the submerged infrastructure.
 
-This means the coverage numbers produced by the tool are not solid enough to draw operational conclusions from directly. They indicate relative differences (this placement is better than that one) more reliably than absolute values (42% of the reef is covered). Grounding these numbers in reality requires a dedicated turbidity simulation layer, and ultimately field validation to confirm or invalidate the model quickly.
-
-The system does not solve the turbidity problem. It is a constraint of optical sensing in water. The mitigation is multi-modal: during the brief ascent phase (once per day, a few minutes), the sensor could run a LiDAR or acoustic sonar pulse. The light or sound only needs to travel a few meters down and back, not the full water column, so effective range is better than surface-based bathymetric surveys. Where turbidity degrades optical capture, the reconstruction can interpolate between high-confidence zones (bottom captures in clear conditions, external survey data from drones or dive teams, or known cartography from previous passes) and partial ascent captures. The coverage tool is designed to help frame this question: given what we know precisely from some zones and what we captured during ascent, how much can we reconstruct, and what remains unknown.
+Surface biofouling cleaning is drastically simpler than underwater cleaning. Once sensors are collected (eventually automatically) at a single location, they can pass through an autonomous washing station. Even a simple offshore platform with a single power cable driving a high-pressure water pump solves this. The cable and anchor fouling is a real maintenance cost, acknowledged as part of the infrastructure we ultimately want to eliminate. In Phases 1 and 2, it's an accepted cost, lower than the alternatives because the frequency and complexity of intervention is reduced.
 
 ### Sensor swarm feasibility
 
