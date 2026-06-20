@@ -12,7 +12,7 @@ Every existing approach to coral reef monitoring forces a trade-off between cost
 
 **Permanent infrastructure** (subsea cables, solar buoy arrays, shore-linked platforms) delivers reliable power and data. But it imposes a physical footprint on the reef: cables crossing the seabed, buoys cluttering the surface, anchor blocks on the substrate. The visual and ecological impact is non-trivial. These systems are expensive to install, expensive to expand, and expensive to decommission. They do not scale.
 
-The table below summarizes how current solutions compare across three axes that matter at scale: naturalness (how little the system disrupts the site), operational cost, and scalability.
+The table below is a thinking framework, not a benchmark. The scores are qualitative, not quantitative. They reflect how we reason about trade-offs across three axes: naturalness (how little the system disrupts the site), operational cost, and scalability. They are not validated measurements and should not be read as such.
 
 | Criterion | Subsea Cable | Solar Buoys | ReefOS | **ReefScope** |
 |---|---|---|---|---|
@@ -20,7 +20,7 @@ The table below summarizes how current solutions compare across three axes that 
 | **OPEX** | 0.4, divers for biofouling + cable upkeep | 0.3, divers for biofouling + panel upkeep | 0.3, divers + platform + WiFi mesh | **0.6**, onshore cleaning, limited seabed maintenance |
 | **Scalability** | 0.1, linear cost, expensive to expand | 0.4, deployable but per-unit maintenance | 0.3, high cost per station, heavy monitoring | **0.6**, eventually zero seabed installation |
 
-*Scores are qualitative estimates on a 0-1 scale. They reflect our current assessment and would benefit from rigorous benchmarking against field data.*
+*These scores are subjective estimates intended to structure the comparison, not to conclude it. The ReefScope column in particular blends the current state (Phases 1-2, which still use permanent cable and anchor) with the target state (Phase 3, zero seabed installation). Rigorous benchmarking against field data is needed before these numbers carry weight.*
 
 ### What if the sensors came to us?
 
@@ -30,7 +30,7 @@ The operational cycle has four phases:
 
 **Phase 1: Deep capture.** A sensor device is anchored at the seabed, camera active. It captures images continuously for the full duration of its battery, roughly 24 hours. No intervention is needed. The device sits near the bottom, attached to a mooring cable, scanning the reef.
 
-**Phase 2: Automatic ascent.** When the battery is depleted, the device detaches from its mooring and rises slowly by buoyancy. The ascent is passive and gradual: no propulsion, no sudden movement. The cable stays in place. The buoy at the surface is only visible temporarily. During ascent, downward-facing cameras capture the reef at increasing altitudes, producing a multi-scale image set usable for photogrammetric 3D reconstruction.
+**Phase 2: Automatic ascent.** When the battery is depleted, the device detaches from its mooring and rises slowly by buoyancy. The ascent is passive and gradual: no propulsion, no sudden movement. The cable stays in place, submerged, with a small buoy at its top to mark the station. The buoy is only at the surface during the exchange window: the old sensor surfaces, transmits, and departs; the new sensor arrives, docks, and descends. This exchange takes minutes, not hours. Between cycles, the buoy sits just below the surface or at the waterline, not as a permanent visible fixture. During ascent, downward-facing cameras capture the reef at increasing altitudes, producing a multi-scale image set usable for photogrammetric 3D reconstruction.
 
 **Phase 3: Surface transit and data transmission.** Once at the surface, the device drifts toward shore or navigates in a straight line (trivial algorithm: aim for the coast, no underwater intelligence required). Captured data is transmitted by radio to a shore station. The transmission delay is approximately 24 hours from capture to reception.
 
@@ -104,15 +104,13 @@ The browser simulation (Simulation tab) uses the Verlet approach adapted to Thre
 
 *References: Morison equation for hydrodynamic drag on cylinders. Airy linear wave theory for orbital velocities. MuJoCo (DeepMind) for multi-body physics. MoorPy / MoorDyn v2 (NREL) for mooring line standards.*
 
-#### The simulation gap
+#### Two tracks: field testing now, simulation later
 
-There is no end-to-end, plug-and-play simulation tool for prototyping underwater mooring systems at the scale and iteration speed that early-stage hardware development requires. Industry tools (OrcaFlex, Orcina, Project Chrono) are designed for certified offshore engineering: precise, validated, and slow to set up. Research tools (MoorPy, MoorDyn) solve specific subproblems well but do not integrate into a rapid prototyping loop.
+There is no end-to-end, plug-and-play simulation tool for prototyping underwater mooring systems at the iteration speed that early-stage hardware development requires. Industry tools (OrcaFlex, Orcina, Project Chrono) are designed for certified offshore engineering: precise, validated, and slow to set up. Research tools (MoorPy, MoorDyn) solve specific subproblems well but do not integrate into a rapid prototyping loop. This is a real gap in the ecosystem, but it is not ReefScope's gap to fill. Building such a tool is a separate project entirely, and treating it as a prerequisite would be scope creep.
 
-What we need, and what does not yet exist, is a tool that lets you go from "I want to test a 10mm Dyneema cable at 15m depth in 0.5 m/s current with 1.5m swell" to a force envelope and safety factor in seconds, sweep parameters, and compare ten configurations side by side before building anything. Then export the result to a validated tool for certification.
+The short-term track is trial and error on real sites. The real-world forces in calm to moderate conditions (the typical operating envelope for reef monitoring) are well-understood and the engineering is not extreme. A 10mm cable at 15m depth under 0.3 m/s current is a tractable problem. Building a few prototypes, deploying them, and measuring what actually happens will produce usable engineering data faster than waiting for a perfect simulation.
 
-In the short term, this gap is manageable. The real-world forces in calm to moderate conditions (the typical operating envelope for reef monitoring) are well-understood and the engineering is not extreme. A 10mm cable at 15m depth under 0.3 m/s current is a tractable problem, and trial and error on a real site will converge faster than waiting for a perfect simulation tool.
-
-But at scale, deploying hundreds of stations across dozens of reefs with varying bathymetry, current patterns, and wave exposure, the inability to simulate in parallel becomes a bottleneck. You cannot test alternative anchor geometries, cable routing strategies, or float configurations across 50 sites simultaneously without simulation. This is a long-term investment, not a short-term blocker, but it is a real gap in the current ecosystem.
+The medium-term track is building a simulation that reproduces field results. Once real-world measurements exist (cable angles, tension readings, anchor loads, drift patterns), a simulation can be calibrated against them and used to explore configurations that would be expensive or slow to test physically. This is valuable for scaling to dozens of reefs with different conditions, but it comes after field data, not before. The simulation we have today (described above) is a first approximation for building intuition and sizing, not a validated engineering tool.
 
 ### Coverage Analysis
 
@@ -182,7 +180,11 @@ The sections above describe what we've built and the reasoning behind it. This s
 
 ### Energy budget
 
-There is an unresolved tension between the "swarm" objective (smaller, cheaper sensors, shorter battery) and 24-hour continuous capture. Filming and storing imagery continuously for 24 hours is a non-trivial power draw. No energy budget figures are provided in this document because the budget depends on choices that haven't been locked yet: device weight, enclosure materials, thermal dissipation, capture resolution, compression strategy, and duty cycle. These are all conditioned on the simulation work described above. The mooring simulation determines what the device can weigh and how it behaves; the coverage analysis determines what resolution and angle are needed. The energy budget is the next step once those constraints converge. It is the single variable that dimensions everything else.
+No energy budget figures are provided in this document. This is the number one risk and we know it.
+
+That said, the problem is less dramatic than it sounds. Storing 24 hours of video is not a storage challenge unless you film in 4K. At 1080p with reasonable compression, a full day fits on a modest SD card. The power draw depends on capture strategy: continuous filming is one option, but periodic capture triggered on a timer or by motion detection is another. A sensor that records 10 seconds every 5 minutes produces a fraction of the data and power consumption of continuous capture, while still delivering useful temporal coverage of a largely static scene.
+
+No budget figures are given because the budget depends on choices that haven't been locked yet: device weight, enclosure materials, thermal dissipation, capture resolution, and duty cycle. These are conditioned on the simulation work described above. The mooring simulation determines what the device can weigh and how it behaves; the coverage analysis determines what resolution and angle are needed. The energy budget is the next step once those constraints converge.
 
 ### Docking mechanics
 
@@ -212,9 +214,11 @@ This is a known problem in multi-sensor, multi-pass capture. It is the same prob
 
 ### Turbidity as a hard ceiling
 
-The coverage analysis penalizes turbidity, but in practice turbidity is closer to a hard cutoff than a gradual penalty. Even in clear tropical water, useful optical imagery is limited to a few meters to a few tens of meters. The coverage percentages reported by the tool should be understood with this ceiling in mind.
+The coverage analysis penalizes turbidity, but in practice turbidity is closer to a hard cutoff than a gradual penalty. Even in clear tropical water, useful optical imagery is limited to a few meters to a few tens of meters. The coverage percentages reported by the tool are geometric: they compute what is visible assuming ideal water clarity. Real coverage will be lower, potentially much lower.
 
-This is not a problem the system solves. It is a constraint of optical sensing in water. The mitigation is multi-modal: during the brief ascent phase (once per day, a few minutes), the sensor could run a LiDAR or acoustic sonar pulse. The light or sound only needs to travel a few meters down and back, not the full water column, so effective range is better than surface-based bathymetric surveys. Where turbidity degrades optical capture, the reconstruction relies on interpolation between high-confidence zones (bottom captures in clear conditions, external survey data from drones or dive teams) and partial ascent captures. The coverage tool is designed to help quantify exactly this gap: how much can we see, from where, and what remains unknown.
+This means the coverage numbers produced by the tool are not solid enough to draw operational conclusions from directly. They indicate relative differences (this placement is better than that one) more reliably than absolute values (42% of the reef is covered). Grounding these numbers in reality requires a dedicated turbidity simulation layer, and ultimately field validation to confirm or invalidate the model quickly.
+
+The system does not solve the turbidity problem. It is a constraint of optical sensing in water. The mitigation is multi-modal: during the brief ascent phase (once per day, a few minutes), the sensor could run a LiDAR or acoustic sonar pulse. The light or sound only needs to travel a few meters down and back, not the full water column, so effective range is better than surface-based bathymetric surveys. Where turbidity degrades optical capture, the reconstruction can interpolate between high-confidence zones (bottom captures in clear conditions, external survey data from drones or dive teams, or known cartography from previous passes) and partial ascent captures. The coverage tool is designed to help frame this question: given what we know precisely from some zones and what we captured during ascent, how much can we reconstruct, and what remains unknown.
 
 ### Phase 3 reconciliation
 
@@ -230,7 +234,7 @@ Phase 3 is the least validated part of the system. It is the long-term vision, n
 
 ## Compromises and Convictions
 
-This project is built on deliberate compromises. The simulation uses simplified physics. The coverage model uses approximated occlusion. The coral growth algorithm is analytical rather than biophysical. The comparison scores in the table above are qualitative estimates, not validated benchmarks. All of this needs more rigorous testing, field validation, and iteration.
+This project is built on deliberate compromises. The simulation uses simplified physics. The coverage model uses approximated occlusion. The coral growth algorithm is analytical rather than biophysical. The comparison table is a reasoning framework with subjective scores, not a validated benchmark. All of this needs more rigorous testing, field validation, and iteration.
 
 We are comfortable with these compromises because the underlying model (sensors that cycle autonomously between seabed and surface, requiring no permanent power or data infrastructure underwater) is sound at the physics level. The forces involved in a 15-meter mooring under moderate tropical conditions are well within the envelope of standard marine engineering. The photogrammetric reconstruction workflow is proven technology. The asynchronous data model is not a limitation but a design choice aligned with the timescales of the ecosystems being observed.
 
