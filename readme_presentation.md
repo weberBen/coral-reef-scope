@@ -26,15 +26,15 @@ The table below is a thinking framework, not a benchmark. The scores are qualita
 
 ReefScope inverts the maintenance problem. Instead of sending divers to service fixed equipment, the equipment services itself.
 
-The operational cycle has four phases:
+The operational cycle has four phases. The anchor assembly on the seabed includes a cable spool. Two designs are being explored: the spool fixed in the anchor at the bottom, or integrated into the mobile assembly itself (self-tracking, self-retaining). In both cases, the principle is the same: the cable holds the sensor and buoy near the seabed when wound, and releases them to the surface when unwound.
 
-**Phase 1: Deep capture.** A sensor device is anchored at the seabed, camera active. It captures images continuously for the full duration of its battery, roughly 24 hours. No intervention is needed. The device sits near the bottom, attached to a mooring cable, scanning the reef.
+**Phase 1: Deep capture.** The cable is wound. The sensor and its buoy are held near the seabed by the spool. The sensor captures images continuously for the full duration of its battery, roughly 24 hours. No intervention is needed. Nothing is visible at the surface.
 
-**Phase 2: Automatic ascent.** When the battery is depleted, the device detaches from its mooring and rises slowly by buoyancy. The ascent is passive and gradual: no propulsion, no sudden movement. The cable stays in place, submerged, with a small buoy at its top to mark the station. The buoy is only at the surface during the exchange window: the old sensor surfaces, transmits, and departs; the new sensor arrives, docks, and descends. This exchange takes minutes, not hours. Between cycles, the buoy sits just below the surface or at the waterline, not as a permanent visible fixture. During ascent, downward-facing cameras capture the reef at increasing altitudes, producing a multi-scale image set usable for photogrammetric 3D reconstruction.
+**Phase 2: Automatic ascent.** When the battery is depleted, the spool unwinds and buoyancy pulls the mobile assembly (sensor + buoy) to the surface. No detachment, no propulsion: the cable pays out and the assembly floats up passively. The ascent is slow and gradual, respecting marine life. During ascent, downward-facing cameras capture the reef at increasing altitudes, producing a multi-scale image set usable for photogrammetric 3D reconstruction.
 
-**Phase 3: Surface transit and data transmission.** Once at the surface, the device drifts toward shore or navigates in a straight line (trivial algorithm: aim for the coast, no underwater intelligence required). Captured data is transmitted by radio to a shore station. The transmission delay is approximately 24 hours from capture to reception.
+**Phase 3: Surface transit and data transmission.** Once at the surface, the sensor separates from the buoy and heads for shore. This is not a drone or a submarine: it is a simple motorized float that moves in a straight line at constant speed toward the coast. No 3D navigation, no obstacle avoidance, no underwater intelligence. Captured data is transmitted by radio to a shore station. The transmission delay is approximately 24 hours from capture to reception. The buoy remains at the surface, marking the station for the next sensor.
 
-**Phase 4: Replacement and collection.** A fresh sensor navigates from shore toward the buoy at constant speed in a straight line. No fine underwater control is needed: the buoy is designed to absorb a low-speed surface impact, and the collision itself is the docking mechanism. Once attached, the sensor descends autonomously by winching down the existing cable. The spent sensor is recovered: either by boat during periodic rounds (Phase 1 of deployment), by a passive coastal collection net (like a floating anti-pollution barrier), or by catapult relaunch from a shore station (Phase 2). The old sensor is cleaned, recharged, and returned to the pool. The entire docking sequence happens at the surface, away from the reef.
+**Phase 4: Replacement and collection.** A fresh sensor arrives from shore (same principle: simple motorized float, straight line, constant speed). The buoy is designed to absorb a low-speed surface impact, and the collision itself is the docking mechanism. Once the new sensor is attached, the spool rewinds and pulls the entire assembly (sensor + buoy) back to the seabed. Nothing remains visible at the surface. The exchange window (from ascent to full rewinding) takes minutes. The spent sensor is recovered at shore: either by boat during periodic rounds (Phase 1 of deployment), by a passive coastal collection net (like a floating anti-pollution barrier), or by catapult relaunch from a shore station (Phase 2). The old sensor is cleaned, recharged, and returned to the pool.
 
 ### Three phases toward full autonomy
 
@@ -44,9 +44,13 @@ The system is designed to be deployed incrementally:
 
 **Phase 2: Automated collection.** Two variants depending on site and budget. *Active*: straight-line navigation to shore, coastal recharging station, catapult relaunch toward buoys. *Passive*: natural drift, sensors float, current brings them to shore, a coastal collection net recovers them without intervention.
 
-**Phase 3: Sensor swarm.** Paradigm shift. Produce many low-resolution sensors rather than few high-resolution ones. Drop them by drone with a slow tumbling descent (robust to wind, precise placement, no parachute). No cable, no anchor, no buoy. The sensors sit on the reef under their own weight, capture for the duration of their battery, then float up and drift. An offshore collection net (similar to anti-pollution floating barriers) is installed around the reef perimeter to intercept drifting sensors. The net installation requires subsea anchoring, but it is located away from the reef itself, with no cable or structure crossing the coral. Cost concentrates entirely on mass production. Reef coverage scales linearly with the number of sensors produced.
+**Research direction: sensor swarm.** This is not a planned deployment phase. It is a distant research direction that becomes relevant only if sensor unit cost drops far enough. The idea: produce many low-resolution sensors rather than few high-resolution ones. Sensors are deposited at the water surface (by a small vessel, or catapulted from shore) and sink slowly to the seabed. No cable, no anchor, no spool. They capture for the duration of their battery, then become buoyant and rise to the surface, where they drift toward an offshore collection net (similar to anti-pollution floating barriers) installed around the reef perimeter.
 
-*References for tumbling descent: TumblerBots (arXiv 2410.23049). For drone-deployed coral restoration: Ramsby 2026, Restoration Ecology.*
+This raises real concerns. Catapulting from shore produces noise and splash near the reef. Sensors sinking through the water column and rising back up in free ascent risk contact with coral structures, particularly in dense reef areas. For this reason, initial testing would target clear, flat zones and use rigid passive reception platforms with wide catchment areas. These platforms require installation but no maintenance, and are designed to blend into the environment over time, unlike cameras or cables that need regular servicing. The collection net is anchored away from the reef itself, with no cable or structure crossing the coral.
+
+Cost in this model concentrates entirely on mass production. Reef coverage scales linearly with the number of sensors produced. But the naturalité argument only holds if the physical interaction between sensors and reef (repeated sinking, rising, occasional snagging) is demonstrated to be benign. This is unproven.
+
+*References: Ramsby 2026, Restoration Ecology (drone-deployed coral restoration monitoring). TumblerBots (arXiv 2410.23049) for slow tumbling descent through fluid.*
 
 ### Why asynchronous is not a compromise, it's the right model
 
@@ -188,7 +192,7 @@ No budget figures are given because the budget depends on choices that haven't b
 
 ### Docking mechanics
 
-The operational cycle requires a fresh sensor to reach the buoy, attach, and descend. This sounds like it reintroduces the precise underwater maneuvering problem criticized in the drone section, but the mechanics are different. The sensor navigates at the surface, in a straight line at constant speed, toward a visible buoy. This is closer to a radio-controlled boat than to a submarine. No 3D underwater navigation, no obstacle avoidance, no proximity control near coral. The docking itself is impact-based: the buoy is designed so that a low-speed surface collision locks the sensor in place. The cable and buoy absorb the impact. Once docked, the sensor descends by winching down the cable, a controlled 1D motion.
+The operational cycle requires a fresh sensor to reach the buoy, attach, and descend. This sounds like it reintroduces the precise underwater maneuvering problem criticized earlier, but the mechanics are different. The sensor is a simple motorized float that moves at the surface, in a straight line at constant speed, toward a visible buoy. Not a drone, not a submarine: closer to a radio-controlled boat. No 3D underwater navigation, no obstacle avoidance, no proximity control near coral. The docking itself is impact-based: the buoy is designed so that a low-speed surface collision locks the sensor in place. The cable and buoy absorb the impact. Once docked, the spool rewinds and pulls the assembly back to the seabed.
 
 The impact force matters: it transmits down the cable and could affect the anchor or the cable angle. This needs to be simulated. Higher approach speed means faster turnaround but more force and more noise, which affects marine life around the mooring. This is a simulation target, not a fundamental blocker.
 
@@ -220,15 +224,15 @@ This means the coverage numbers produced by the tool are not solid enough to dra
 
 The system does not solve the turbidity problem. It is a constraint of optical sensing in water. The mitigation is multi-modal: during the brief ascent phase (once per day, a few minutes), the sensor could run a LiDAR or acoustic sonar pulse. The light or sound only needs to travel a few meters down and back, not the full water column, so effective range is better than surface-based bathymetric surveys. Where turbidity degrades optical capture, the reconstruction can interpolate between high-confidence zones (bottom captures in clear conditions, external survey data from drones or dive teams, or known cartography from previous passes) and partial ascent captures. The coverage tool is designed to help frame this question: given what we know precisely from some zones and what we captured during ascent, how much can we reconstruct, and what remains unknown.
 
-### Phase 3 reconciliation
+### Sensor swarm feasibility
 
-Phase 3 (sensor swarm) abandons the cable, anchor, and buoy that Phases 1 and 2 rely on. The sensors sit on the reef under their own weight, float up when done, and drift. This raises the question: how do they stay in place in current, and how are they recovered without a mooring?
+The sensor swarm concept described earlier is a research direction, not an engineering plan. It abandons the cable and spool mechanism that Phases 1 and 2 rely on, and replaces it with disposable sensors deposited at the surface that sink, capture, rise, and drift to a collection net. The engineering question is not whether this can work in principle. It is whether the physical interaction with the reef is acceptable.
 
-Staying in place: the sensors are small and heavy enough relative to their cross-section that moderate current does not displace them during a capture cycle. This is a design constraint on the form factor, not a fundamental problem.
+The real tension with the naturalité argument is not the sensors themselves, but the repeated contact: sinking through the water column near coral structures, rising back up in free ascent, occasional snagging or collision. In dense reef areas this is a genuine concern, and it is unsolved. Initial testing would target clear, flat zones with rigid passive reception platforms that have wide catchment. These platforms require installation (subsea anchoring, away from the reef) but no ongoing maintenance, and are designed to blend in over time. This is fundamentally different from cameras, cables, or buoys that require regular servicing to function.
 
-Recovery: an offshore collection net is deployed around the reef perimeter, anchored to the seabed at a distance from the reef itself. Drifting sensors accumulate in the net. The net infrastructure is separate from the reef: no cables cross the coral, no buoys sit over the colonies. Installation cost is real, but it is a one-time perimeter setup, not per-sensor infrastructure.
+Recovery relies on an offshore collection net deployed around the reef perimeter, anchored at a distance from the reef itself. Drifting sensors accumulate in the net. No cables cross the coral, no buoys sit over the colonies. Installation cost is real, but it is a one-time perimeter setup.
 
-Phase 3 is the least validated part of the system. It is the long-term vision, not the near-term plan. Phases 1 and 2 are where the engineering is focused now. Phase 3 becomes viable when sensor unit cost drops low enough that loss rates and simplified logistics outweigh the complexity of per-unit recovery.
+This concept becomes relevant only when sensor unit cost drops far enough that loss rates and simplified logistics outweigh the complexity of per-unit cable-based recovery. Phases 1 and 2 are where the engineering is focused now.
 
 ---
 
@@ -240,7 +244,7 @@ We are comfortable with these compromises because the underlying model (sensors 
 
 What we are not comfortable compromising on is infrastructure.
 
-The long-term goal is to eliminate *all* permanent underwater infrastructure, including the mooring cable and the surface buoy. Every cable trailing from an anchor, every buoy bobbing at the surface, sends a signal: this ecosystem cannot exist without our scaffolding. It encloses the reef rather than letting it grow. It frames the natural world as something that needs to be wired up, plugged in, kept on life support.
+The long-term goal is to eliminate *all* permanent underwater infrastructure: the anchor, the spool, the cable. Every piece of hardware bolted to the seabed sends a signal: this ecosystem cannot exist without our scaffolding. It encloses the reef rather than letting it grow. It frames the natural world as something that needs to be wired up, plugged in, kept on life support.
 
 Discreet sensors that attach to nothing, disturb nothing, and cycle through on their own, that tells a different story. It says: this reef is so vast, so complex, that we can only sample it. We are not controlling it. We are not instrumenting it. We are watching, as quietly as we can, and trying to keep up.
 
