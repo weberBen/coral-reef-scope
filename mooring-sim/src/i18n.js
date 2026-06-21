@@ -93,10 +93,11 @@ const T = {
     // Mapping
     mapKicker: 'Cartographie intégrée',
     mapStatement: 'Chaque remontée produit une<br><em>carte 3D</em> du récif',
-    mapText1: 'Les caméras orientées vers le bas capturent le récif à différentes altitudes pendant la remontée. Les images sont assemblées par photogrammétrie pour reconstruire un modèle 3D haute résolution.',
-    mapText2: 'Chaque cycle de maintenance = une mise à jour automatique de la cartographie. Pas de survol drone, pas de plongeur.',
-    mapText3: 'La turbidité peut compromettre la qualité des captures en altitude, mais les images haute résolution prises au fond servent de référence : par interpolation entre ces zones connues et les captures de remontée, on reconstitue les zones où la visibilité était insuffisante.',
-    mapText4: 'La remontée étant brève et limitée à une fois par jour, l\'utilisation d\'un sonar acoustique ou d\'un LiDAR bathymétrique peut être envisagée pour compléter la capture optique. L\'impact sur la vie sous-marine reste compatible avec les recommandations en vigueur compte tenu de la faible durée et fréquence d\'exposition.',
+    mapText1: 'Lors de leurs remontées autonomes à la surface, les caméras orientées vers le bas capturent le récif à différentes altitudes.',
+    mapText2: 'Pas de survol drone. Pas de plongeur.',
+    mapText3: 'Les images sont assemblées par photogrammétrie pour reconstruire un modèle 3D haute résolution.',
+    mapText4: 'Pour vaincre la turbidité, les capteurs de faible résolution et l\'eau trouble : démultiplier les capteurs et les angles de vue.',
+    mapCaption: 'La remontée étant brève et limitée à une fois par jour, l\'utilisation d\'un sonar acoustique ou d\'un LiDAR bathymétrique peut être envisagée pour compléter la capture optique selon la compatibilité avec la vie marine.',
 
     // Compare
     cmpKicker: 'Comparaison',
@@ -298,10 +299,11 @@ const T = {
     // Mapping
     mapKicker: 'Integrated mapping',
     mapStatement: 'Each ascent produces a<br><em>3D map</em> of the reef',
-    mapText1: 'Downward-facing cameras capture the reef at different altitudes during ascent. Images are assembled by photogrammetry to reconstruct a high-resolution 3D model.',
-    mapText2: 'Each maintenance cycle = an automatic mapping update. No drone flyover, no diver.',
-    mapText3: 'Turbidity may compromise capture quality at altitude, but high-resolution images taken at the bottom serve as reference: by interpolation between these known zones and ascent captures, areas with insufficient visibility are reconstructed.',
-    mapText4: 'Since the ascent is brief and limited to once per day, using an acoustic sonar or bathymetric LiDAR can be considered to complement optical capture. The impact on marine life remains compatible with current guidelines given the short duration and frequency of exposure.',
+    mapText1: 'During their autonomous ascent to the surface, downward-facing cameras capture the reef at different altitudes.',
+    mapText2: 'No drone flyover. No diver.',
+    mapText3: 'Images are assembled by photogrammetry to reconstruct a high-resolution 3D model.',
+    mapText4: 'To overcome turbidity, low-resolution sensors and murky water: multiply sensors and viewing angles.',
+    mapCaption: 'Since the ascent is brief and limited to once per day, acoustic sonar or bathymetric LiDAR may be considered to complement optical capture, depending on marine life compatibility.',
 
     // Compare
     cmpKicker: 'Comparison',

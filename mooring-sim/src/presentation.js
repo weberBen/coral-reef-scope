@@ -469,6 +469,7 @@ export function buildPresentation() {
             </linearGradient>
           </defs>
         </svg>
+        <p class="mapping-caption">${t('mapCaption')}</p>
       </div>
     </div>
   </div>
