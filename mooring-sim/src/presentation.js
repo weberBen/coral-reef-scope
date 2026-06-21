@@ -260,6 +260,91 @@ export function buildPresentation() {
   </div>
 </div>
 
+<!-- ============ MAPPING ============ -->
+<section class="deck mapping-section">
+  <div class="mapping-bg"></div>
+  <div class="deck-content">
+    <div class="split">
+      <div class="mapping-text">
+        <h2 class="reveal kicker">${t('mapKicker')}</h2>
+        <p class="reveal big-statement">${t('mapStatement')}</p>
+        <p class="reveal d1 sub-text">${t('mapText1')}</p>
+        <p class="reveal d2 sub-text highlight-text">${t('mapText2')}</p>
+        <p class="reveal d3 sub-text">${t('mapText3')}</p>
+        <p class="reveal d3 sub-text">${t('mapText4')}</p>
+      </div>
+      <div class="mapping-illustration reveal d1">
+        <svg viewBox="0 0 360 480" class="illustration">
+          <!-- Ocean -->
+          <rect x="0" y="40" width="360" height="440" fill="url(#mapOcean)" rx="12"/>
+          <!-- Surface wave -->
+          <path d="M0 40 Q45 30 90 40 T180 40 T270 40 T360 40 V0 H0Z" fill="var(--bg-2)"/>
+
+          <!-- Anchor at bottom -->
+          <rect x="155" y="430" width="30" height="8" rx="3" fill="#64748b" opacity="0.5"/>
+          <!-- Cable -->
+          <line x1="170" y1="430" x2="170" y2="48" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.3"/>
+          <!-- Buoy -->
+          <circle cx="170" cy="46" r="5" fill="var(--orange)" opacity="0.5"/>
+
+          <!-- Device at position 1 (bottom, starting) -->
+          <g opacity="0.3">
+            <rect x="156" y="360" width="28" height="22" rx="4" class="cy-device-fill"/>
+            <circle cx="170" cy="352" r="7" fill="var(--orange)"/>
+          </g>
+          <!-- Capture cone 1 -->
+          <path d="M170 382 L110 440 L230 440Z" fill="rgba(56,189,248,0.05)" stroke="var(--cyan)" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
+
+          <!-- Device at position 2 (mid) -->
+          <g opacity="0.5">
+            <rect x="156" y="240" width="28" height="22" rx="4" class="cy-device-fill"/>
+            <circle cx="170" cy="232" r="7" fill="var(--orange)"/>
+          </g>
+          <!-- Capture cone 2 (wider) -->
+          <path d="M170 262 L80 380 L260 380Z" fill="rgba(56,189,248,0.04)" stroke="var(--cyan)" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
+
+          <!-- Device at position 3 (near top, current) -->
+          <g opacity="1">
+            <rect x="156" y="110" width="28" height="22" rx="4" class="cy-device-fill"/>
+            <circle cx="170" cy="102" r="7" fill="var(--orange)"/>
+            <!-- Camera indicator -->
+            <circle cx="170" cy="119" r="3.5" fill="#1a202c"/>
+            <circle cx="170" cy="119" r="2" fill="var(--cyan)" opacity="0.6"/>
+          </g>
+          <!-- Capture cone 3 (widest) -->
+          <path d="M170 132 L40 320 L300 320Z" fill="rgba(56,189,248,0.03)" stroke="var(--cyan)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
+
+          <!-- Arrow up showing ascent path -->
+          <path d="M200 355 L200 120" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
+          <polygon points="196,125 200,110 204,125" fill="var(--green)" opacity="0.5"/>
+
+          <!-- Altitude labels -->
+          <text x="215" y="370" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 2m</text>
+          <text x="215" y="250" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 8m</text>
+          <text x="215" y="120" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 15m</text>
+
+          <!-- Coverage width labels -->
+          <line x1="110" y1="442" x2="230" y2="442" stroke="var(--cyan)" stroke-width="0.5" opacity="0.3"/>
+          <text x="170" y="455" text-anchor="middle" fill="var(--cyan)" font-size="8" font-family="Inter,sans-serif" opacity="0.5">4m</text>
+          <line x1="40" y1="322" x2="300" y2="322" stroke="var(--cyan)" stroke-width="0.5" opacity="0.3"/>
+          <text x="170" y="335" text-anchor="middle" fill="var(--cyan)" font-size="8" font-family="Inter,sans-serif" opacity="0.5">20m</text>
+
+          <!-- Coral on seabed -->
+          <path d="M50 440 Q70 420 90 440 Q110 415 130 440 Q150 420 170 440 Q190 415 210 440 Q230 425 250 440 Q270 418 290 440 Q310 425 330 440" stroke="var(--green)" stroke-width="1.5" fill="none" opacity="0.4"/>
+
+          <defs>
+            <linearGradient id="mapOcean" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" class="cy-ocean-top"/>
+              <stop offset="1" class="cy-ocean-bot"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <p class="mapping-caption">${t('mapCaption')}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ PHASES,sticky scroll ============ -->
 <section class="deck phases-intro">
   <div class="deck-bg-gradient orange-glow"></div>
@@ -386,91 +471,6 @@ export function buildPresentation() {
         </div>
       </div>
 
-    </div>
-  </div>
-</section>
-
-<!-- ============ MAPPING ============ -->
-<section class="deck mapping-section">
-  <div class="mapping-bg"></div>
-  <div class="deck-content">
-    <div class="split reverse">
-      <div class="mapping-text">
-        <h2 class="reveal kicker">${t('mapKicker')}</h2>
-        <p class="reveal big-statement">${t('mapStatement')}</p>
-        <p class="reveal d1 sub-text">${t('mapText1')}</p>
-        <p class="reveal d2 sub-text highlight-text">${t('mapText2')}</p>
-        <p class="reveal d3 sub-text">${t('mapText3')}</p>
-        <p class="reveal d3 sub-text">${t('mapText4')}</p>
-      </div>
-      <div class="mapping-illustration reveal d1">
-        <svg viewBox="0 0 360 480" class="illustration">
-          <!-- Ocean -->
-          <rect x="0" y="40" width="360" height="440" fill="url(#mapOcean)" rx="12"/>
-          <!-- Surface wave -->
-          <path d="M0 40 Q45 30 90 40 T180 40 T270 40 T360 40 V0 H0Z" fill="var(--bg-2)"/>
-
-          <!-- Anchor at bottom -->
-          <rect x="155" y="430" width="30" height="8" rx="3" fill="#64748b" opacity="0.5"/>
-          <!-- Cable -->
-          <line x1="170" y1="430" x2="170" y2="48" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.3"/>
-          <!-- Buoy -->
-          <circle cx="170" cy="46" r="5" fill="var(--orange)" opacity="0.5"/>
-
-          <!-- Device at position 1 (bottom, starting) -->
-          <g opacity="0.3">
-            <rect x="156" y="360" width="28" height="22" rx="4" class="cy-device-fill"/>
-            <circle cx="170" cy="352" r="7" fill="var(--orange)"/>
-          </g>
-          <!-- Capture cone 1 -->
-          <path d="M170 382 L110 440 L230 440Z" fill="rgba(56,189,248,0.05)" stroke="var(--cyan)" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
-
-          <!-- Device at position 2 (mid) -->
-          <g opacity="0.5">
-            <rect x="156" y="240" width="28" height="22" rx="4" class="cy-device-fill"/>
-            <circle cx="170" cy="232" r="7" fill="var(--orange)"/>
-          </g>
-          <!-- Capture cone 2 (wider) -->
-          <path d="M170 262 L80 380 L260 380Z" fill="rgba(56,189,248,0.04)" stroke="var(--cyan)" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.3"/>
-
-          <!-- Device at position 3 (near top, current) -->
-          <g opacity="1">
-            <rect x="156" y="110" width="28" height="22" rx="4" class="cy-device-fill"/>
-            <circle cx="170" cy="102" r="7" fill="var(--orange)"/>
-            <!-- Camera indicator -->
-            <circle cx="170" cy="119" r="3.5" fill="#1a202c"/>
-            <circle cx="170" cy="119" r="2" fill="var(--cyan)" opacity="0.6"/>
-          </g>
-          <!-- Capture cone 3 (widest) -->
-          <path d="M170 132 L40 320 L300 320Z" fill="rgba(56,189,248,0.03)" stroke="var(--cyan)" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4"/>
-
-          <!-- Arrow up showing ascent path -->
-          <path d="M200 355 L200 120" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
-          <polygon points="196,125 200,110 204,125" fill="var(--green)" opacity="0.5"/>
-
-          <!-- Altitude labels -->
-          <text x="215" y="370" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 2m</text>
-          <text x="215" y="250" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 8m</text>
-          <text x="215" y="120" fill="var(--t4)" font-size="9" font-family="Inter,sans-serif">alt. 15m</text>
-
-          <!-- Coverage width labels -->
-          <line x1="110" y1="442" x2="230" y2="442" stroke="var(--cyan)" stroke-width="0.5" opacity="0.3"/>
-          <text x="170" y="455" text-anchor="middle" fill="var(--cyan)" font-size="8" font-family="Inter,sans-serif" opacity="0.5">4m</text>
-          <line x1="40" y1="322" x2="300" y2="322" stroke="var(--cyan)" stroke-width="0.5" opacity="0.3"/>
-          <text x="170" y="335" text-anchor="middle" fill="var(--cyan)" font-size="8" font-family="Inter,sans-serif" opacity="0.5">20m</text>
-
-          <!-- Coral on seabed -->
-          <path d="M50 440 Q70 420 90 440 Q110 415 130 440 Q150 420 170 440 Q190 415 210 440 Q230 425 250 440 Q270 418 290 440 Q310 425 330 440" stroke="var(--green)" stroke-width="1.5" fill="none" opacity="0.4"/>
-
-          <defs>
-            <linearGradient id="mapOcean" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" class="cy-ocean-top"/>
-              <stop offset="1" class="cy-ocean-bot"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <p class="mapping-caption">${t('mapCaption')}</p>
-      </div>
     </div>
   </div>
 </section>
