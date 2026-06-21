@@ -303,7 +303,7 @@ export function initCoverage() {
   // Top bar: cameras count + coverage stats + legend
   const topBar = document.createElement('div');
   topBar.id = 'cov-topbar';
-  topBar.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:20px;align-items:center;z-index:10;pointer-events:none;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 320px);padding:0 8px';
+  topBar.style.cssText = 'position:absolute;top:60px;margin-top:32px;left:50%;transform:translateX(-50%);display:flex;gap:20px;align-items:center;z-index:10;pointer-events:none;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 320px);padding:0 8px';
   topBar.innerHTML = `
     <div class="cov-stat" data-tip="${t('covTipCam')}">
       <div class="cov-label">${t('covCameras')}</div>
@@ -336,7 +336,7 @@ export function initCoverage() {
     @media (max-width: 900px) {
       .cov-num { font-size: 22px; }
       .cov-label { font-size: 8px; letter-spacing: 1px; }
-      #cov-topbar { max-width: 100% !important; top: 52px; gap: 8px 20px; display: grid !important; grid-template-columns: 1fr 1fr; }
+      #cov-topbar { max-width: 100% !important; top: 52px; margin-top: 24px; gap: 8px 20px; display: grid !important; grid-template-columns: 1fr 1fr; }
       #tab-coverage > .lil-gui { display: none; }
       #tab-coverage > .lil-gui.show { display: block; top: 140px !important; bottom: auto !important; right: 8px; max-height: 55vh; overflow-y: auto; }
       .cov-toggle-bar { display: flex !important; }
