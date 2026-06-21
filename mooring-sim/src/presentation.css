@@ -1057,7 +1057,7 @@
   height: 70px;
   border-radius: 8px;
 }
-.gc-cell:hover { transform: scale(1.05); }
+.gc-cell:hover { transform: scale(1.02); }
 .gc-score {
   font-size: 16px;
   font-weight: 800;
@@ -1113,6 +1113,8 @@
   display: flex;
   justify-content: flex-end;
   pointer-events: none;
+  opacity: 0.5;
+  z-index: 0;
 }
 .gc-iter-arrow svg {
   width: calc(2 * (100% - 130px) / 4 - 8px);
@@ -1266,6 +1268,8 @@
   padding: 0;
   border: none;
   background: none;
+  opacity: 0.5;
+  z-index: 0;
 }
 .grid-compare .gc-iter-cell::before { display: none !important; }
 .grid-compare .gc-iter-cell svg {
