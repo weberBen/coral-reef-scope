@@ -492,35 +492,35 @@ export function buildPresentation() {
         <thead>
           <tr>
             <th></th>
-            <th>${t('cmpCable')}</th>
-            <th>${t('cmpBuoy')}</th>
-            <th>${t('cmpReefOS')}</th>
-            <th class="gc-ours">${t('cmpOurs')}</th>
+            <th title="${t('cmpCableDesc')}">${t('cmpCable')}<small class="gc-desc">${t('cmpCableDesc')}</small></th>
+            <th title="${t('cmpBuoyDesc')}">${t('cmpBuoy')}<small class="gc-desc">${t('cmpBuoyDesc')}</small></th>
+            <th title="${t('cmpReefOSDesc')}">${t('cmpReefOS')}<small class="gc-desc">${t('cmpReefOSDesc')}</small></th>
+            <th class="gc-ours" title="${t('cmpOursDesc')}">${t('cmpOurs')}<small class="gc-desc">${t('cmpOursDesc')}</small></th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="3 2" class="cmp-pulse"/><path d="M14 28 Q17 18 20 22 Q23 26 26 16" stroke="var(--green)" stroke-width="2" fill="none"/><circle cx="20" cy="12" r="2" fill="var(--green)" opacity="0.6"/></svg>${t('cmpNat')}</td>
-            <td data-label="${t('cmpCable')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpNatCable')}</span></div></td>
-            <td data-label="${t('cmpBuoy')}"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">${t('cmpNatBuoy')}</span></div></td>
-            <td data-label="${t('cmpReefOS')}"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">${t('cmpNatReefOS')}</span></div></td>
-            <td data-label="${t('cmpOurs')}"><div class="gc-cell gc-7 gc-best"><span class="gc-score">0.65</span><span class="gc-sub">${t('cmpNatOurs')}</span></div></td>
+            <td data-label="${t('cmpCable')}" data-desc="${t('cmpCableDesc')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpNatCable')}</span></div></td>
+            <td data-label="${t('cmpBuoy')}" data-desc="${t('cmpBuoyDesc')}"><div class="gc-cell gc-2"><span class="gc-score">0.2</span><span class="gc-sub">${t('cmpNatBuoy')}</span></div></td>
+            <td data-label="${t('cmpReefOS')}" data-desc="${t('cmpReefOSDesc')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpNatReefOS')}</span></div></td>
+            <td data-label="${t('cmpOurs')}" data-desc="${t('cmpOursDesc')}"><div class="gc-cell gc-5 gc-best"><span class="gc-score">0.5</span><span class="gc-sub">${t('cmpNatOurs')}</span></div></td>
             <td class="gc-iter-cell"><svg viewBox="0 0 38 100" preserveAspectRatio="xMidYMid meet"><defs><marker id="gc-arrV1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="var(--green)" stroke-width="1.5"/></marker></defs><text x="30" y="44" text-anchor="middle" fill="var(--green)" font-size="11" font-weight="900" font-family="Inter,sans-serif" writing-mode="tb">${t('cmpIter')}</text><path d="M8 5 Q30 50 8 95" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#gc-arrV1)"/></svg></td>
           </tr>
           <tr>
             <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="20" cy="20" r="14" fill="none" stroke="var(--yellow)" stroke-width="1.5"/><path d="M20 10 v4 M20 26 v4 M14 20 h12" stroke="var(--yellow)" stroke-width="2"/><path d="M16 16 Q20 14 24 16 Q20 18 16 16" stroke="var(--yellow)" stroke-width="1.5" fill="none" class="cmp-coin"/></svg>${t('cmpOpex')}</td>
-            <td data-label="${t('cmpCable')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpOpexCable')}</span></div></td>
-            <td data-label="${t('cmpBuoy')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpOpexBuoy')}</span></div></td>
-            <td data-label="${t('cmpReefOS')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpOpexReefOS')}</span></div></td>
-            <td data-label="${t('cmpOurs')}"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">${t('cmpOpexOurs')}</span></div></td>
+            <td data-label="${t('cmpCable')}" data-desc="${t('cmpCableDesc')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpOpexCable')}</span></div></td>
+            <td data-label="${t('cmpBuoy')}" data-desc="${t('cmpBuoyDesc')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpOpexBuoy')}</span></div></td>
+            <td data-label="${t('cmpReefOS')}" data-desc="${t('cmpReefOSDesc')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpOpexReefOS')}</span></div></td>
+            <td data-label="${t('cmpOurs')}" data-desc="${t('cmpOursDesc')}"><div class="gc-cell gc-5 gc-best"><span class="gc-score">0.45</span><span class="gc-sub">${t('cmpOpexOurs')}</span></div></td>
             <td class="gc-iter-cell"><svg viewBox="0 0 38 100" preserveAspectRatio="xMidYMid meet"><text x="30" y="44" text-anchor="middle" fill="var(--green)" font-size="11" font-weight="900" font-family="Inter,sans-serif" writing-mode="tb">${t('cmpIter')}</text><path d="M8 5 Q30 50 8 95" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#gc-arrV1)"/></svg></td>
           </tr>
           <tr>
             <td class="gc-criterion"><svg viewBox="0 0 40 40" width="36" height="36" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="20" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale1"/><circle cx="24" cy="14" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale2"/><circle cx="24" cy="26" r="4" fill="none" stroke="var(--cyan)" stroke-width="1.5" class="cmp-scale3"/><line x1="16" y1="20" x2="20" y2="15" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/><line x1="16" y1="20" x2="20" y2="25" stroke="var(--cyan)" stroke-width="1" opacity="0.4"/></svg>${t('cmpScale')}</td>
-            <td data-label="${t('cmpCable')}"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">${t('cmpScaleCable')}</span></div></td>
-            <td data-label="${t('cmpBuoy')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpScaleBuoy')}</span></div></td>
-            <td data-label="${t('cmpReefOS')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpScaleReefOS')}</span></div></td>
-            <td data-label="${t('cmpOurs')}"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">${t('cmpScaleOurs')}</span></div></td>
+            <td data-label="${t('cmpCable')}" data-desc="${t('cmpCableDesc')}"><div class="gc-cell gc-1"><span class="gc-score">0.1</span><span class="gc-sub">${t('cmpScaleCable')}</span></div></td>
+            <td data-label="${t('cmpBuoy')}" data-desc="${t('cmpBuoyDesc')}"><div class="gc-cell gc-4"><span class="gc-score">0.4</span><span class="gc-sub">${t('cmpScaleBuoy')}</span></div></td>
+            <td data-label="${t('cmpReefOS')}" data-desc="${t('cmpReefOSDesc')}"><div class="gc-cell gc-3"><span class="gc-score">0.3</span><span class="gc-sub">${t('cmpScaleReefOS')}</span></div></td>
+            <td data-label="${t('cmpOurs')}" data-desc="${t('cmpOursDesc')}"><div class="gc-cell gc-6 gc-best"><span class="gc-score">0.6</span><span class="gc-sub">${t('cmpScaleOurs')}</span></div></td>
             <td class="gc-iter-cell"><svg viewBox="0 0 38 100" preserveAspectRatio="xMidYMid meet"><text x="30" y="44" text-anchor="middle" fill="var(--green)" font-size="11" font-weight="900" font-family="Inter,sans-serif" writing-mode="tb">${t('cmpIter')}</text><path d="M8 5 Q30 50 8 95" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#gc-arrV1)"/></svg></td>
           </tr>
         </tbody>
@@ -557,6 +557,25 @@ export function buildPresentation() {
     });
   }, { threshold: 0.15 });
   el.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+
+  // Comparison table: click on th or td[data-desc] to show tooltip
+  el.querySelectorAll('.grid-compare th[title], .grid-compare td[data-desc]').forEach(cell => {
+    cell.style.cursor = 'pointer';
+    cell.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      const existing = cell.querySelector('.gc-tooltip');
+      if (existing) { existing.remove(); return; }
+      el.querySelectorAll('.gc-tooltip').forEach(t => t.remove());
+      const text = cell.title || cell.dataset.desc;
+      if (!text) return;
+      const tip = document.createElement('span');
+      tip.className = 'gc-tooltip';
+      tip.textContent = text;
+      cell.style.position = 'relative';
+      cell.appendChild(tip);
+      setTimeout(() => tip.remove(), 3000);
+    });
+  });
 
   // Cycle phases scroll observer
   initCycleScroll();
