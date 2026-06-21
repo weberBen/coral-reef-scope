@@ -14,11 +14,11 @@ Every existing approach to coral reef monitoring forces a trade-off between cost
 
 The table below is a thinking framework, not a benchmark. The scores are qualitative, not quantitative. They reflect how we reason about trade-offs across three axes: naturalness (how little the system disrupts the site), operational cost, and scalability. They are not validated measurements and should not be read as such.
 
-| Criterion | Subsea Cable | Solar Buoys | ReefOS | **ReefScope** |
+| Criterion | Subsea Cable | Buoy Mesh | ReefCam (solar platform) | **ReefScope** |
 |---|---|---|---|---|
-| **Naturalness** | 0.4, cable crossing the reef, seabed infrastructure | 0.1, permanent surface buoys | 0.2, concentrated but permanent platform | **0.65**, seabed anchor, temporary buoy |
-| **OPEX** | 0.4, divers for biofouling + cable upkeep | 0.3, divers for biofouling + panel upkeep | 0.3, divers + platform + WiFi mesh | **0.6**, onshore cleaning, limited seabed maintenance |
-| **Scalability** | 0.1, linear cost, expensive to expand | 0.4, deployable but per-unit maintenance | 0.3, high cost per station, heavy monitoring | **0.6**, eventually zero seabed installation |
+| **Naturalness** | 0.4 — Fixed cables cross the reef and anchor permanently to the seabed. Visible infrastructure degrades the natural aspect of the site. | 0.2 — Network of buoys permanently visible at the surface. Alters the seascape and public perception of the site. | 0.3 — Concentrated solar platform on-site, permanent but localized. Less spread than buoys but still a constant presence. | **0.5** — Seabed anchor only, buoy visible at surface temporarily during sensor swap. Minimal lasting visual impact. |
+| **OPEX** | 0.4 — Requires regular diver interventions for biofouling removal and cable maintenance. Each dive is costly and weather-dependent. | 0.3 — Divers needed for biofouling on each buoy plus solar panel cleaning. Maintenance scales linearly with number of buoys. | 0.3 — Divers required for platform upkeep, camera servicing, and WiFi mesh maintenance. Concentrated but complex. | **0.45** — Sensors cleaned and recharged onshore. No underwater human intervention. Only the seabed anchor needs occasional inspection. |
+| **Scalability** | 0.1 — Each new position requires cable laying, a major civil engineering operation. Expansion cost is prohibitive. | 0.4 — New buoys can be deployed independently, but each adds its own maintenance burden. | 0.3 — High cost per station with specialized equipment. Monitoring overhead grows with each platform. | **0.6** — Adding coverage means producing more sensors, not more infrastructure. At Phase 3, zero seabed installation per new position. |
 
 *These scores are subjective estimates intended to structure the comparison, not to conclude it. The ReefScope column in particular blends the current state (Phases 1-2, which still use permanent cable and anchor) with the target state (Phase 3, zero seabed installation). Rigorous benchmarking against field data (rewind+transit energy, loss rate per cycle, wet-mate connector reliability under biofouling) is needed before these numbers carry weight and meaning.*
 
