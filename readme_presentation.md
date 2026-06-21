@@ -12,15 +12,7 @@ Every existing approach to coral reef monitoring forces a trade-off between cost
 
 **Permanent infrastructure** (subsea cables, solar buoy arrays, shore-linked platforms) delivers reliable power and data. But it imposes a physical footprint on the reef: cables crossing the seabed, buoys cluttering the surface, anchor blocks on the substrate. The visual and ecological impact is non-trivial — mooring systems can damage adjacent seagrass if poorly designed ([Glasby & West 2015](https://www.researchgate.net/publication/233772840)), moorings attract more boat traffic which partially offsets the reduction in direct anchoring damage ([Forrester 2020](https://www.sciencedirect.com/science/article/abs/pii/S0964569120302647)), and defining sustainable anchoring limits remains an open management problem ([Gonson et al. 2023](https://www.sciencedirect.com/science/article/pii/S0025326X23001522)). These systems are expensive to install, expensive to expand, and expensive to decommission. They do not scale.
 
-The table below is a thinking framework, not a benchmark. The scores are qualitative, not quantitative. They reflect how we reason about trade-offs across three axes: naturalness (how little the system disrupts the site), operational cost, and scalability. They are not validated measurements and should not be read as such.
-
-| Criterion | Subsea Cable | Buoy Mesh | ReefCam (solar platform) | **ReefScope** |
-|---|---|---|---|---|
-| **Naturalness** | 0.4 — Fixed cables cross the reef and anchor permanently to the seabed. Visible infrastructure degrades the natural aspect of the site. | 0.2 — Network of buoys permanently visible at the surface. Alters the seascape and public perception of the site. | 0.3 — Concentrated solar platform on-site, permanent but localized. Less spread than buoys but still a constant presence. | **0.5** — Seabed anchor only, buoy visible at surface temporarily during sensor swap. Minimal lasting visual impact. |
-| **OPEX** | 0.4 — Requires regular diver interventions for biofouling removal and cable maintenance. Each dive is costly and weather-dependent. | 0.3 — Divers needed for biofouling on each buoy plus solar panel cleaning. Maintenance scales linearly with number of buoys. | 0.3 — Divers required for platform upkeep, camera servicing, and WiFi mesh maintenance. Concentrated but complex. | **0.45** — Sensors cleaned and recharged onshore. No underwater human intervention. Only the seabed anchor needs occasional inspection. |
-| **Scalability** | 0.1 — Each new position requires cable laying, a major civil engineering operation. Expansion cost is prohibitive. | 0.4 — New buoys can be deployed independently, but each adds its own maintenance burden. | 0.3 — High cost per station with specialized equipment. Monitoring overhead grows with each platform. | **0.6** — Adding coverage means producing more sensors, not more infrastructure. At Phase 3, zero seabed installation per new position. |
-
-*These scores are subjective estimates intended to structure the comparison, not to conclude it. ReefScope does not claim to outperform existing systems — it explores a different set of trade-offs. The ReefScope column blends the current state (Phases 1-2, which still use permanent cable and anchor) with the target state (Phase 3, zero seabed installation). Each iteration of field testing will shift these numbers, up or down. Rigorous benchmarking against field data (rewind+transit energy, loss rate per cycle, wet-mate connector reliability under biofouling) is needed before these numbers carry weight.*
+The working hypotheses behind ReefScope are: that cycling sensors between seabed and surface reduces operational cost compared to permanent diver-maintained infrastructure; that temporary surface presence preserves site naturalness better than permanent buoys or platforms; and that scaling coverage by producing more sensors rather than more infrastructure changes the cost curve. These are hypotheses to validate through field cycles, not conclusions.
 
 ### What if the sensors came to us?
 
@@ -250,7 +242,7 @@ This is a known problem in multi-sensor, multi-pass capture. It is the same prob
 
 ### Biofouling
 
-The 24-hour cycle eliminates biofouling on the optical system, which is the component most sensitive to it. But the cable, anchor, and spool stay permanently submerged and will foul over time. The "onshore cleaning" mentioned in the comparison table applies to the sensor only, not to the submerged infrastructure.
+The 24-hour cycle eliminates biofouling on the optical system, which is the component most sensitive to it. But the cable, anchor, and spool stay permanently submerged and will foul over time. Onshore cleaning applies to the sensor only, not to the submerged infrastructure.
 
 Surface biofouling cleaning is drastically simpler than underwater cleaning. Once sensors are collected (eventually automatically) at a single location, they can pass through an autonomous washing station. Even a simple offshore platform with a single power cable driving a high-pressure water pump solves this. The cable and anchor fouling is a real maintenance cost, acknowledged as part of the infrastructure we ultimately want to eliminate. In Phases 1 and 2, it's an accepted cost, lower than the alternatives because the frequency and complexity of intervention is reduced.
 
@@ -268,7 +260,7 @@ This concept becomes relevant only when sensor unit cost drops far enough that l
 
 ## Compromises and Convictions
 
-This project is built on deliberate compromises. The simulation uses simplified physics. The coverage model uses approximated occlusion. The coral growth algorithm is analytical rather than biophysical. The comparison table is a reasoning framework with subjective scores, not a validated benchmark. Each of these will be revised — some tightened, some discarded — as field cycles accumulate.
+This project is built on deliberate compromises. The simulation uses simplified physics. The coverage model uses approximated occlusion. The coral growth algorithm is analytical rather than biophysical. Each of these will be revised — some tightened, some discarded — as field cycles accumulate.
 
 We are comfortable with these compromises because the underlying model (sensors that cycle autonomously between seabed and surface, requiring no permanent power or data infrastructure underwater) is sound at the physics level. The forces involved in a 15-meter mooring under moderate tropical conditions are well within the envelope of standard marine engineering. The photogrammetric reconstruction workflow is proven technology. The asynchronous data model is not a limitation but a design choice aligned with the timescales of the ecosystems being observed.
 
@@ -284,7 +276,11 @@ Some directions we think about, without pretending to know which will work.
 
 **Autonomous underwater photography.** Photographing a reef at high resolution can be done by an autonomous underwater vehicle. But the collision avoidance algorithm required to navigate near coral is extremely critical: any contact is destructive, and the failure mode is the thing you're trying to protect. Beyond collision, the noise and physical disturbance of a motorized vehicle moving through the water column affects the ecosystem you're trying to observe. Fish flee. Behavior changes. The observation contaminates the subject.
 
-The closest viable concept is something closer to a jellyfish than a submarine: a system that does not fight the current but follows it, maintaining its position by adjusting its buoyancy and very slightly influencing its trajectory to avoid collision with structures. It does not decide where to go. It drifts, observes, and nudges itself away from obstacles. This is extremely complex to engineer and extremely critical to get right. It is not a near-term project.
+The closest viable concept is something closer to a jellyfish than a submarine: a system that does not fight the current but follows it, adjusting its buoyancy and very slightly influencing its trajectory to avoid collision with structures. It does not decide where to go. It drifts, observes, and nudges itself away from obstacles. The mechanics are quasi-passive: the current provides propulsion, buoyancy provides vertical control, and the sensor captures whatever passes beneath it. Passive in all its mechanics, active only during the brief capture window — like a jellyfish that pulses minimally and lets the ocean do the rest. This is also, structurally, how coral larvae disperse. Coral spawning relies on releasing enormous numbers of larvae into the current, letting hydrodynamics carry them to settlement sites. The swarm sensor concept shares that logic: many small units, released into the flow, covering the reef by sheer number rather than by individual precision. The analogy points to the operating regime where the approach might work: high volume, low unit cost, tolerance for loss, coverage through redundancy.
+
+But the analogy has a sharp edge. Coral recruitment devices are designed to stay — and [Ramsby et al. 2026](https://onlinelibrary.wiley.com/doi/10.1111/rec.70206) shows they cement to the reef within months via encrusting organisms. That is the goal for restoration. For a sensor that must rise again, it is the opposite: fouling that cements the device to the substrate prevents recovery and risks damaging coral when extracted. This constrains the design toward short bottom time (hours, not weeks) and anti-adhesion coatings, and it means the shared mechanics with coral seeding apply to deployment but diverge sharply at recovery. Two modes follow: drifting (the sensor never settles, it planes through the water column like a jellyfish, capturing as it goes) or settling briefly (it sits on the bottom for a few hours, then pops up before fouling organisms can grip it). Which mode works depends on the site — reef density, current patterns, bottom type.
+
+This is extremely complex to engineer and extremely critical to get right. It is not a near-term project.
 
 **The hybrid fleet.** The final monitoring system will not be one type of sensor. It will be a combination:
 
@@ -300,6 +296,16 @@ Discreet sensors that attach to nothing, disturb nothing, and cycle through on t
 
 That is the signal we want to send.
 
+### Nursery: a different problem
+
+The reef side of the system operates in open water, under wave and current forces, with fragile living structures everywhere. The nursery side — where sensors are cleaned, recharged, inspected, and redeployed — operates in a controlled environment: a shore station, a dock, a floating platform. The constraints are entirely different.
+
+In a nursery, the water is calm or absent. Power is available. Equipment is accessible. Sensors can be handled by machines. Biofouling removal is a pressure wash, not a dive. Battery replacement is a swap, not a connector problem. Quality inspection can use cameras, scales, continuity testers — all commodity hardware. The nursery can run 24/7 without weather windows.
+
+This means the nursery deserves its own design, optimized for throughput and automation, not constrained by the reef-side engineering. A conveyor system that receives sensors from the collection net, washes them, tests them, charges them, and queues them for the next deployment cycle. The engineering is industrial, not marine. The problems are solved problems.
+
+The reef side pushes the boundaries. The nursery side benefits from the controlled environment it sits in. Keeping these two domains separate — and not letting reef-side constraints bleed into nursery design, or vice versa — is a deliberate architectural choice.
+
 ---
 
 ## What comes next
@@ -308,4 +314,4 @@ The simulation and coverage work presented in Part II addresses the passive, wel
 
 The first call to action is not more simulation. It is to close one cycle. Build one spool. Test it in a tank. Foul it deliberately and test it again. Wire a wet-mate connector to a buoy and throw a weighted float at it until it locks or it doesn't. Measure the rewind energy. Measure the transit energy at a realistic distance. Put one station in the water for one cycle and see what comes back. Feed the numbers back into the simulation. Adjust the parameters. Build the next version. Put it back in the water.
 
-The project moves forward by accumulating these cycles, not by designing the final system upfront. The simulation, the coverage tool, the comparison table — they are all calibrated against whatever the last cycle taught us. Next cycle, they get recalibrated. The gap between simulation and reality shrinks with each round. That is the process. There is no shortcut past it.
+The project moves forward by accumulating these cycles, not by designing the final system upfront. The simulation and the coverage tool are calibrated against whatever the last cycle taught us. Next cycle, they get recalibrated. The gap between simulation and reality shrinks with each round. That is the process. There is no shortcut past it.
