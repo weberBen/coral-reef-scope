@@ -114,10 +114,3 @@ bunx playwright open --viewport-size=1366,768 --browser=chromium http://localhos
 
 Edit `config.yaml` to change source (`allen`/`procedural`), bbox, resolution, colony params, etc.
 See `ARCHITECTURE.md` for full reference.
-
----
-
-## Social
-
-- See the open source code on Github and contribute: [github.com/weberBen/coral-reef-scope](https://github.com/weberBen/coral-reef-scope)
-- Follow my personal feed for up to date info: [feed.rnznr.com/@ben](https://feed.rnznr.com/@ben)
