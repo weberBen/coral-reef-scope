@@ -3,6 +3,10 @@ const GITHUB_REPO = 'coral-reef-scope';
 
 import readmeMd from '../../readme_presentation.md?raw';
 
+export const FIRST_COMMIT_DATE = '2026-06-03';
+export const GITHUB_COMMITS_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/commits?per_page=1`;
+export const GITHUB_URL = `https://github.com/${GITHUB_USER}/${GITHUB_REPO}`;
+
 export default {
   links: [
     { type: 'resources', url: 'https://ifrecor.fr/', label: { fr: 'Corail', en: 'Coral' }, aria: { fr: 'Ressources corail', en: 'Coral resources' }, desc: { fr: 'Ressources sur les récifs coralliens (IFRECOR, etc.)', en: 'Resources on coral reefs (IFRECOR, etc.)' } },

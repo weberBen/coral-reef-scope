@@ -124,7 +124,7 @@
   margin-bottom: 32px;
 }
 .hero h1 {
-  font-size: 120px;
+  font-size: clamp(64px, 8vw + 32px, 120px);
   font-weight: 900;
   letter-spacing: -4px;
   background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-l) 40%, var(--orange) 100%);
@@ -144,6 +144,62 @@
   font-size: 17px !important;
   color: var(--t4) !important;
   margin-top: 8px;
+}
+.hero-activity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.hero-activity:hover .hero-status {
+  opacity: 0.8;
+}
+.hero-date {
+  color: var(--t4);
+}
+.hero-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hero-status.first {
+  background: rgba(249,115,22,0.1);
+  color: var(--orange-l);
+  border: 1px solid rgba(249,115,22,0.15);
+}
+.hero-status.loading {
+  background: rgba(148,163,184,0.15);
+  color: var(--t4);
+  animation: statusPulse 1.5s ease-in-out infinite;
+}
+.hero-status.active {
+  background: rgba(52,211,153,0.15);
+  color: #34d399;
+  border: 1px solid rgba(52,211,153,0.3);
+}
+.hero-status.recent {
+  background: rgba(251,191,36,0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.3);
+}
+.hero-status.inactive {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.3);
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 .scroll-cue {
   position: absolute;
@@ -1166,7 +1222,9 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
-  .hero h1 { font-size: 56px; }
+  .hero h1 { font-size: clamp(64px, 10vw + 20px, 90px); }
+  .hero-sub br { content: ''; font-size: 0; }
+  .hero-sub br::after { content: ' '; font-size: 17px; }
   .big-statement { font-size: 24px; }
   .mega-title { font-size: 32px; }
   .problem-row, .phase-cards { grid-template-columns: 1fr; }

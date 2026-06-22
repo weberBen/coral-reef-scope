@@ -26,7 +26,7 @@ const T = {
     heroBadge: 'Reef Monitoring System',
     heroTitle: 'ReefScope',
     heroSub1: 'Surveillance autonome des récifs coralliens',
-    heroSub2: 'Un système où chaque capteur remonte, se recharge,<br>et replonge. Sans intervention humaine sous l\'eau.',
+    heroSub2: 'Un système où chaque capteur remonte, se recharge, et replonge.<br>Sans intervention humaine sous l\'eau.',
     heroScroll: 'Découvrir',
 
     // Problem
@@ -126,6 +126,14 @@ const T = {
     cmpScaleBuoy: 'Déployable mais entretien par unité',
     cmpScaleReefOS: 'Coût / station élevé, surveillance accrue',
     cmpScaleOurs: 'À terme, zéro installation au fond',
+
+    // Activity dates
+    activityLoading: 'En cours…',
+    activityActive: 'Actif',
+    activityRecent: 'Récent',
+    activityInactive: 'Inactif',
+    activitySince: 'Depuis',
+    activityLast: 'Mis à jour',
 
     // CTA
     ctaStatement: 'Testez le système vous-même',
@@ -232,7 +240,7 @@ const T = {
     heroBadge: 'Reef Monitoring System',
     heroTitle: 'ReefScope',
     heroSub1: 'Autonomous coral reef monitoring',
-    heroSub2: 'A system where each sensor rises, recharges,<br>and dives back. No human intervention underwater.',
+    heroSub2: 'A system where each sensor rises, recharges, and dives back.<br>No human intervention underwater.',
     heroScroll: 'Discover',
 
     // Problem
@@ -332,6 +340,14 @@ const T = {
     cmpScaleBuoy: 'Deployable but per-unit maintenance',
     cmpScaleReefOS: 'High cost/station, increased monitoring',
     cmpScaleOurs: 'Eventually, zero seabed installation',
+
+    // Activity dates
+    activityLoading: 'Active…',
+    activityActive: 'Active',
+    activityRecent: 'Recent',
+    activityInactive: 'Inactive',
+    activitySince: 'Since',
+    activityLast: 'Updated',
 
     // CTA
     ctaStatement: 'Try the system yourself',

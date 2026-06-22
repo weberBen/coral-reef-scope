@@ -1,7 +1,53 @@
 import { isDark, onThemeChange } from './theme.js';
 import { t, getLang } from './i18n.js';
 import { createSocialPanel } from 'social-links-panel';
-import socialConfig from './social.config.js';
+import socialConfig, { FIRST_COMMIT_DATE, GITHUB_COMMITS_URL, GITHUB_URL } from './social.config.js';
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(getLang() === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function getActivityStatus(dateStr) {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24);
+  if (diff <= 7) return { label: t('activityActive'), cls: 'active' };
+  if (diff <= 30) return { label: t('activityRecent'), cls: 'recent' };
+  return { label: t('activityInactive'), cls: 'inactive' };
+}
+
+let lastCommitCache = null;
+
+function applyLastCommitToDOM() {
+  if (!lastCommitCache) return;
+  const { date, status } = lastCommitCache;
+  document.querySelectorAll('.hero-last-commit-target').forEach(el => {
+    el.textContent = `${t('activityLast')} ${formatDate(date)}`;
+    el.className = `hero-status ${status.cls}`;
+  });
+  document.querySelectorAll('.slp-activity-status').forEach(el => {
+    el.textContent = status.label;
+    el.className = `slp-activity-status ${status.cls}`;
+    el.style.display = '';
+  });
+  document.querySelectorAll('.slp-activity-arrow').forEach(el => {
+    el.style.display = 'inline';
+  });
+  document.querySelectorAll('.slp-activity-date').forEach(el => {
+    el.textContent = formatDate(date);
+  });
+}
+
+function fetchLastCommit() {
+  fetch(GITHUB_COMMITS_URL)
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      const date = data[0]?.commit?.committer?.date;
+      if (!date) return;
+      lastCommitCache = { date, status: getActivityStatus(date) };
+      applyLastCommitToDOM();
+    })
+    .catch(() => {});
+}
 
 export function buildPresentation() {
   const el = document.getElementById('presentation');
@@ -16,6 +62,10 @@ export function buildPresentation() {
   <div class="deck-content hero-content">
     <div class="hero-badge">${t('heroBadge')}</div>
     <h1 class="reveal">${t('heroTitle')}</h1>
+    <a class="reveal hero-activity" id="hero-activity" href="${GITHUB_URL}" target="_blank" rel="noopener">
+      <span class="hero-status first">${t('activitySince')} ${formatDate(FIRST_COMMIT_DATE)}</span>
+      <span class="hero-status loading hero-last-commit-target">${t('activityLoading')}</span>
+    </a>
     <p class="reveal d1">${t('heroSub1')}</p>
     <p class="reveal d2 hero-sub">${t('heroSub2')}</p>
   </div>
@@ -592,6 +642,8 @@ export function buildPresentation() {
     ...socialConfig,
     locale: getLang(),
     modal: isDark() ? 'dark' : 'light',
+    firstCommitDate: FIRST_COMMIT_DATE,
+    onOpen: () => applyLastCommitToDOM(),
   });
   panel.appendTo(el);
 
@@ -613,6 +665,9 @@ export function buildPresentation() {
 
   // Sync modal theme with dark/light toggle
   onThemeChange(() => panel.setModalTheme(isDark() ? 'dark' : 'light'));
+
+  // Non-blocking fetch of last commit date
+  fetchLastCommit();
 }
 
 function initCycleScroll() {
