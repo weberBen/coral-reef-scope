@@ -5,7 +5,7 @@ import socialConfig, { FIRST_COMMIT_DATE, GITHUB_COMMITS_URL, GITHUB_URL } from 
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString(getLang() === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(getLang() === 'fr' ? 'fr-FR' : 'en-US', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function getActivityStatus(dateStr) {
