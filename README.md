@@ -52,6 +52,34 @@ uv run python -m coral_sim.viz config.yaml
 uv run python tools/run.py config.yaml
 ```
 
+## Docker
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+The first run fetches Allen Coral Atlas data and generates `reef.glb`. The web app is then available at `http://localhost:5173`.
+
+To force terrain regeneration:
+
+```bash
+FORCE_REGENERATE=1 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+### Reef generation parameters
+
+Configure via environment variables in `docker-compose.yml` or on the command line:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `REEF_LAT` | `-17.52` | Center latitude |
+| `REEF_LON` | `-149.83` | Center longitude |
+| `REEF_RADIUS` | `4` | Radius in km |
+| `REEF_RESOLUTION` | `0.0003` | Degrees/pixel (~33 m) |
+| `REEF_LABEL` | `Moorea Nord` | Site name |
+| `REEF_LOCATION` | `French Polynesia` | Location |
+| `FORCE_REGENERATE` | `0` | Set to `1` to force regeneration |
+
 ### GLB Export Options
 
 | Option         | Default          | Description                                |
