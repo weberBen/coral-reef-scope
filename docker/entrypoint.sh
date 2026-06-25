@@ -1,19 +1,24 @@
 #!/bin/sh
 set -e
 
-CONFIG_FILE="${CONFIG_FILE:-config.yaml}"
-DATA_DIR=$(python -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('data_dir', 'data'))")
-TERRAIN_OUTPUT=$(python -c "import yaml; c=yaml.safe_load(open('$CONFIG_FILE')); print(c['terrain']['output'])")
-TERRAIN_FILE="$DATA_DIR/$TERRAIN_OUTPUT"
+REEF_OUTPUT="${REEF_OUTPUT:-data/reef.glb}"
 
-mkdir -p "$DATA_DIR"
+mkdir -p "$(dirname "$REEF_OUTPUT")"
 
-if [ ! -f "$TERRAIN_FILE" ] || [ "${FORCE_REGENERATE:-0}" = "1" ]; then
-    echo "[entrypoint] Generating terrain from $CONFIG_FILE..."
-    python -m coral_sim.terrain "$CONFIG_FILE"
-    echo "[entrypoint] Terrain generated: $TERRAIN_FILE"
+if [ ! -f "$REEF_OUTPUT" ] || [ "${FORCE_REGENERATE:-0}" = "1" ]; then
+    echo "[entrypoint] Generating reef GLB..."
+    python tools/reef_export.py \
+        --lat "${REEF_LAT:--17.52}" \
+        --lon "${REEF_LON:--149.83}" \
+        --radius "${REEF_RADIUS:-4}" \
+        --resolution "${REEF_RESOLUTION:-0.0003}" \
+        --label "${REEF_LABEL:-Moorea Nord}" \
+        --location "${REEF_LOCATION:-French Polynesia}" \
+        --cache-dir "${REEF_CACHE_DIR:-cache}" \
+        -o "$REEF_OUTPUT"
+    echo "[entrypoint] Reef exported: $REEF_OUTPUT"
 else
-    echo "[entrypoint] Terrain already exists: $TERRAIN_FILE"
+    echo "[entrypoint] Reef already exists: $REEF_OUTPUT"
 fi
 
 exec "$@"

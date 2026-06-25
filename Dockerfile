@@ -25,6 +25,7 @@ WORKDIR /app
 
 COPY --from=deps /app/.venv /app/.venv
 COPY coral_sim/ coral_sim/
+COPY tools/ tools/
 COPY docker/entrypoint.sh docker/entrypoint.sh
 
 ENV PATH="/app/.venv/bin:$PATH"
@@ -35,7 +36,4 @@ RUN mkdir -p data cache && chown -R coral:coral data cache
 
 USER coral
 
-EXPOSE 8080
-
 ENTRYPOINT ["docker/entrypoint.sh"]
-CMD ["python", "-m", "coral_sim", "config.yaml"]
