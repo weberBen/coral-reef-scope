@@ -1,0 +1,21 @@
+services:
+  backend:
+    volumes:
+      - ./coral_sim:/app/coral_sim:ro
+      - ./tools:/app/tools:ro
+      - ./data:/app/data
+      - ./cache:/app/cache
+      - ./config.yaml:/app/config.yaml:ro
+
+  frontend:
+    build:
+      target: deps
+    command: bun run dev --host 0.0.0.0
+    volumes:
+      - ./mooring-sim/src:/app/src:ro
+      - ./mooring-sim/index.html:/app/index.html:ro
+      - ./mooring-sim/vite.config.js:/app/vite.config.js:ro
+      - ./mooring-sim/data:/app/data:ro
+      - ./readme_presentation.md:/readme_presentation.md:ro
+    ports:
+      - "5173:5173"
